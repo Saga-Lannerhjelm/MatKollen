@@ -36,7 +36,7 @@ namespace MatKollen.Controllers.Repositories
                     {
                         while (myReader.Read())
                         {
-                            string test = myReader.GetString("category_name");
+                            string test = myReader.GetString("name");
                             testList.Add(test);
                         }
                     }
