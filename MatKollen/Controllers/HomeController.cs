@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using MatKollen.Models;
+using MatKollen.Controllers.Repositories;
 
 namespace MatKollen.Controllers;
 
@@ -15,6 +16,10 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
+        var foodRep = new FoodRepository();
+        var categories = foodRep.GetData(out string error);
+
+        ViewBag.categories = categories;
         return View();
     }
 
