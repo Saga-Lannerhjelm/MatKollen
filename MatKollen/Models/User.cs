@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 
 namespace MatKollen.Models
@@ -17,7 +18,10 @@ namespace MatKollen.Models
         public string? Email { get; set; }   
 
         [Required]   
-        public byte[] Password { get; set; }  
+        [NotMapped]   
+        public string Password { get; set; }  
+
+        public byte[] PasswordHashed { get; set; }  
 
          public ICollection<List> Lists {get; set;}
          public ICollection<Recipe> Recipes {get; set;}

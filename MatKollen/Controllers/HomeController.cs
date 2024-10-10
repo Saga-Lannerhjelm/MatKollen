@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using MatKollen.Models;
 using MatKollen.Controllers.Repositories;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MatKollen.Controllers;
 
@@ -13,7 +14,6 @@ public class HomeController : Controller
     {
         _logger = logger;
     }
-
     public IActionResult Index()
     {
         var foodRep = new FoodRepository();
@@ -23,8 +23,10 @@ public class HomeController : Controller
         return View();
     }
 
+    [Authorize]
     public IActionResult Privacy()
     {
+        var currentUser = HttpContext.User;
         return View();
     }
 
