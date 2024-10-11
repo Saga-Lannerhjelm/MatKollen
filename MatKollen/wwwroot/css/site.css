@@ -12,11 +12,107 @@ html {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
-html {
-  position: relative;
-  min-height: 100%;
+
+
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 body {
   margin-bottom: 60px;
+}
+
+header h1 {
+  margin: 0;
+}
+
+nav ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+  nav ul li {
+      display: inline-block;
+      margin-right: 10px;
+  }
+
+      nav ul li a {
+          color: #212529;
+          text-decoration: none;
+      }
+
+main {
+  margin: 20px;
+}
+
+a {
+  color: #212529;
+  text-decoration: none;
+}
+
+  a:hover {
+      color: #6d6dfb;
+  }
+
+
+.bg-custom {
+  background-color: #e4ffb6;
+}
+
+.bg-default{
+  background-color: #e4ffb6;
+  color: #2f691c;
+}
+
+.bg-attention{
+  background-color: #ffe7af;
+  color: #6d541c;
+}
+
+.bg-critical{
+  background-color: #ffb6b6;
+}
+
+
+.bg-transparent {
+  background-color: transparent;
+}
+
+.post-card img {
+  width: 100%;
+  height: auto;
+  margin-bottom: 10px;
+}
+
+.tag {
+  background-color: #babaff;
+  display: inline-block;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 2px 0.66em 1px;
+  text-transform: uppercase;
+  border-radius: 5px;
+}
+
+  .tag a:hover {
+      color: #6d6dfb;
+  }
+
+.post-date {
+  margin-bottom: 5px;
+}
+
+.footer {
+  color: #666;
+  text-align: center;
+  padding: 20px;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
 }
