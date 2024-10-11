@@ -63,10 +63,10 @@ builder.Services.AddAuthorization(options =>
 
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
 
-// builder.Services.AddScoped<FoodService>();
+builder.Services.AddScoped<FoodService>();
 
 
 var app = builder.Build();
@@ -89,6 +89,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Account}/{action=Login}/{id?}");
 
 app.Run();
