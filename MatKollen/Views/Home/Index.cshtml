@@ -3,7 +3,7 @@
 }
 
 @{
-    var hello = Guid.NewGuid();
+    var hello = User.Claims.FirstOrDefault(v => v.Type == "name").Value;
 }
 
 @{
@@ -17,4 +17,8 @@
     <h1 class="display-4">Welcome</h1>
     <p>@(hello)</p>
     <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    
+    <form method="post" asp-controller="Account" asp-action="Logout">
+        <button type="submit">Logout</button>
+    </form>
 </div>
