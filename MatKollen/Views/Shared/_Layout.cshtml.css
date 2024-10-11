@@ -7,6 +7,16 @@ a.navbar-brand {
   word-break: break-all;
 }
 
+.nav-item:active {
+  color: white;
+  background-color: #2ef02b;
+  border-radius: 99px;
+}
+
+.nav-link{
+  color: rgb(30, 30, 30);
+}
+
 a {
   color: #0077cc;
 }
