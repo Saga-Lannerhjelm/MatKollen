@@ -86,7 +86,7 @@ namespace MatKollen.DAL.Repositories
                     }
                     if (userCredentials.PasswordHashed == null)
                     {
-                        errorMsg = "Gick inte att hitta användaren";
+                        errorMsg = "Fel användarnamn eller lösenord";
                         return null;
                     }
                     return userCredentials;

@@ -32,7 +32,6 @@ namespace MatKollen.Controllers
         [HttpPost]
         public IActionResult Login(User user)
         {
-            IActionResult response = Unauthorized();
             var expirationTime = 2;
 
             var AccountRep = new AccountRepository();
@@ -65,7 +64,6 @@ namespace MatKollen.Controllers
 
                     var cookieOptions = new CookieOptions
                     {
-                        SameSite = SameSiteMode.None,
                         Expires = DateTime.Now.AddHours(expirationTime),
                         Secure = true,
                         HttpOnly = true,
@@ -73,17 +71,18 @@ namespace MatKollen.Controllers
                     
                     Response.Cookies.Append("Jwt-cookie", tokenResult, cookieOptions);
 
-                    return Ok(tokenResult);
+                    return RedirectToAction("Index", "Home");
                 }
             }
             if (error != "")
             {
                 TempData["unsuccessful"] = "Fel: " + error;
-                View(user);
+            } else
+            {
+                TempData["unsuccessful"] = "Fel användarnamn eller lösenord";
             }
 
-
-            return response;
+            return View(user);
         }
 
         [HttpGet]
@@ -127,6 +126,23 @@ namespace MatKollen.Controllers
             hashValue = sha256.ComputeHash(objUtf8.GetBytes(password));
 
             return hashValue;
+        }
+
+        public IActionResult Logout()
+        {
+            // To delete the cookie I used had to create a new cookie with an expired expiration date
+            if (Request.Cookies["Jwt-cookie"] != null) {
+                
+                var cookieOptions = new CookieOptions
+                {
+                    Expires = DateTime.Now.AddDays(-1),
+                    Secure = true,
+                    HttpOnly = true,
+                };
+                    
+                    Response.Cookies.Append("Jwt-cookie", "", cookieOptions);
+            }
+            return View("Login");
         }
 
     }
