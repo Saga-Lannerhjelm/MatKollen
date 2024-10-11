@@ -1,6 +1,8 @@
 using System.Text;
-using MatKollen.Services;
+using MatKollen.Controllers;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +18,15 @@ builder.Services
     a.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
     a.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
+// .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,
+//     // options => builder.Configuration.Bind("CookieSettings", options)
+//     options => 
+//     {
+//         options.Cookie.Name = "Jwt-cookie";
+//         options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+//         options.SlidingExpiration = true;
+//     }
+// )
 .AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
@@ -28,15 +39,35 @@ builder.Services
          ValidAudience = jwtAudience,
          IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
     };
+    options.SaveToken = true;
+
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context => 
+        {
+            if (context.Request.Cookies.ContainsKey("Jwt-cookie"))
+            {
+                context.Token = context.Request.Cookies["Jwt-cookie"];
+            }
+            return Task.CompletedTask;
+        }
+    };
 });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+});
+
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
 
-builder.Services.AddSingleton<DatabaseService>();
+// builder.Services.AddScoped<FoodService>();
+
 
 var app = builder.Build();
 

@@ -22,6 +22,7 @@ namespace MatKollen.Controllers
             _config = config;
         }
 
+         [AllowAnonymous]
         public IActionResult Login()
         {
             return View();
@@ -32,6 +33,8 @@ namespace MatKollen.Controllers
         public IActionResult Login(User user)
         {
             IActionResult response = Unauthorized();
+            var expirationTime = 2;
+
             var AccountRep = new AccountRepository();
 
             var hashedPassword = CalculateSHA256(user.Password);
@@ -55,10 +58,20 @@ namespace MatKollen.Controllers
                         issuer: _config["JwtSettings:Issuer"],
                         audience: _config["JwtSettings:Audience"],
                         claims: tokenClaims,
-                        expires: DateTime.Now.AddMinutes(5),
+                        expires: DateTime.Now.AddHours(expirationTime),
                         signingCredentials: credentials);
 
                     var tokenResult = new JwtSecurityTokenHandler().WriteToken(token);
+
+                    var cookieOptions = new CookieOptions
+                    {
+                        SameSite = SameSiteMode.None,
+                        Expires = DateTime.Now.AddHours(expirationTime),
+                        Secure = true,
+                        HttpOnly = true,
+                    };
+                    
+                    Response.Cookies.Append("Jwt-cookie", tokenResult, cookieOptions);
 
                     return Ok(tokenResult);
                 }
