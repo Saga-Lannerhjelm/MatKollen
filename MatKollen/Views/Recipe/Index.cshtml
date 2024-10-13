@@ -1,7 +1,21 @@
+@model List<RecipeDetailsViewModel>
 @{
     ViewData["Title"] = "Recept";
 }
 
 <h2>@ViewData["Title"]</h2>
 
-<p>Hello from our View Template!</p>
+@{
+    foreach(var recipe in Model)
+    {
+        <div class="card rounded-5">
+            <div class="card-body">
+                <h4 class="card-title">@recipe.Recipe.Title</h4>
+                 <small>@recipe.Recipe.CreatedAt by @recipe.Username</small>
+                 <p>@recipe.Recipe.Description</p>
+                 <small><em>@recipe.Category</em></small>
+            </div>
+
+        </div>
+    }
+}

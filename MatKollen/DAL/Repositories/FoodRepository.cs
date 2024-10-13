@@ -17,7 +17,7 @@ namespace MatKollen.Controllers.Repositories
 
             using (var myConnection = new MySqlConnection(myConnectionString))
             {
-                string query  = "SELECT * FROM vw_user_food_detials WHERE user_id = @userid";
+                string query  = "SELECT * FROM vw_user_food_details WHERE user_id = @userid";
                 var foodItems = new List<UserFoodItemViewModel>();
 
                 try
