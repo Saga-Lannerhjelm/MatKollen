@@ -1,3 +1,4 @@
+using MatKollen.DAL.Repositories;
 using MatKollen.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,7 +9,11 @@ namespace MatKollen.Controllers
         //Recipe
         public IActionResult Index()
         {
-            return View();
+            var recRep = new RecipeRepository();
+            var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value);
+            
+            var recipeList = recRep.GetRecipes(out string error);
+            return View(recipeList);
         }
 
         //Recipe/Details
