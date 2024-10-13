@@ -15,22 +15,6 @@ namespace MatKollen.Controllers
             var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value);
             
             var foodList = foodRep.GetUserFoodList(userId, out string error);
-            // var foodList = new List<UserFoodItemViewModel>();
-            // for (int i = 0; i < fetchedList?.Count; i++)
-            // {
-            //     IEnumerable<UserFoodItemViewModel> countOcurrences = fetchedList.Where(item => item.FoodItem == fetchedList[i].FoodItem);
-                
-            //     if (foodList.Find(item => item.FoodItem.Contains(fetchedList[i].FoodItem)) == null)
-            //     {
-            //         var item = new UserFoodItemViewModel()
-            //         {
-            //             FoodItem = fetchedList[i].FoodItem,
-            //             Category = fetchedList[i].Category,
-            //             Amount = countOcurrences.Count()
-            //         };
-            //         foodList.Add(item);
-            //     }
-            // }
             return View(foodList);
         }
 
