@@ -36,9 +36,12 @@ namespace MatKollen.DAL.Repositories
                             {
                                 Recipe = new Recipe()
                                 {
+                                    Id = reader.GetInt32("id"),
                                     Title = reader.GetString("title"),
                                     Description = reader.GetString("description"),
                                     CreatedAt = reader.GetDateTime("created_at"),
+                                    RecipeCategoryId = reader.GetInt32("recipe_category_id"),
+                                    UserId = reader.GetInt32("user_id")
                                 },
                                 Category = reader.GetString("category"),
                                 Username = reader.GetString("username"),
@@ -47,6 +50,70 @@ namespace MatKollen.DAL.Repositories
                         }
                     }
                     return recipeList;
+                }
+                catch (MySqlException e)
+                {
+                    errorMsg = e.Message;
+                    return null;
+                }    
+
+            }
+        }
+
+        public RecipeDetailsViewModel? GetRecipe(int recipeId, out string errorMsg)
+        {
+            var myConnectionString = "Server=localhost;Database=MatKollen;Uid=root;Pwd=mySqlPw123;";
+
+            using (var myConnection = new MySqlConnection(myConnectionString))
+            {
+                string query  = "SELECT * FROM vw_recipe_with_ingredients WHERE id = @recipeId";
+                var recipe = new RecipeDetailsViewModel();
+
+                try
+                {
+                    // create a MySQL command and set the SQL statement with parameters
+                    MySqlCommand myCommand = new MySqlCommand(query, myConnection);
+                    myConnection.Open();
+
+                    myCommand.Parameters.AddWithValue("@recipeId", recipeId);
+
+                    errorMsg = "";
+
+                    using var reader = myCommand.ExecuteReader();
+                    {
+
+                        while (reader.Read())
+                        {
+
+                            if (recipe.Recipe == null)
+                            {
+                                recipe.Recipe = new Recipe()
+                                {
+                                    Id = reader.GetInt32("id"),
+                                    Title = reader.GetString("title"),
+                                    Description = reader.GetString("description"),
+                                    CreatedAt = reader.GetDateTime("created_at"),
+                                    RecipeCategoryId = reader.GetInt32("recipe_category_id"),
+                                    UserId = reader.GetInt32("user_id")
+                                };
+                                recipe.Category = reader.GetString("category");
+                                recipe.Username = reader.GetString("username"); 
+                            }
+
+                            recipe.Ingredients.Add(new RecipeFoodItemViewModel()
+                            {
+                                RecipeFood = new RecipeFoodItem()
+                                {
+                                    Amount = reader.GetInt32("amount"),
+                                    UnitId =  reader.GetInt32("unit_id"),
+                                    FoodItemId = reader.GetInt32("food_item_id")
+                                },
+                                Ingredient = reader.GetString("ingredient"),
+                                Unit = reader.GetString("unit")
+                            });
+                        }
+                    }
+                    return recipe;
                 }
                 catch (MySqlException e)
                 {

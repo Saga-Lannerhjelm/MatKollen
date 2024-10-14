@@ -8,8 +8,9 @@ namespace MatKollen.ViewModels
 {
     public class RecipeDetailsViewModel
     {
-        public required Recipe Recipe { get; set; }
-        public required string Category { get; set; }
-        public required string Username { get; set; }
+        public Recipe Recipe { get; set; }
+        public string Category { get; set; }
+        public string Username { get; set; }
+        public List<RecipeFoodItemViewModel> Ingredients { get; set; } = new List<RecipeFoodItemViewModel>();
     }
 }

@@ -1,7 +1,19 @@
+@model RecipeDetailsViewModel
+
 @{
-    ViewData["Title"] = "Recept";
+    ViewData["Title"] = "Recept detalj";
 }
 
 <h2>@ViewData["Title"]</h2>
 
-<p>Hello from our View Template!</p>
+<h4>@Model.Recipe.Title</h4>
+<p><small>@Model.Recipe.CreatedAt</small> by user @Model.Username</p>
+<p>@Model.Recipe.Description</p>
+
+<p>Ingredienser:</p>
+@{
+    foreach(var item in Model.Ingredients)
+    {
+        <p><strong>@item.RecipeFood.Amount@item.Unit</strong> @item.Ingredient</p>
+    }
+}

@@ -19,7 +19,9 @@ namespace MatKollen.Controllers
         //Recipe/Details
         public IActionResult Details(int id)
         {
-            return View();
+            var recRep = new RecipeRepository();
+            var recipe = recRep.GetRecipe(id, out string error);
+            return View(recipe);
         }
 
         //Recipe/Saved
