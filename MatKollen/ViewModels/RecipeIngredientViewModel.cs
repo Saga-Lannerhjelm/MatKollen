@@ -6,9 +6,9 @@ using MatKollen.Models;
 
 namespace MatKollen.ViewModels
 {
-    public class RecipeFoodItemViewModel
+    public class RecipeIngredientViewModel
     {
-        public required RecipeFoodItem RecipeFood  { get; set; }
+        public required RecipeFoodItem IngredientDetails  { get; set; }
         public required string Ingredient { get; set; }
         public required string Unit { get; set; }
     }

@@ -100,9 +100,9 @@ namespace MatKollen.DAL.Repositories
                                 recipe.Username = reader.GetString("username"); 
                             }
 
-                            recipe.Ingredients.Add(new RecipeFoodItemViewModel()
+                            recipe.Ingredients.Add(new RecipeIngredientViewModel()
                             {
-                                RecipeFood = new RecipeFoodItem()
+                                IngredientDetails = new RecipeFoodItem()
                                 {
                                     Amount = reader.GetInt32("amount"),
                                     UnitId =  reader.GetInt32("unit_id"),

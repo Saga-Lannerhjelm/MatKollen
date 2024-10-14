@@ -11,6 +11,6 @@ namespace MatKollen.ViewModels
         public Recipe? Recipe { get; set; }
         public string? Category { get; set; }
         public string? Username { get; set; }
-        public List<RecipeFoodItemViewModel> Ingredients { get; set; } = new List<RecipeFoodItemViewModel>();
+        public List<RecipeIngredientViewModel> Ingredients { get; set; } = new List<RecipeIngredientViewModel>();
     }
 }
