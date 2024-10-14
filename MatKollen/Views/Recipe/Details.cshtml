@@ -14,6 +14,6 @@
 @{
     foreach(var item in Model.Ingredients)
     {
-        <p><strong>@item.IngredientDetails.Amount@item.Unit</strong> @item.Ingredient</p>
+        <p style="@(item.UserHasIngredient ? "" : "text-decoration: line-through; color: maroon;")"><strong>@item.IngredientDetails.Amount@item.Unit</strong> @item.Ingredient</p>
     }
 }

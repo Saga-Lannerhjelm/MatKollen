@@ -1,3 +1,4 @@
+using MatKollen.Controllers.Repositories;
 using MatKollen.DAL.Repositories;
 using MatKollen.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -21,6 +22,22 @@ namespace MatKollen.Controllers
         {
             var recRep = new RecipeRepository();
             var recipe = recRep.GetRecipe(id, out string error);
+
+
+            var foodRep = new FoodRepository();
+            int userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value);
+            var userFoodItems = foodRep.GetUserFoodList(userId, out string listError);
+
+            foreach(var item in recipe.Ingredients)
+            {
+                if (userFoodItems.Find(food => food.FoodItemDetails.FoodItemId == item.IngredientDetails.FoodItemId) != null)
+                {
+                    item.UserHasIngredient = true;
+                    
+                    // Lägg allt som blir falskt i en egen variabel så att det kan användas till att enkelt lägg till sakerna i inköpslista
+                }
+            }
+
             return View(recipe);
         }
 
