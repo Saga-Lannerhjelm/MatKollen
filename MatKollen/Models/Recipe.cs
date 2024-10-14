@@ -9,7 +9,7 @@ namespace MatKollen.Models
 
     [Required]
     [StringLength(50, ErrorMessage = "Titel kan inte vara längre än 50 tecken.")]
-    public string Title { get; set; }
+    public required string Title { get; set; }
 
     [Required]
     [StringLength(1000, ErrorMessage = "Instruktionerna kan inte vara längre än 1000 tecken.")]
