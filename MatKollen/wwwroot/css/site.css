@@ -1,5 +1,6 @@
 html {
   font-size: 14px;
+  --main-color: #1ccc1e;
 }
 
 @media (min-width: 768px) {
@@ -64,6 +65,13 @@ a {
   background-color: #e4ffb6;
 }
 
+.border-color {
+  border: 2px solid var(--main-color);
+}
+
+.text-main {
+  color: var(--main-color);
+}
 .bg-default{
   background-color: #e4ffb6;
   color: #2f691c;
