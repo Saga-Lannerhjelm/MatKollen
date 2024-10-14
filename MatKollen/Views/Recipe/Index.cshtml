@@ -8,7 +8,7 @@
 @{
     foreach(var recipe in Model)
     {
-        <div class="card rounded-5">
+        <a class="card rounded-5" href="Details/@recipe.Recipe.Id">
             <div class="card-body">
                 <h4 class="card-title">@recipe.Recipe.Title</h4>
                  <small>@recipe.Recipe.CreatedAt by @recipe.Username</small>
@@ -16,6 +16,6 @@
                  <small><em>@recipe.Category</em></small>
             </div>
 
-        </div>
+        </a>
     }
 }
