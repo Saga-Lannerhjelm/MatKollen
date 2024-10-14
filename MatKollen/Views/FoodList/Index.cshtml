@@ -15,29 +15,39 @@
             if (item.ExpirationDate.Count == 2) ViewBag.criticalLevel = "attention";
             if (item.ExpirationDate.Count == 1) ViewBag.criticalLevel = "default";
 
+            var sum = item.Amounts.Sum();
+
             <div class="col">
                 <div class="card text-dark card-has-bg rounded-5 bg-@ViewBag.criticalLevel" style="border-radius: 1.25rem">
                     <div class="card-body">
-                        <h1 class="bg-@ViewBag.criticalLevel">@item.ExpirationDate?.Count</h1>
-                        <small class="card-meta mb-2">@item.Category</small>
-                        <h4 class="card-title mt-0 ">@item.FoodItem</h4>
+                        <div class="d-flex">
+                            <h1 class="bg-@ViewBag.criticalLevel">@(item.ExpirationDate?.Count == 1 ? item.Amounts[0] + item.Units[0] : sum + item.Units[0])</h1>
+                        </div>
+                        <small class="card-meta mb-2">@item.CategoryName</small>
+                        <h4 class="card-title mt-0 ">@item.FoodItemName</h4>
+                        @if (item.ExpirationDate.Count != 1)
+                        {
                         <div class="accordion accordion-flush" id="accordionFlushExample">
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="flush-headingOne">
-                                    <button class="accordion-button collapsed bg-@ViewBag.criticalLevel p-0" type="button" data-bs-toggle="collapse" data-bs-target="#@item.FoodItem">
+                                    <button class="accordion-button collapsed bg-@ViewBag.criticalLevel p-0" type="button" data-bs-toggle="collapse" data-bs-target="#@item.FoodItemName">
                                         <small>Utgångsdatum</small>
                                     </button>
                                 </h2>
-                                <div id="@item.FoodItem" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+                                <div id="@item.FoodItemName" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
                                     <div class="accordion-body bg-@ViewBag.criticalLevel p-0">
-                                        @foreach (var date in @item.ExpirationDate)
+                                        @for (var i = 0; i < item.ExpirationDate.Count; i++)
                                         {
-                                            <p class="m-0"><small>@date</small></p>
+                                            <p class="m-0"><small>@item.ExpirationDate[i] (@item.Amounts[i]@item.Units[i])</small></p>
                                         }
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        } else
+                        {
+                            <p class="m-0"><small>@item.ExpirationDate[0]</small></p>
+                        }
                     </div>
                 </div>
             </div>  

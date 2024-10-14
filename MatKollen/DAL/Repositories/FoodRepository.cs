@@ -35,22 +35,37 @@ namespace MatKollen.Controllers.Repositories
                     {
                         while (reader.Read())
                         {
-                            if (foodItems.Find(item => item.FoodItem.Contains(reader.GetString("item"))) == null)
+                            if (foodItems.Find(item => item.FoodItemName.Contains(reader.GetString("item"))) == null)
                             {
                                 var foodItem = new UserFoodItemViewModel()
                                 {
-                                    FoodItem = reader.GetString("item"),
-                                    Category = reader.GetString("category"),
+                                    FoodItemDetails = new UserFoodItem()
+                                    {
+                                        FoodItemId = reader.GetInt16("food_item_id"),
+                                        UnitId = reader.GetInt16("unit_id"),
+                                    },
+                                    FoodItemName = reader.GetString("item"),
+                                    CategoryName = reader.GetString("category"),
                                     ExpirationDate =
                                     [
                                         DateOnly.FromDateTime(reader.GetDateTime("expiration_date")),
-                                    ]
+                                    ],
+                                    Amounts = 
+                                    [
+                                        reader.GetFloat("amount"),
+                                    ],
+                                    Units = 
+                                    [
+                                        reader.GetString("unit"),
+                                    ],
                                 }; 
                                 foodItems.Add(foodItem);
                             } else
                             {
-                                var existingItem = foodItems.Find(item => item.FoodItem.Contains(reader.GetString("item")));
+                                var existingItem = foodItems.Find(item => item.FoodItemName.Contains(reader.GetString("item")));
                                 existingItem?.ExpirationDate?.Add(DateOnly.FromDateTime(reader.GetDateTime("expiration_date")));
+                                existingItem?.Amounts?.Add(reader.GetFloat("amount"));
+                                existingItem?.Units?.Add(reader.GetString("unit"));
                             }
                         }
                     }
