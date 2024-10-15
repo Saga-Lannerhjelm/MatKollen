@@ -40,7 +40,9 @@ namespace MatKollen.Controllers.Repositories
                     {
                         while (reader.Read())
                         {
-                            if (foodItems.Find(item => item.FoodItemName.Contains(reader.GetString("item"))) == null)
+                            var existingItem = foodItems.Find(item => item.FoodItemName.Contains(reader.GetString("item")));
+
+                            if (existingItem == null)
                             {
                                 var foodItem = new UserFoodItemViewModel()
                                 {
@@ -67,7 +69,6 @@ namespace MatKollen.Controllers.Repositories
                                 foodItems.Add(foodItem);
                             } else
                             {
-                                var existingItem = foodItems.Find(item => item.FoodItemName.Contains(reader.GetString("item")));
                                 existingItem?.ExpirationDate?.Add(DateOnly.FromDateTime(reader.GetDateTime("expiration_date")));
                                 existingItem?.Amounts?.Add(reader.GetFloat("amount"));
                                 existingItem?.Units?.Add(reader.GetString("unit"));
