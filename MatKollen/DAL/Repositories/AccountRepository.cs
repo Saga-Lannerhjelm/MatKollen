@@ -10,9 +10,16 @@ namespace MatKollen.DAL.Repositories
 {
     public class AccountRepository
     {
+
+        private readonly string _connectionString;
+        
+        public AccountRepository(IConfiguration configuration)
+        {
+            _connectionString = configuration.GetConnectionString("DefaultConnection");
+        }
         public int InertUser(User user, out string errorMsg)
         {
-            var myConnectionString = "Server=localhost;Database=MatKollen;Uid=root;Pwd=mySqlPw123;";
+            var myConnectionString = _connectionString;
 
             using (var myConnection = new MySqlConnection(myConnectionString))
             {
@@ -55,7 +62,7 @@ namespace MatKollen.DAL.Repositories
 
         public User? GetUserCredentials(User user, out string errorMsg)
         {
-            var myConnectionString = "Server=localhost;Database=MatKollen;Uid=root;Pwd=mySqlPw123;";
+            var myConnectionString = _connectionString;
 
             using (var myConnection = new MySqlConnection(myConnectionString))
             {

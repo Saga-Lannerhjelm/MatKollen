@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 using MatKollen.Models;
@@ -11,18 +12,23 @@ namespace MatKollen.Controllers.Repositories
 {
     public class FoodRepository
     {
+        private readonly string _connectionString;
+        
+        public FoodRepository(IConfiguration configuration)
+        {
+            _connectionString = configuration.GetConnectionString("DefaultConnection");
+        }
+
         public List<UserFoodItemViewModel>? GetUserFoodList(int userId, out string errorMsg)
         {
-            var myConnectionString = "Server=localhost;Database=MatKollen;Uid=root;Pwd=mySqlPw123;";
+            var myConnectionString = _connectionString;
+            string query  = "SELECT * FROM vw_user_food_details WHERE user_id = @userid";
+            var foodItems = new List<UserFoodItemViewModel>();
 
             using (var myConnection = new MySqlConnection(myConnectionString))
             {
-                string query  = "SELECT * FROM vw_user_food_details WHERE user_id = @userid";
-                var foodItems = new List<UserFoodItemViewModel>();
-
                 try
                 {
-                    // create a MySQL command and set the SQL statement with parameters
                     MySqlCommand myCommand = new MySqlCommand(query, myConnection);
                     myConnection.Open();
 
@@ -30,7 +36,6 @@ namespace MatKollen.Controllers.Repositories
 
                     errorMsg = "";
 
-                    // execute the command and read the results
                     using var reader = myCommand.ExecuteReader();
                     {
                         while (reader.Read())

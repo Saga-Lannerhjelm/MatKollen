@@ -10,9 +10,15 @@ namespace MatKollen.DAL.Repositories
 {
     public class RecipeRepository
     {
+        private readonly string _connectionString;
+        
+        public RecipeRepository(IConfiguration configuration)
+        {
+            _connectionString = configuration.GetConnectionString("DefaultConnection");
+        }
         public List<RecipeDetailsViewModel>? GetRecipes( out string errorMsg)
         {
-            var myConnectionString = "Server=localhost;Database=MatKollen;Uid=root;Pwd=mySqlPw123;";
+            var myConnectionString = _connectionString;
 
             using (var myConnection = new MySqlConnection(myConnectionString))
             {
@@ -62,7 +68,7 @@ namespace MatKollen.DAL.Repositories
 
         public RecipeDetailsViewModel? GetRecipe(int recipeId, out string errorMsg)
         {
-            var myConnectionString = "Server=localhost;Database=MatKollen;Uid=root;Pwd=mySqlPw123;";
+            var myConnectionString = _connectionString;
 
             using (var myConnection = new MySqlConnection(myConnectionString))
             {

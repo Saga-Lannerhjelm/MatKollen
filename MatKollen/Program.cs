@@ -1,5 +1,7 @@
 using System.Text;
 using MatKollen.Controllers;
+using MatKollen.Controllers.Repositories;
+using MatKollen.DAL.Repositories;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -64,6 +66,11 @@ builder.Services.AddAuthorization(options =>
 
 // Add services to the container.
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
+
+// Register resositories
+builder.Services.AddScoped<FoodRepository>();
+builder.Services.AddScoped<AccountRepository>();
+builder.Services.AddScoped<RecipeRepository>();
 
 
 builder.Services.AddScoped<FoodService>();
