@@ -39,7 +39,7 @@ public class HomeController : Controller
     [AllowAnonymous]
     public IActionResult Index()
     {
-        var foodRep = new FoodRepository();
+        // var foodRep = new FoodRepository();
         // var categories = foodRep.GetData(out string error);
         // _foodService.AddUser();
         ViewBag.categories = "categories";
