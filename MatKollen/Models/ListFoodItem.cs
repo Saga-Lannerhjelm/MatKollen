@@ -5,14 +5,13 @@ using System.Threading.Tasks;
 
 namespace MatKollen.Models
 {
-    public class ListHasFoodItem
+    public class ListFoodItem
     {
-         public int Id { get; set; }
-        public int Antal { get; set; }
+        public int Id { get; set; }
+        public int Amount { get; set; }
+        public int UnitId { get; set; }
         public int ListId { get; set; } 
         public int FoodItemId { get; set; }
-
-        public List List { get; set; }
-        public FoodItem FoodItem { get; set; }
+        public bool Completed { get; set; }
     }
 }

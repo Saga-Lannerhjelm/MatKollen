@@ -20,15 +20,6 @@ builder.Services
     a.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
     a.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
-// .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,
-//     // options => builder.Configuration.Bind("CookieSettings", options)
-//     options => 
-//     {
-//         options.Cookie.Name = "Jwt-cookie";
-//         options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
-//         options.SlidingExpiration = true;
-//     }
-// )
 .AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
@@ -67,7 +58,7 @@ builder.Services.AddAuthorization(options =>
 // Add services to the container.
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
-// Register resositories
+// Register repositories
 builder.Services.AddScoped<FoodRepository>();
 builder.Services.AddScoped<AccountRepository>();
 builder.Services.AddScoped<RecipeRepository>();
@@ -75,6 +66,15 @@ builder.Services.AddScoped<RecipeRepository>();
 
 builder.Services.AddScoped<FoodService>();
 
+// Added to handle sessions. Retrieved from https://www.canvas.umu.se/courses/15315/pages/undervisningsfilmer-asp-dot-net-mvc 4th september 2024
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(10);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
@@ -88,9 +88,8 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
+app.UseSession();
 app.UseRouting();
-
 app.UseAuthentication();
 app.UseAuthorization();
 
