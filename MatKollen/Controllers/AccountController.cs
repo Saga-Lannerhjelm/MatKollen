@@ -16,10 +16,12 @@ namespace MatKollen.Controllers
     public class AccountController : Controller
     {
         private IConfiguration _config;
+        private readonly AccountRepository _accountRepository;
 
-        public AccountController(IConfiguration config)
+        public AccountController(IConfiguration config, AccountRepository accountRepository)
         {
             _config = config;
+            _accountRepository = accountRepository;
         }
 
          [AllowAnonymous]
@@ -34,10 +36,8 @@ namespace MatKollen.Controllers
         {
             var expirationTime = 2;
 
-            var AccountRep = new AccountRepository();
-
             var hashedPassword = CalculateSHA256(user.Password);
-            var fetchedUser = AccountRep.GetUserCredentials(user, out string error);
+            var fetchedUser = _accountRepository.GetUserCredentials(user, out string error);
 
             if (fetchedUser != null)
             {
@@ -97,9 +97,7 @@ namespace MatKollen.Controllers
             var hashedPassword = CalculateSHA256(user.Password);
             user.PasswordHashed = hashedPassword;
 
-            var accountRep = new AccountRepository();
-
-            var rowsAffectd = accountRep.InertUser(user, out string error);
+            var rowsAffectd = _accountRepository.InertUser(user, out string error);
 
             if (rowsAffectd != 0)
             {

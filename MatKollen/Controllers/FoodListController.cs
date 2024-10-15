@@ -8,13 +8,19 @@ namespace MatKollen.Controllers
 {
     public class FoodListController : Controller
     {
+        private readonly FoodRepository _foodRepository;
+
+        public FoodListController(FoodRepository foodRepository)
+        {
+            _foodRepository = foodRepository;
+        }
+        
         //FoodItems
         public IActionResult Index()
         {
-            var foodRep = new FoodRepository();
             var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value);
             
-            var foodList = foodRep.GetUserFoodList(userId, out string error);
+            var foodList = _foodRepository.GetUserFoodList(userId, out string error);
             return View(foodList);
         }
 

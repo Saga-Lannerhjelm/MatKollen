@@ -7,26 +7,31 @@ namespace MatKollen.Controllers
 {
     public class RecipeController : Controller
     {
+        private readonly RecipeRepository _recipeRepository;
+        private readonly FoodRepository _foodRepository;
+
+        public RecipeController(RecipeRepository recipeRepository, FoodRepository foodRepository)
+        {
+            _recipeRepository = recipeRepository;
+            _foodRepository = foodRepository;
+        }
+
         //Recipe
         public IActionResult Index()
         {
-            var recRep = new RecipeRepository();
             var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value);
             
-            var recipeList = recRep.GetRecipes(out string error);
+            var recipeList = _recipeRepository.GetRecipes(out string error);
             return View(recipeList);
         }
 
         //Recipe/Details
         public IActionResult Details(int id)
         {
-            var recRep = new RecipeRepository();
-            var recipe = recRep.GetRecipe(id, out string error);
+            var recipe = _recipeRepository.GetRecipe(id, out string error);
 
-
-            var foodRep = new FoodRepository();
             int userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value);
-            var userFoodItems = foodRep.GetUserFoodList(userId, out string listError);
+            var userFoodItems = _foodRepository.GetUserFoodList(userId, out string listError);
 
             foreach(var item in recipe.Ingredients)
             {
