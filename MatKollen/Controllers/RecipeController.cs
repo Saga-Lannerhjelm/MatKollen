@@ -50,7 +50,7 @@ namespace MatKollen.Controllers
                 {
                     var foodItem = new ListFoodItem()
                     {
-                        Amount = item.IngredientDetails.Amount,
+                        Quantity = item.IngredientDetails.Quantity,
                         UnitId = item.IngredientDetails.UnitId,
                         FoodItemId = item.IngredientDetails.FoodItemId,
                     };

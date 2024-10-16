@@ -57,9 +57,9 @@ namespace MatKollen.Controllers.Repositories
                                     [
                                         DateOnly.FromDateTime(reader.GetDateTime("expiration_date")),
                                     ],
-                                    Amounts = 
+                                    Quantities = 
                                     [
-                                        reader.GetFloat("amount"),
+                                        reader.GetDouble("quantity"),
                                     ],
                                     Units = 
                                     [
@@ -70,7 +70,7 @@ namespace MatKollen.Controllers.Repositories
                             } else
                             {
                                 existingItem?.ExpirationDate?.Add(DateOnly.FromDateTime(reader.GetDateTime("expiration_date")));
-                                existingItem?.Amounts?.Add(reader.GetFloat("amount"));
+                                existingItem?.Quantities?.Add(reader.GetDouble("quantity"));
                                 existingItem?.Units?.Add(reader.GetString("unit"));
                             }
                         }
@@ -82,7 +82,6 @@ namespace MatKollen.Controllers.Repositories
                     errorMsg = e.Message;
                     return null;
                 }    
-
             }
         }
     }  

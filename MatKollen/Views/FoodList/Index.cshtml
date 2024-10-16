@@ -15,13 +15,13 @@
             if (item.ExpirationDate.Count == 2) ViewBag.criticalLevel = "attention";
             if (item.ExpirationDate.Count == 1) ViewBag.criticalLevel = "default";
 
-            var sum = item.Amounts.Sum();
+            var sum = item.Quantities.Sum();
 
             <div class="col">
                 <div class="card text-dark card-has-bg rounded-5 bg-@ViewBag.criticalLevel" style="border-radius: 1.25rem">
                     <div class="card-body">
                         <div class="d-flex">
-                            <h1 class="bg-@ViewBag.criticalLevel">@(item.ExpirationDate?.Count == 1 ? item.Amounts[0] + item.Units[0] : sum + item.Units[0])</h1>
+                            <h1 class="bg-@ViewBag.criticalLevel">@(item.ExpirationDate?.Count == 1 ? item.Quantities[0] + item.Units[0] : sum + item.Units[0])</h1>
                         </div>
                         <small class="card-meta mb-2">@item.CategoryName</small>
                         <h4 class="card-title mt-0 ">@item.FoodItemName</h4>
@@ -38,7 +38,7 @@
                                     <div class="accordion-body bg-@ViewBag.criticalLevel p-0">
                                         @for (var i = 0; i < item.ExpirationDate.Count; i++)
                                         {
-                                            <p class="m-0"><small>@item.ExpirationDate[i] (@item.Amounts[i]@item.Units[i])</small></p>
+                                            <p class="m-0"><small>@item.ExpirationDate[i] (@item.Quantities[i]@item.Units[i])</small></p>
                                         }
                                     </div>
                                 </div>

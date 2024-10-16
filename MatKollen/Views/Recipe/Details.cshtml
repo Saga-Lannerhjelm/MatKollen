@@ -14,7 +14,7 @@
 @{
     foreach(var item in Model.Ingredients)
     {
-        <p style="@(item.UserHasIngredient ? "" : "text-decoration: line-through; color: maroon;")"><strong>@item.IngredientDetails.Amount@item.Unit</strong> @item.Ingredient</p>
+        <p style="@(item.UserHasIngredient ? "" : "text-decoration: line-through; color: maroon;")"><strong>@item.IngredientDetails.Quantity@item.Unit</strong> @item.Ingredient</p>
     }
 }
 <form method="post" asp-action="AddFromRecipe" asp-controller="GroceryList">

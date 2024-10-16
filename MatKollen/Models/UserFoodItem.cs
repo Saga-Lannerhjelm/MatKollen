@@ -8,7 +8,7 @@ namespace MatKollen.Models
     public class UserFoodItem
     {
         public int Id { get; set; }
-        public float Amount { get; set; }
+        public float Quantity { get; set; }
         public DateTime ExpirationDate { get; set; }
         public int UserId { get; set; } 
         public int FoodItemId { get; set; }

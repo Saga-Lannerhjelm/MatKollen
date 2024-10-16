@@ -8,11 +8,11 @@ namespace MatKollen.ViewModels
 {
     public class UserFoodItemViewModel
     {
-        public required UserFoodItem FoodItemDetails { get; set; }
+        public UserFoodItem? FoodItemDetails { get; set; }
         public List<DateOnly>? ExpirationDate { get; set; }
-        public List<float>? Amounts { get; set; }
+        public List<double>? Quantities { get; set; }
         public List<string>? Units { get; set; }
         public required string FoodItemName { get; set; }
-        public required string CategoryName { get; set; }
+        public string? CategoryName { get; set; }
     }
 }

@@ -8,7 +8,7 @@ namespace MatKollen.Models
     public class RecipeFoodItem
     {
         public int Id { get; set; }
-        public int Amount { get; set; }
+        public double Quantity { get; set; }
         public int UnitId { get; set; }
         public int RecipeId { get; set; } 
         public int FoodItemId { get; set; }

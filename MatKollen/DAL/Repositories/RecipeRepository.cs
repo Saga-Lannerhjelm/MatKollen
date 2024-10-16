@@ -110,7 +110,7 @@ namespace MatKollen.DAL.Repositories
                             {
                                 IngredientDetails = new RecipeFoodItem()
                                 {
-                                    Amount = reader.GetInt32("amount"),
+                                    Quantity = reader.GetInt32("quantity"),
                                     UnitId =  reader.GetInt32("unit_id"),
                                     FoodItemId = reader.GetInt32("food_item_id")
                                 },

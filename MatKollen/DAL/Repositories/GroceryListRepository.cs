@@ -74,7 +74,7 @@ namespace MatKollen.DAL.Repositories
 
             using (var myConnection = new MySqlConnection(myConnectionString))
             {
-                string query  = "INSERT INTO list_has_fooditems (amount, unit_id, list_id, food_item_id) SELECT @amount, @unitId, id, @foodItemId FROM lists WHERE user_id = @userId";
+                string query  = "INSERT INTO list_has_fooditems (quantity, unit_id, list_id, food_item_id) SELECT @quantity, @unitId, id, @foodItemId FROM lists WHERE user_id = @userId";
                 var testList = new List<string>();
 
                 try
@@ -86,7 +86,7 @@ namespace MatKollen.DAL.Repositories
                     myConnection.Open();
 
                     myCommand.Parameters.Add("@userId", MySqlDbType.Int32).Value = userId;
-                    myCommand.Parameters.Add("@amount", MySqlDbType.Int32).Value = food.Amount;
+                    myCommand.Parameters.Add("@quantity", MySqlDbType.Double).Value = food.Quantity;
                     myCommand.Parameters.Add("@unitId", MySqlDbType.Int32).Value = food.UnitId;
                     myCommand.Parameters.Add("@foodItemId", MySqlDbType.Int32).Value = food.FoodItemId;
 
@@ -117,7 +117,7 @@ namespace MatKollen.DAL.Repositories
 
             using (var myConnection = new MySqlConnection(myConnectionString))
             {
-                string query  = "UPDATE list_has_fooditems SET amount = (amount + @addedamount) WHERE food_item_id = @foodItemId";
+                string query  = "UPDATE list_has_fooditems SET quantity = (quantity + @addedQuantity) WHERE food_item_id = @foodItemId";
                 var testList = new List<string>();
 
                 try
@@ -128,7 +128,7 @@ namespace MatKollen.DAL.Repositories
                     //open a connection
                     myConnection.Open();
 
-                    myCommand.Parameters.Add("@addedamount", MySqlDbType.Int32).Value = food.Amount;
+                    myCommand.Parameters.Add("@addedQuantity", MySqlDbType.Int32).Value = food.Quantity;
                     myCommand.Parameters.Add("@foodItemId", MySqlDbType.Int32).Value = food.FoodItemId;
 
                     errorMsg = "";
@@ -178,7 +178,7 @@ namespace MatKollen.DAL.Repositories
                                 FoodDetails = new ListFoodItem()
                                 {
                                     Id = reader.GetInt32("id"),
-                                    Amount = reader.GetInt32("amount"),
+                                    Quantity = reader.GetDouble("quantity"),
                                     UnitId = reader.GetInt16("unit_id"),
                                     ListId = reader.GetInt16("list_id"),
                                     FoodItemId = reader.GetInt16("food_item_id"),
