@@ -23,7 +23,8 @@ namespace MatKollen.DAL.Repositories
 
             using (var myConnection = new MySqlConnection(myConnectionString))
             {
-                string query  = "INSERT INTO users (username, email, password) VALUES (@username, @email, @password)";
+                //Creates a new user and a grozery list for that user at the same time
+                string query  = "INSERT INTO users (username, email, password) VALUES (@username, @email, @password); INSERT INTO lists (name, user_id) VALUES (@groceryListName, LAST_INSERT_ID())";
                 var testList = new List<string>();
 
                 try
@@ -37,6 +38,7 @@ namespace MatKollen.DAL.Repositories
                     myCommand.Parameters.Add("@username", MySqlDbType.VarChar, 50).Value = user.Username;
                     myCommand.Parameters.Add("@email", MySqlDbType.VarChar, 320).Value = user.Email;
                     myCommand.Parameters.Add("@password", MySqlDbType.Binary, 32).Value = user.PasswordHashed;
+                    myCommand.Parameters.Add("@groceryListName", MySqlDbType.VarChar, 50).Value = user.Username + "s Inköpslista";
 
                     errorMsg = "";
 
@@ -56,7 +58,6 @@ namespace MatKollen.DAL.Repositories
                     errorMsg = e.Message;
                     return 0;
                 }    
-
             }
         }
 

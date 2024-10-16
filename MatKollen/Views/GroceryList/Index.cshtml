@@ -1,7 +1,21 @@
-@{
-    ViewData["Title"] = "Inköpslista";
-}
+@model List<GroceryListViewModel>
 
 <h2>@ViewData["Title"]</h2>
 
-<p>Hello from our View Template!</p>
+@{
+     if (TempData.ContainsKey("error")){
+        <div class="alert alert-warning mt-2" role="alert">
+            @TempData["unsuccessful"]
+        </div>
+    }  
+}
+
+<ul>
+    @{
+        foreach(var item in Model)
+        {
+            <li>@item.FoodDetails.Amount@item.Unit @item.FoodItemName</li>
+        }
+    }
+</ul>
+

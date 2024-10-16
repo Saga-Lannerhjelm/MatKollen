@@ -17,3 +17,13 @@
         <p style="@(item.UserHasIngredient ? "" : "text-decoration: line-through; color: maroon;")"><strong>@item.IngredientDetails.Amount@item.Unit</strong> @item.Ingredient</p>
     }
 }
+<form method="post" asp-action="AddFromRecipe" asp-controller="GroceryList">
+    @{
+        if(ViewBag.groceryListItemsExists.Count > 0)
+        {
+            <input type="checkbox" id="check">
+            <label for="check">Jag vill lägga till ingredienserna igen</label>
+        }
+    }
+    <button class="btn-primary" type="submit">Lägg till det du saknar i inköpslista</button>
+</form>
