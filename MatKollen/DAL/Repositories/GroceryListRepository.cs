@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MatKollen.Models;
+using MatKollen.Services;
 using MatKollen.ViewModels;
 using MySql.Data.MySqlClient;
 using Org.BouncyCastle.Bcpg;
@@ -33,7 +34,8 @@ namespace MatKollen.DAL.Repositories
         public bool GroceryListItemsExists (int foodItemId, int userId, out string errorMsg)
         {
             var myConnectionString = _connectionString;
-            string query  = "SELECT COUNT(*) FROM list_has_fooditems AS lhf INNER JOIN lists ON lists.id = lhf.list_id WHERE food_item_id = @foodItemId AND lists.user_id = @userId";
+            string query  = "SELECT COUNT(*) FROM list_has_fooditems AS lhf INNER JOIN lists ON lists.id = lhf.list_id " +
+                            "WHERE food_item_id = @foodItemId AND lists.user_id = @userId";
             var testList = new List<string>();
 
             using (var myConnection = new MySqlConnection(myConnectionString))
@@ -157,6 +159,7 @@ namespace MatKollen.DAL.Repositories
             string query  = "SELECT * FROM vw_grocery_list_details WHERE `list_id` = (SELECT id FROM lists WHERE user_id = @userId)";
             
             var foodItems = new List<GroceryListViewModel>();
+            var conversionHandler = new ConvertQuantity();
 
             using (var myConnection = new MySqlConnection(myConnectionString))
             {
@@ -184,6 +187,7 @@ namespace MatKollen.DAL.Repositories
                                     FoodItemId = reader.GetInt16("food_item_id"),
                                     Completed = reader.GetBoolean("completed")
                                 },
+                                ConvertedQuantity = conversionHandler.ConverFromtLiterOrKg(reader.GetDouble("quantity"), reader.GetDouble("conversion_multiplier")),
                                 FoodItemName = reader.GetString("food_item"),
                                 Unit = reader.GetString("unit"),
                                 ListName = reader.GetString("list_name"),

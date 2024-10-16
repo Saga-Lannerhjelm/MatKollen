@@ -11,7 +11,7 @@ namespace MatKollen.ViewModels
         public required RecipeFoodItem IngredientDetails  { get; set; }
         public required string Ingredient { get; set; }
         public required string Unit { get; set; }
-
+        public double ConvertedQuantity { get; set; }
         public bool UserHasIngredient { get; set; } = false;
     }
 }

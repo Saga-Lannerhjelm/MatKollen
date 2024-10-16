@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 using MatKollen.Models;
+using MatKollen.Services;
 using MatKollen.ViewModels;
 using MySql.Data.MySqlClient;
 using Mysqlx;
@@ -24,6 +25,7 @@ namespace MatKollen.Controllers.Repositories
             var myConnectionString = _connectionString;
             string query  = "SELECT * FROM vw_user_food_details WHERE user_id = @userid";
             var foodItems = new List<UserFoodItemViewModel>();
+            var conversionHandler = new ConvertQuantity();
 
             using (var myConnection = new MySqlConnection(myConnectionString))
             {
@@ -48,6 +50,7 @@ namespace MatKollen.Controllers.Repositories
                                 {
                                     FoodItemDetails = new UserFoodItem()
                                     {
+                                        Quantity = reader.GetDouble("quantity"),
                                         FoodItemId = reader.GetInt16("food_item_id"),
                                         UnitId = reader.GetInt16("unit_id"),
                                     },
@@ -59,7 +62,7 @@ namespace MatKollen.Controllers.Repositories
                                     ],
                                     Quantities = 
                                     [
-                                        reader.GetDouble("quantity"),
+                                        conversionHandler.ConverFromtLiterOrKg(reader.GetDouble("quantity"), reader.GetDouble("conversion_multiplier")),
                                     ],
                                     Units = 
                                     [

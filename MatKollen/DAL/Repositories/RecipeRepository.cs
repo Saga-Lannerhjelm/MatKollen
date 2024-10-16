@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MatKollen.Models;
+using MatKollen.Services;
 using MatKollen.ViewModels;
 using MySql.Data.MySqlClient;
 
@@ -74,6 +75,7 @@ namespace MatKollen.DAL.Repositories
             {
                 string query  = "SELECT * FROM vw_recipe_with_ingredients WHERE id = @recipeId";
                 var recipe = new RecipeDetailsViewModel();
+                var conversionHandler = new ConvertQuantity();
 
                 try
                 {
@@ -110,10 +112,11 @@ namespace MatKollen.DAL.Repositories
                             {
                                 IngredientDetails = new RecipeFoodItem()
                                 {
-                                    Quantity = reader.GetInt32("quantity"),
+                                    Quantity = reader.GetDouble("quantity"),
                                     UnitId =  reader.GetInt32("unit_id"),
                                     FoodItemId = reader.GetInt32("food_item_id")
                                 },
+                                ConvertedQuantity = conversionHandler.ConverFromtLiterOrKg(reader.GetDouble("quantity"), reader.GetDouble("conversion_multiplier")),
                                 Ingredient = reader.GetString("ingredient"),
                                 Unit = reader.GetString("unit")
                             });
