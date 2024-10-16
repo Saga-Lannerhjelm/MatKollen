@@ -37,14 +37,20 @@ namespace MatKollen.Controllers
             int userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "id").Value);
             var userFoodItems = _foodRepository.GetUserFoodList(userId, out string listError);
             var foodItemsForGroceryList = new List<ListFoodItem>();
-            var existingItems = new List<UserFoodItemViewModel>();
+            var existingItems = new List<string>();
 
             foreach(var item in recipe.Ingredients)
             {
                 // Find matching food items between a recipe and the user's food items
-                if (userFoodItems.Find(food => food.FoodItemDetails.FoodItemId == item.IngredientDetails.FoodItemId) != null)
+                var matchingItem = userFoodItems.Find(food => food.FoodItemDetails.FoodItemId == item.IngredientDetails.FoodItemId);
+
+                // Find matching food items between a recipe and the items in the grocery list
+                var matchingListItem = _groceryListRepository.GetGroceryList(userId, out error).Find(listItem => listItem.FoodDetails.FoodItemId == item.IngredientDetails.FoodItemId);
+
+                // If the item exists among the user's food items and the amount is equal to or more than in the recipe
+                if (matchingItem != null && (matchingItem.FoodItemDetails.Quantity >= item.IngredientDetails.Quantity))
                 {
-                    item.UserHasIngredient = true;
+                    item.UserHasIngredient = true;   
                 }
                 else
                 {
@@ -59,12 +65,9 @@ namespace MatKollen.Controllers
                     foodItemsForGroceryList.Add(foodItem);
                 }
 
-                if (_groceryListRepository.GroceryListItemsExists(item.IngredientDetails.FoodItemId, userId, out error))
+                if (_groceryListRepository.GroceryListItemsExists(item.IngredientDetails.FoodItemId, userId, out error) && (matchingListItem.FoodDetails.Quantity >= item.IngredientDetails.Quantity))
                 {
-                    existingItems.Add(new UserFoodItemViewModel()
-                    {
-                        FoodItemName = item.Ingredient
-                    });
+                    existingItems.Add(item.Ingredient);
                 }
             }
 
