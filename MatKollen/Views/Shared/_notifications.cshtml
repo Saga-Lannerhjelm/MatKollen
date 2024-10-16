@@ -1,0 +1,17 @@
+﻿@* toastr from https://github.com/CodeSeven/toastr?tab=readme-ov-file *@
+
+@if (TempData.ContainsKey("error")){
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script type="text/javascript">
+        toastr.error('@TempData["error"]', 'Något gick fel')
+    </script>
+}
+
+@if (TempData.ContainsKey("success")){
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script type="text/javascript">
+       toastr.error('@TempData["success"]')
+    </script>
+}

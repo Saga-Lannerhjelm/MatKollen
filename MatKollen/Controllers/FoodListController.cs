@@ -15,16 +15,17 @@ namespace MatKollen.Controllers
             _foodRepository = foodRepository;
         }
         
-        //FoodItems
+        //FoodList
         public IActionResult Index()
         {
             var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value);
             
             var foodList = _foodRepository.GetUserFoodList(userId, out string error);
+            TempData["error"] = "hello";
             return View(foodList);
         }
 
-        //FoodItems/Add
+        //FoodList/Add
         [HttpGet]
         public IActionResult Add()
         {
@@ -36,7 +37,7 @@ namespace MatKollen.Controllers
             return View();
         }
 
-        //FoodItems/Edit
+        //FoodList/Edit
         [HttpGet]
         public IActionResult Edit(int id)
         {
@@ -49,7 +50,6 @@ namespace MatKollen.Controllers
             return View();
         }
 
-        //FoodItems
         [HttpPost]
         public IActionResult Delete(int id)
         {
