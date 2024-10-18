@@ -1,0 +1,52 @@
+@model AddFoodAndUserItemViewModel
+@{
+    ViewData["Title"] = "Lägg till matvara";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div class="d-flex justify-content-center mt-5">
+  <div class="card" style="width: 50vw;">
+    <div class="card-body">
+        <form method="post" asp-action="AddNewFoodItem" asp-controller="FoodList">
+            <div class="mb-3">
+                <label asp-for="FoodItem.Name" class="form-label">Matvara</label>
+                <input type="text" asp-for="FoodItem.Name" class="form-control">
+                @Html.ValidationMessageFor(m => m.FoodItem.Name, "", new { @class = "text-danger" })
+            </div>
+            <div class="mb-3">
+                <label asp-for="UserFoodItem.Quantity" class="form-label">Mängd/Antal</label>
+                <input type="number" step=".1" asp-for="UserFoodItem.Quantity" class="form-control">
+                @Html.ValidationMessageFor(m => m.UserFoodItem.Quantity, "", new { @class = "text-danger" })
+            </div>
+            <div class="mb-3">
+                    <label asp-for="UserFoodItem.UnitId" class="form-label">Enhet</label>
+                    <select class="form-select" asp-for="UserFoodItem.UnitId">
+                        <option value="0">Ingen enhet vald</option>
+                        @foreach (var unit in (List<MeasurementUnit>)ViewData["units"])
+                        {
+                        <option value="@unit.Id">@unit.Unit</option>
+                        }
+                    </select>
+                     @Html.ValidationMessageFor(m => m.UserFoodItem.UnitId, "", new { @class = "text-danger" })
+            </div>
+            <div class="mb-3">
+                <label asp-for="UserFoodItem.ExpirationDate" class="form-label">Utgångsdatum</label>
+                <input type="date" asp-for="UserFoodItem.ExpirationDate" class="form-control" min="2024-01-01">
+                @Html.ValidationMessage("expirationDate", new { @class = "text-danger" })
+            </div>
+                <div class="mb-3">
+                <label asp-for="FoodItem.FoodCategoryId" class="form-label">Kategori</label>
+                <select class="form-select" asp-for="FoodItem.FoodCategoryId">
+                    <option value="0">Ingen enhet vald</option>
+                    @foreach (var category in (List<FoodCategory>)ViewData["categories"])
+                    {
+                    <option value="@category.Id">@category.Name</option>
+                    }
+                </select>
+                @Html.ValidationMessageFor(m => m.FoodItem.FoodCategoryId, "", new { @class = "text-danger" })
+            </div>
+            <input type="submit" class="btn btn-primary" value="Lägg till matvara"/>
+        </form>
+    </div>
+  </div>

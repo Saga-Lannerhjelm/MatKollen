@@ -25,7 +25,7 @@ namespace MatKollen.Controllers.Repositories
             var myConnectionString = _connectionString;
             string query  = "SELECT * FROM vw_user_food_details WHERE user_id = @userid";
             var foodItems = new List<UserFoodItemViewModel>();
-            var conversionHandler = new ConvertQuantity();
+            var conversionHandler = new ConvertQuantityHandler();
 
             using (var myConnection = new MySqlConnection(myConnectionString))
             {
@@ -33,9 +33,7 @@ namespace MatKollen.Controllers.Repositories
                 {
                     MySqlCommand myCommand = new MySqlCommand(query, myConnection);
                     myConnection.Open();
-
                     myCommand.Parameters.AddWithValue("@userId", userId);
-
                     errorMsg = "";
 
                     using var reader = myCommand.ExecuteReader();
@@ -84,6 +82,89 @@ namespace MatKollen.Controllers.Repositories
                 {
                     errorMsg = e.Message;
                     return null;
+                }    
+            }
+        }
+
+        public List<FoodItem>? GetFoodItems (out string errorMsg)
+        {
+            var myConnectionString = _connectionString;
+            string query  = "SELECT * FROM food_items";
+            var foodItems = new List<FoodItem>();
+
+            using (var myConnection = new MySqlConnection(myConnectionString))
+            {
+                try
+                {
+                    MySqlCommand myCommand = new MySqlCommand(query, myConnection);
+                    myConnection.Open();
+                    errorMsg = "";
+
+                    using var reader = myCommand.ExecuteReader();
+                    {
+                        while (reader.Read())
+                        {
+                            var foodItem = new FoodItem()
+                            {
+                                Id = reader.GetInt32("id"),
+                                Name = reader.GetString("name"),
+                                FoodCategoryId = reader.GetInt32("food_category_id")
+                            };
+                            foodItems.Add(foodItem);
+                        }
+                    }
+                    return foodItems;
+                }
+                catch (MySqlException e)
+                {
+                    errorMsg = e.Message;
+                    return null;
+                }    
+            }
+        }
+
+        public int InsertFoodItem(AddFoodAndUserItemViewModel foodItem, out string errorMsg)
+        {
+            var myConnectionString = _connectionString;
+
+            using (var myConnection = new MySqlConnection(myConnectionString))
+            {
+                //Creates a new user and a grozery list for that user at the same time
+                string query  = "CALL `insert_food_and_assign_to_user`(@foodName, @categoryId, @quantity, @expirationDate, @userId, @unitId);";
+                var testList = new List<string>();
+
+                try
+                {
+                    // create a MySQL command and set the SQL statement with parameters
+                    MySqlCommand myCommand = new MySqlCommand(query, myConnection);
+
+                    //open a connection
+                    myConnection.Open();
+
+                    myCommand.Parameters.Add("@foodName", MySqlDbType.VarChar, 50).Value = foodItem.FoodItem.Name;
+                    myCommand.Parameters.Add("@categoryId", MySqlDbType.Int32).Value = foodItem.FoodItem.FoodCategoryId;
+                    myCommand.Parameters.Add("@quantity", MySqlDbType.Double).Value = foodItem.UserFoodItem.Quantity;
+                    myCommand.Parameters.Add("@expirationDate", MySqlDbType.Date).Value = foodItem.UserFoodItem.ExpirationDate;
+                    myCommand.Parameters.Add("@userId", MySqlDbType.Int32).Value = foodItem.UserFoodItem.UserId;
+                    myCommand.Parameters.Add("@unitId", MySqlDbType.Int32).Value = foodItem.UserFoodItem.UnitId;
+
+                    errorMsg = "";
+
+                    // execute the command and read the results
+                    var rowsAffected = Convert.ToInt32(myCommand.ExecuteScalar());
+
+                    if (rowsAffected == 0)
+                    {
+                        errorMsg = "Ingen matvara lades till.";
+                        return 0;
+                    }
+                    
+                    return rowsAffected;
+                }
+                catch (MySqlException e)
+                {
+                    errorMsg = e.Message;
+                    return 0;
                 }    
             }
         }

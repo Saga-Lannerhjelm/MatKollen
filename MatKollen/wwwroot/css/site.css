@@ -124,3 +124,17 @@ a {
   bottom: 0;
   width: 100%;
 }
+
+
+
+/* Buttons */
+
+.add-btn {
+  transition: transform 330ms ease-in-out;
+}
+
+.add-btn:hover {
+  opacity: 0.5;
+  cursor: pointer;
+  transform: scale(0.95);
+}

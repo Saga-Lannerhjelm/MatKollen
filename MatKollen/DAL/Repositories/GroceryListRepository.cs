@@ -159,7 +159,7 @@ namespace MatKollen.DAL.Repositories
             string query  = "SELECT * FROM vw_grocery_list_details WHERE `list_id` = (SELECT id FROM lists WHERE user_id = @userId)";
             
             var foodItems = new List<GroceryListViewModel>();
-            var conversionHandler = new ConvertQuantity();
+            var conversionHandler = new ConvertQuantityHandler();
 
             using (var myConnection = new MySqlConnection(myConnectionString))
             {

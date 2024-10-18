@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MatKollen.Services
 {
-    public class ConvertQuantity
+    public class ConvertQuantityHandler
     {
         public double ConverFromtLiterOrKg(double quanity, double conversionMultiplier)
         {

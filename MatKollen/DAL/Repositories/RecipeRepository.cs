@@ -75,7 +75,7 @@ namespace MatKollen.DAL.Repositories
             {
                 string query  = "SELECT * FROM vw_recipe_with_ingredients WHERE id = @recipeId";
                 var recipe = new RecipeDetailsViewModel();
-                var conversionHandler = new ConvertQuantity();
+                var conversionHandler = new ConvertQuantityHandler();
 
                 try
                 {

@@ -63,6 +63,7 @@ builder.Services.AddScoped<FoodRepository>();
 builder.Services.AddScoped<AccountRepository>();
 builder.Services.AddScoped<RecipeRepository>();
 builder.Services.AddScoped<GroceryListRepository>();
+builder.Services.AddScoped<GetListsRepository>();
 
 
 builder.Services.AddScoped<FoodService>();

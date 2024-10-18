@@ -7,11 +7,12 @@ namespace MatKollen.Models
     {
         public int Id { get; set; }
 
-        [Required]                              
-        [StringLength(20, ErrorMessage = "Nament på matvaran kan inte vara längre än 20 tecken.")]
-        public required string Name { get; set; }     
+        [Required (ErrorMessage = "Fältet kan inte vara tomt")]                              
+        [StringLength(20, ErrorMessage = "Nament på matvaran kan inte vara längre än 20 tecken")]
+        public string? Name { get; set; }     
 
-        [Required]
+        [Required (ErrorMessage = "Fältet kan inte vara tomt")]
+        [Range(1, int.MaxValue, ErrorMessage = "Du måste välja en kategori")]
         public int FoodCategoryId { get; set; }
     }
 }

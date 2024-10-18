@@ -9,6 +9,13 @@
 
 
 <div class="row row-cols-2 row-cols-md-6 g-4">
+    <div class="col add-btn">
+        <div class="card rounded-5" style="border-radius: 1.25rem; height: 100%; border: 3px dotted green;">
+            <div class="card-body d-flex justify-content-center align-items-center">
+                <i class="bi bi-plus-lg" style="font-size: 4rem; color: green;"></i>
+            </div>
+        </div>
+    </div>  
     @{
         foreach (var item in Model)
         {
@@ -18,7 +25,7 @@
             var sum = item.Quantities.Sum();
 
             <div class="col">
-                <div class="card text-dark card-has-bg rounded-5 bg-@ViewBag.criticalLevel" style="border-radius: 1.25rem">
+                <div class="card rounded-5 bg-@ViewBag.criticalLevel" style="border-radius: 1.25rem">
                     <div class="card-body">
                         <div class="d-flex">
                             <h1 class="bg-@ViewBag.criticalLevel">@(item.ExpirationDate?.Count == 1 ? item.Quantities[0] + item.Units[0] : sum + item.Units[0])</h1>
@@ -54,7 +61,4 @@
         }
     }
 </div>
-
-  
-
   
