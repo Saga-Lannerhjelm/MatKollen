@@ -10,5 +10,6 @@ namespace MatKollen.Models
         public int Id { get; set; }
         public required string Unit { get; set; }
         public double Multiplier { get; set; }
+        public string Type { get; set; }
     }
 }

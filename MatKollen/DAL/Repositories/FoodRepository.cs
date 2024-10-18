@@ -58,21 +58,23 @@ namespace MatKollen.Controllers.Repositories
                                     [
                                         DateOnly.FromDateTime(reader.GetDateTime("expiration_date")),
                                     ],
-                                    Quantities = 
+                                    Quantities =
                                     [
-                                        conversionHandler.ConverFromtLiterOrKg(reader.GetDouble("quantity"), reader.GetDouble("conversion_multiplier")),
+                                        (ConvertedQuantity: conversionHandler.ConverFromtLiterOrKg(reader.GetDouble("quantity"), reader.GetDouble("conversion_multiplier")),
+                                        Convert: reader.GetDouble("quantity"))
                                     ],
                                     Units = 
                                     [
-                                        reader.GetString("unit"),
+                                        (Unit: reader.GetString("unit"),
+                                        Type: reader.GetString("type"))
                                     ],
                                 }; 
                                 foodItems.Add(foodItem);
                             } else
                             {
                                 existingItem?.ExpirationDate?.Add(DateOnly.FromDateTime(reader.GetDateTime("expiration_date")));
-                                existingItem?.Quantities?.Add(reader.GetDouble("quantity"));
-                                existingItem?.Units?.Add(reader.GetString("unit"));
+                                existingItem?.Quantities?.Add((ConvertedQuantity: conversionHandler.ConverFromtLiterOrKg(reader.GetDouble("quantity"), reader.GetDouble("conversion_multiplier")), Convert: reader.GetDouble("quantity")));
+                                existingItem?.Units?.Add((Unit: reader.GetString("unit"), Type: reader.GetString("type")));
                             }
                         }
                     }
@@ -151,6 +153,46 @@ namespace MatKollen.Controllers.Repositories
                     errorMsg = "";
 
                     // execute the command and read the results
+                    var rowsAffected = Convert.ToInt32(myCommand.ExecuteScalar());
+
+                    if (rowsAffected == 0)
+                    {
+                        errorMsg = "Ingen matvara lades till.";
+                        return 0;
+                    }
+                    
+                    return rowsAffected;
+                }
+                catch (MySqlException e)
+                {
+                    errorMsg = e.Message;
+                    return 0;
+                }    
+            }
+        }
+
+        public int AddFoodItem(UserFoodItem foodItem, out string errorMsg)
+        {
+            var myConnectionString = _connectionString;
+
+            using (var myConnection = new MySqlConnection(myConnectionString))
+            {
+                string query  = "Call add_food_item(@quantity, @expirationDate, @userId, @foodItemId, @unitId)";
+                var testList = new List<string>();
+
+                try
+                {
+                    MySqlCommand myCommand = new MySqlCommand(query, myConnection);
+                    myConnection.Open();
+
+                    myCommand.Parameters.Add("@quantity", MySqlDbType.Double).Value = foodItem.Quantity;
+                    myCommand.Parameters.Add("@expirationDate", MySqlDbType.Date).Value = foodItem.ExpirationDate;
+                    myCommand.Parameters.Add("@userId", MySqlDbType.Int32).Value = foodItem.UserId;
+                    myCommand.Parameters.Add("@foodItemId", MySqlDbType.Int32).Value = foodItem.FoodItemId;
+                    myCommand.Parameters.Add("@unitId", MySqlDbType.Int32).Value = foodItem.UnitId;
+
+                    errorMsg = "";
+
                     var rowsAffected = Convert.ToInt32(myCommand.ExecuteScalar());
 
                     if (rowsAffected == 0)

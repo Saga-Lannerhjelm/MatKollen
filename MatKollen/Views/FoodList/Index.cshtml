@@ -2,33 +2,29 @@
 
 @{
     ViewData["Title"] = "Matvaror";
-    ViewBag.criticalLevel = "";
 }
 
 <h2>@ViewData["Title"]</h2>
 
 
 <div class="row row-cols-2 row-cols-md-6 g-4">
-    <div class="col add-btn">
+    <a class="col add-btn" asp-action="Add" asp-controller="FoodList">
         <div class="card rounded-5" style="border-radius: 1.25rem; height: 100%; border: 3px dotted green;">
             <div class="card-body d-flex justify-content-center align-items-center">
                 <i class="bi bi-plus-lg" style="font-size: 4rem; color: green;"></i>
             </div>
         </div>
-    </div>  
+    </a>  
     @{
         foreach (var item in Model)
         {
-            if (item.ExpirationDate.Count == 2) ViewBag.criticalLevel = "attention";
-            if (item.ExpirationDate.Count == 1) ViewBag.criticalLevel = "default";
-
-            var sum = item.Quantities.Sum();
+            var sum = item.Quantities.Sum(q => q.Quantity);
 
             <div class="col">
-                <div class="card rounded-5 bg-@ViewBag.criticalLevel" style="border-radius: 1.25rem">
+                <div class="card rounded-5 bg-@item.CriticalLevel()" style="border-radius: 1.25rem">
                     <div class="card-body">
                         <div class="d-flex">
-                            <h1 class="bg-@ViewBag.criticalLevel">@(item.ExpirationDate?.Count == 1 ? item.Quantities[0] + item.Units[0] : sum + item.Units[0])</h1>
+                            <h1 class="bg-@item.CriticalLevel()">@(item.ExpirationDate?.Count == 1 ? item.Quantities[0].ConvertedQuantity.ToString() + item.Units[0].Unit : sum.ToString() + (item.Units[0].Type == "weight" ? "kg" : (item.Units[0].Type == "volume" ? "L" : item.Units[0].Unit)))</h1>
                         </div>
                         <small class="card-meta mb-2">@item.CategoryName</small>
                         <h4 class="card-title mt-0 ">@item.FoodItemName</h4>
@@ -37,15 +33,15 @@
                         <div class="accordion accordion-flush" id="accordionFlushExample">
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="flush-headingOne">
-                                    <button class="accordion-button collapsed bg-@ViewBag.criticalLevel p-0" type="button" data-bs-toggle="collapse" data-bs-target="#@item.FoodItemName">
+                                    <button class="accordion-button collapsed bg-@item.CriticalLevel() p-0" type="button" data-bs-toggle="collapse" data-bs-target="#@item.FoodItemName">
                                         <small>Utgångsdatum</small>
                                     </button>
                                 </h2>
                                 <div id="@item.FoodItemName" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
-                                    <div class="accordion-body bg-@ViewBag.criticalLevel p-0">
+                                    <div class="accordion-body bg-@item.CriticalLevel() p-0">
                                         @for (var i = 0; i < item.ExpirationDate.Count; i++)
                                         {
-                                            <p class="m-0"><small>@item.ExpirationDate[i] (@item.Quantities[i]@item.Units[i])</small></p>
+                                            <p class="m-0"><small>@item.ExpirationDate[i] (@item.Quantities[i].ConvertedQuantity@item.Units[i].Unit)</small></p>
                                         }
                                     </div>
                                 </div>

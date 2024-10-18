@@ -34,36 +34,23 @@ namespace MatKollen.Controllers
         [HttpGet]
         public IActionResult Add()
         {
-            List<FoodItem>? foodItemList = _foodRepository.GetFoodItems(out string error);
+            var model = new UserFoodItem();
 
-            if (error != "")
-            {
-                TempData["error"] = error;
-                return View("Index");
-            }
-
-            var model = new AddFoodViewModel
-            {
-                FoodItems = foodItemList
-            };
-            
-            if (error != "") TempData["error"] = error;
-
-            GetFormLists();
+            GetAddFormData();
             return View(model);
         }
 
         [HttpPost]
-        public IActionResult Add(AddFoodAndUserItemViewModel item)
+        public IActionResult Add(UserFoodItem item)
         {
-            if (item.UserFoodItem.ExpirationDate < DateOnly.FromDateTime(DateTime.Now))
+            if (item.ExpirationDate < DateOnly.FromDateTime(DateTime.Now))
             {
-                ModelState.AddModelError("expirationDate", "Utgångsdatumet kan inte vara i det förflutna");
+                ModelState.AddModelError(nameof(item.ExpirationDate), "Utgångsdatumet kan inte vara i det förflutna");
             }
 
             if (!ModelState.IsValid)
             {
-                GetFormLists();
+                GetAddFormData();
                 return View(item);
             }
 
@@ -74,30 +61,39 @@ namespace MatKollen.Controllers
                 TempData["error"] = unitsError;
                 return View(item);
             }
-            double multiplier = measurementMultipliers.Find(m => m.Id == item.UserFoodItem.UnitId).Multiplier;
+            double multiplier = measurementMultipliers.Find(m => m.Id == item.UnitId).Multiplier;
 
             //Get user id
             var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "id").Value);
-            item.UserFoodItem.UserId = userId;
+            item.UserId = userId;
 
             // Recalculate quantity
             var conversionHandler = new ConvertQuantityHandler();
-            item.UserFoodItem.Quantity = conversionHandler.ConverToLiterOrKg(item.UserFoodItem.Quantity, multiplier);
+            item.Quantity = conversionHandler.ConverToLiterOrKg(item.Quantity, multiplier);
 
             // Insert values in database
-            int affectedRows = _foodRepository.InsertFoodItem(item, out string error);
+            int affectedRows = _foodRepository.AddFoodItem(item, out string error);
 
             if (error != "")
             {
                 TempData["error"] = "Det gick inte att lägga till matvaran:" + error;
             }
 
-            if (affectedRows == 0)
-            {
-                TempData["error"] = "Det gick inte att lägga till matvaran";
-            }
+            if (affectedRows == 0) TempData["error"] = "Det gick inte att lägga till matvaran";
+            else TempData["success"] = "Matvara tillagd!";
 
             return RedirectToAction("Index");
+        }
+
+        private void GetAddFormData()
+        {
+            var unitList = _getListRepository.GetUnits(out string unitsError);
+            List<FoodItem>? foodItemList = _foodRepository.GetFoodItems(out string error);
+
+            if (unitsError != "" || error != "") TempData["error"] = unitsError + " " + error;
+
+            ViewData["units"] = unitList;
+            ViewData["foodItems"] = foodItemList;
         }
 
         //FoodList/AddNewFoodItem
@@ -152,10 +148,8 @@ namespace MatKollen.Controllers
                 TempData["error"] = "Det gick inte att lägga till matvaran:" + error;
             }
 
-            if (affectedRows == 0)
-            {
-                TempData["error"] = "Det gick inte att lägga till matvaran";
-            }
+            if (affectedRows == 0) TempData["error"] = "Det gick inte att lägga till matvaran";
+            else TempData["success"] = "Matvara tillagd!";
 
             return RedirectToAction("Index");
         }
