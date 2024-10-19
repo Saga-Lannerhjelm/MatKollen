@@ -18,6 +18,106 @@
     @{
         foreach (var item in Model)
         {
+            var sum = item.UserFoodItems.Sum(q => q.FoodDetails.Quantity);
+
+            <div class="col">
+                <div class="card rounded-5 bg-@item.CriticalLevel()" style="border-radius: 1.25rem; max-height: 100%;">
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <h1 class="bg-@item.CriticalLevel()">@(item.UserFoodItems?.Count == 1 ? item.UserFoodItems[0].ConvertedQuantity.ToString() + item.UserFoodItems[0].UnitInfo.Unit : sum.ToString() + (item.UserFoodItems[0].UnitInfo.Type == "weight" ? "kg" : (item.UserFoodItems[0].UnitInfo.Type == "volume" ? "L" : item.UserFoodItems[0].UnitInfo.Unit)))</h1>
+                        </div>
+                        @* <small class="card-meta mb-2">@item.CategoryName</small> *@
+                        <h4 class="card-title mt-0 ">@item.FoodItemName</h4>
+                        @if (item.UserFoodItems?.Count != 1)
+                        {
+                        <div class="accordion accordion-flush" id="accordionFlushExample">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="flush-headingOne">
+                                    <button class="accordion-button collapsed bg-@item.CriticalLevel() p-0" type="button" data-bs-toggle="collapse" data-bs-target="#@item.FoodItemName">
+                                        <small>Utgångsdatum</small>
+                                    </button>
+                                </h2>
+                                <div id="@item.FoodItemName" class="accordion-collapse collapse @(ViewBag.showAccordionName == @item.FoodItemName ? "show" : "")" data-bs-parent="#accordionFlushExample">
+                                    <div class="accordion-body bg-@item.CriticalLevel() p-0">
+                                        @foreach (var foodItem in item?.UserFoodItems)
+                                        {
+                                            <div class="d-flex align-items-center border-bottom py-2 border-dark">
+                                                <p class="m-0"><small>@foodItem.FoodDetails.ExpirationDate (@foodItem.ConvertedQuantity@foodItem.UnitInfo.Unit)</small></p>
+                                                <div class="d-flex">
+                                                    <form method="post" asp-action="DecreaseQuantity">
+                                                        <input type="hidden" value="@foodItem.FoodDetails.Id" name="id">
+                                                        <input type="hidden" value="@foodItem.UnitInfo.Multiplier" name="unitMultiplier">
+                                                        <input type="hidden" value="@foodItem.FoodDetails.Quantity" name="quantity">
+                                                        <input type="hidden" value="@foodItem.UnitInfo.Unit" name="unit">
+                                                        <input type="hidden" value="@item.FoodItemName" name="showAccordionName">
+                                                        <button type="submit" class="update-btn"><i class="bi bi-dash"></i></button>
+                                                    </form>
+                                                    <form method="post" asp-action="IncreaseQuantity">
+                                                        <input type="hidden" value="@foodItem.FoodDetails.Id" name="id">
+                                                        <input type="hidden" value="@foodItem.UnitInfo.Multiplier" name="unitMultiplier">
+                                                        <input type="hidden" value="@foodItem.FoodDetails.Quantity" name="quantity">
+                                                        <input type="hidden" value="@foodItem.UnitInfo.Unit" name="unit">
+                                                        <input type="hidden" value="@item.FoodItemName" name="showAccordionName">
+                                                        <button type="submit" class="update-btn"><i class="bi bi-plus"></i></button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        } else
+                        {
+                            <div class="d-flex align-items-center">
+                                <p class="m-0"><small>@item.UserFoodItems[0].FoodDetails.ExpirationDate</small></p>
+                                <div class="d-flex">
+                                    <form method="post" asp-action="DecreaseQuantity">
+                                        <input type="hidden" value="@item.UserFoodItems[0].FoodDetails.Id" name="id">
+                                        <input type="hidden" value="@item.UserFoodItems[0].UnitInfo.Multiplier" name="unitMultiplier">
+                                        <input type="hidden" value="@item.UserFoodItems[0].FoodDetails.Quantity" name="quantity">
+                                        <input type="hidden" value="@item.UserFoodItems[0].UnitInfo.Unit" name="unit">
+                                        <button type="submit" class="update-btn"><i class="bi bi-dash"></i></button>
+                                    </form>
+                                    <form method="post" asp-action="IncreaseQuantity">
+                                        <input type="hidden" value="@item.UserFoodItems[0].FoodDetails.Id" name="id">
+                                        <input type="hidden" value="@item.UserFoodItems[0].UnitInfo.Multiplier" name="unitMultiplier">
+                                        <input type="hidden" value="@item.UserFoodItems[0].FoodDetails.Quantity" name="quantity">
+                                        <input type="hidden" value="@item.UserFoodItems[0].UnitInfo.Unit" name="unit">
+                                        <button type="submit" class="update-btn"><i class="bi bi-plus"></i></button>
+                                    </form>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>  
+        }
+    }
+</div>
+  
+@* 
+
+@model List<UserFoodItemViewModel>
+
+@{
+    ViewData["Title"] = "Matvaror";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+
+<div class="row row-cols-2 row-cols-md-6 g-4">
+    <a class="col add-btn" asp-action="Add" asp-controller="FoodList">
+        <div class="card rounded-5" style="border-radius: 1.25rem; height: 100%; border: 3px dotted green;">
+            <div class="card-body d-flex justify-content-center align-items-center">
+                <i class="bi bi-plus-lg" style="font-size: 4rem; color: green;"></i>
+            </div>
+        </div>
+    </a>  
+    @{
+        foreach (var item in Model)
+        {
             var sum = item.Quantities.Sum(q => q.Quantity);
 
             <div class="col">
@@ -28,6 +128,18 @@
                         </div>
                         <small class="card-meta mb-2">@item.CategoryName</small>
                         <h4 class="card-title mt-0 ">@item.FoodItemName</h4>
+                        <div class="d-flex">
+                            <form method="post" asp-action="DecreaseQuantity">
+                                <input type="hidden" value="@item.FoodItemDetails.Id" name="id">
+                                <input type="hidden" value="@item.Units[0].Multiplier" name="unitMultiplier">
+                                <button type="submit" class="update-btn"><i class="bi bi-dash"></i></button>
+                            </form>
+                            <form method="post" asp-action="IncreaseQuantity">
+                                <input type="hidden" value="@item.FoodItemDetails.Id" name="id">
+                                <input type="hidden" value="@item.Units[0].Multiplier" name="unitMultiplier">
+                                <button type="submit" class="update-btn"><i class="bi bi-plus"></i></button>
+                            </form>
+                        </div>
                         @if (item.ExpirationDate.Count != 1)
                         {
                         <div class="accordion accordion-flush" id="accordionFlushExample">
@@ -57,4 +169,4 @@
         }
     }
 </div>
-  
+   *@

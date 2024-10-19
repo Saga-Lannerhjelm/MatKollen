@@ -42,13 +42,13 @@ namespace MatKollen.Controllers
             foreach(var item in recipe.Ingredients)
             {
                 // Find matching food items between a recipe and the user's food items
-                var matchingItem = userFoodItems.Find(food => food.FoodItemDetails.FoodItemId == item.IngredientDetails.FoodItemId);
+                var matchingItem = userFoodItems?.Find(food => food?.UserFoodItems?[0].FoodDetails.FoodItemId == item.IngredientDetails.FoodItemId);
 
                 // Find matching food items between a recipe and the items in the grocery list
                 var matchingListItem = _groceryListRepository.GetGroceryList(userId, out error).Find(listItem => listItem.FoodDetails.FoodItemId == item.IngredientDetails.FoodItemId);
 
                 // If the item exists among the user's food items and the amount is equal to or more than in the recipe
-                if (matchingItem != null && (matchingItem.FoodItemDetails.Quantity >= item.IngredientDetails.Quantity))
+                if (matchingItem != null && (matchingItem?.UserFoodItems?[0].FoodDetails.Quantity >= item.IngredientDetails.Quantity))
                 {
                     item.UserHasIngredient = true;   
                 }

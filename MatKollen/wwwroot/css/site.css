@@ -138,3 +138,20 @@ a {
   cursor: pointer;
   transform: scale(0.95);
 }
+
+.update-btn {
+  background-color: transparent; 
+  border: none;
+  transition: transform 330ms ease-in-out;
+}
+
+.update-btn:hover{
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 99px;
+}
+
+.update-btn i {
+  font-size: 1.5rem; 
+  color: green;
+  transition: transform 330ms ease-in-out;
+}

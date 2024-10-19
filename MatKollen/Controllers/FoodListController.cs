@@ -20,12 +20,14 @@ namespace MatKollen.Controllers
         }
         
         //FoodList
-        public IActionResult Index()
+        public IActionResult Index(string showAccordionName)
         {
             var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "id").Value);
             var foodList = _foodRepository.GetUserFoodList(userId, out string error);
             
             if (error != "") TempData["error"] = error;
+
+            ViewBag.showAccordionName = showAccordionName;
 
             return View(foodList);
         }
@@ -176,6 +178,30 @@ namespace MatKollen.Controllers
         {
             return View();
         }
+
+        [HttpPost]
+        public IActionResult IncreaseQuantity(int id, double unitMultiplier, double quantity, string unit, string showAccordionName)
+        {
+            double incrementNr = unit != "kg" && unit != "L" ? 1 / unitMultiplier : 0.1;
+            var affectedRows = _foodRepository.UpdateQuantity(id, incrementNr, out string error);
+            if (error != "") TempData["error"] = error;
+            if (affectedRows == 0) TempData["error"] = "Det gick inte att ändra antalet";
+            return RedirectToAction("Index", new {showAccordionName});
+        }
+
+        [HttpPost]
+        public IActionResult DecreaseQuantity(int id, double unitMultiplier, double quantity, string unit, string showAccordionName)
+        {
+            if (quantity > 0)
+            {
+                double decreaseNr = (unit != "kg" && unit != "L" ? 1 / unitMultiplier : 0.1) * -1;
+                var affectedRows = _foodRepository.UpdateQuantity(id, decreaseNr, out string error);
+                if (error != "") TempData["error"] = error;
+                if (affectedRows == 0) TempData["error"] = "Det gick inte att ändra antalet";
+            }
+            return RedirectToAction("Index", new {showAccordionName});
+        }
+
 
         [HttpPost]
         public IActionResult Delete(int id)

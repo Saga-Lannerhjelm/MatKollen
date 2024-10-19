@@ -46,35 +46,51 @@ namespace MatKollen.Controllers.Repositories
                             {
                                 var foodItem = new UserFoodItemViewModel()
                                 {
-                                    FoodItemDetails = new UserFoodItem()
-                                    {
-                                        Quantity = reader.GetDouble("quantity"),
-                                        FoodItemId = reader.GetInt16("food_item_id"),
-                                        UnitId = reader.GetInt16("unit_id"),
-                                    },
                                     FoodItemName = reader.GetString("item"),
                                     CategoryName = reader.GetString("category"),
-                                    ExpirationDate =
+                                    UserFoodItems = 
                                     [
-                                        DateOnly.FromDateTime(reader.GetDateTime("expiration_date")),
-                                    ],
-                                    Quantities =
-                                    [
-                                        (ConvertedQuantity: conversionHandler.ConverFromtLiterOrKg(reader.GetDouble("quantity"), reader.GetDouble("conversion_multiplier")),
-                                        Convert: reader.GetDouble("quantity"))
-                                    ],
-                                    Units = 
-                                    [
-                                        (Unit: reader.GetString("unit"),
-                                        Type: reader.GetString("type"))
+                                        (
+                                            ConvertedQuantity: conversionHandler.ConverFromtLiterOrKg(reader.GetDouble("quantity"), reader.GetDouble("conversion_multiplier")),
+                                            FoodDetails: new UserFoodItem()
+                                            {
+                                                Id = reader.GetInt32("id"),
+                                                Quantity = reader.GetDouble("quantity"),
+                                                ExpirationDate = DateOnly.FromDateTime(reader.GetDateTime("expiration_date")),
+                                                FoodItemId = reader.GetInt16("food_item_id"),
+                                                UnitId = reader.GetInt16("unit_id"),
+                                            },
+                                            UnitInfo: new MeasurementUnit() 
+                                            {
+                                                Unit = reader.GetString("unit"),
+                                                Multiplier = reader.GetDouble("conversion_multiplier"),
+                                                Type = reader.GetString("type")
+                                            }
+                                        )
                                     ],
                                 }; 
                                 foodItems.Add(foodItem);
                             } else
                             {
-                                existingItem?.ExpirationDate?.Add(DateOnly.FromDateTime(reader.GetDateTime("expiration_date")));
-                                existingItem?.Quantities?.Add((ConvertedQuantity: conversionHandler.ConverFromtLiterOrKg(reader.GetDouble("quantity"), reader.GetDouble("conversion_multiplier")), Convert: reader.GetDouble("quantity")));
-                                existingItem?.Units?.Add((Unit: reader.GetString("unit"), Type: reader.GetString("type")));
+                                existingItem?.UserFoodItems.Add(
+                                    (
+                                            ConvertedQuantity: conversionHandler.ConverFromtLiterOrKg(reader.GetDouble("quantity"), reader.GetDouble("conversion_multiplier")),
+                                            FoodDetails: new UserFoodItem()
+                                            {
+                                                Id = reader.GetInt32("id"),
+                                                Quantity = reader.GetDouble("quantity"),
+                                                ExpirationDate = DateOnly.FromDateTime(reader.GetDateTime("expiration_date")),
+                                                FoodItemId = reader.GetInt16("food_item_id"),
+                                                UnitId = reader.GetInt16("unit_id"),
+                                            },
+                                            UnitInfo: new MeasurementUnit() 
+                                            {
+                                                Unit = reader.GetString("unit"),
+                                                Multiplier = reader.GetDouble("conversion_multiplier"),
+                                                Type = reader.GetString("type")
+                                            }
+                                        )
+                                );
                             }
                         }
                     }
@@ -198,6 +214,42 @@ namespace MatKollen.Controllers.Repositories
                     if (rowsAffected == 0)
                     {
                         errorMsg = "Ingen matvara lades till.";
+                        return 0;
+                    }
+                    
+                    return rowsAffected;
+                }
+                catch (MySqlException e)
+                {
+                    errorMsg = e.Message;
+                    return 0;
+                }    
+            }
+        }
+
+        public int UpdateQuantity(int id, double nr, out string errorMsg)
+        {
+            var myConnectionString = _connectionString;
+
+            using (var myConnection = new MySqlConnection(myConnectionString))
+            {
+                string query  = "Update user_has_fooditems SET quantity = ROUND((quantity + @nr), 4) WHERE id = @id";
+
+                try
+                {
+                    MySqlCommand myCommand = new MySqlCommand(query, myConnection);
+                    myConnection.Open();
+
+                    myCommand.Parameters.Add("@nr", MySqlDbType.Double).Value = nr;
+                    myCommand.Parameters.Add("@id", MySqlDbType.Int32).Value = id;
+
+                    errorMsg = "";
+
+                    var rowsAffected = myCommand.ExecuteNonQuery();
+
+                    if (rowsAffected == 0)
+                    {
+                        errorMsg = "Gick inte att updatera antalet.";
                         return 0;
                     }
                     
