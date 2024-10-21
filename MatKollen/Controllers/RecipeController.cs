@@ -208,7 +208,10 @@ namespace MatKollen.Controllers
         //Recipe/Delete
         public IActionResult Delete(int id)
         {
-            return View();
+            var affectedRows = _recipeRepository.Delete(id, out string error);
+            if (error != "") TempData["error"] = error;
+            if (affectedRows == 0) TempData["error"] = "Det gick inte att ta bort receptet";
+            return RedirectToAction("My");
         }
 
 
