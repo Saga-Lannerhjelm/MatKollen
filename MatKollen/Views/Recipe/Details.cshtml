@@ -11,26 +11,39 @@
 <p>@Model.Recipe.Description</p>
 
 <p>Ingredienser:</p>
+
 @{
-    foreach(var item in Model.Ingredients)
+    if(Model.Ingredients == null)
     {
-        <p style="@(item.UserHasIngredient ? "" : "text-decoration: line-through; color: maroon;")"><strong>@item.ConvertedQuantity@item.Unit</strong> @item.Ingredient</p>
+        foreach(var item in Model.Ingredients)
+        {
+            <p style="@(item.UserHasIngredient ? "" : "text-decoration: line-through; color: maroon;")"><strong>@item.ConvertedQuantity@item.Unit</strong> @item.Ingredient</p>
+        }
+
+        <form method="post" asp-action="AddFromRecipe" asp-controller="GroceryList">
+            @{
+                if(ViewBag.groceryListItemsExists.Count > 0)
+                {
+                    <p>Du har readan tillräckligt av dessa ingredienser i din inköpslista.</p>
+                    <ul>
+                        @foreach (var item in ViewBag.groceryListItemsExists)
+                        {
+                            <li>@item</li>
+                        }
+                    </ul>
+                    <input type="checkbox" id="check">
+                    <label for="check">Jag vill lägga till ingredienserna igen</label>
+                }
+            }
+            <button class="btn-primary" type="submit">Lägg till det du saknar i inköpslista</button>
+        </form>
+    }
+    else 
+    {
+    <form method="post" asp-action="..." asp-controller="Recipe">
+        <p>Detta recept har inga ingredienser än.</p>
+        <button class="btn-primary" type="submit">Lägg till ingredienser</button>
+    </form>
+
     }
 }
-<form method="post" asp-action="AddFromRecipe" asp-controller="GroceryList">
-    @{
-        if(ViewBag.groceryListItemsExists.Count > 0)
-        {
-            <p>Du har readan tillräckligt av dessa ingredienser i din inköpslista.</p>
-            <ul>
-                @foreach (var item in ViewBag.groceryListItemsExists)
-                {
-                    <li>@item</li>
-                }
-            </ul>
-            <input type="checkbox" id="check">
-            <label for="check">Jag vill lägga till ingredienserna igen</label>
-        }
-    }
-    <button class="btn-primary" type="submit">Lägg till det du saknar i inköpslista</button>
-</form>
