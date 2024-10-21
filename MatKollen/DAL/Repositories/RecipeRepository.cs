@@ -163,11 +163,13 @@ namespace MatKollen.DAL.Repositories
                                 {
                                     IngredientDetails = new RecipeFoodItem()
                                     {
+                                        Id = reader.GetInt32("ingredient_id"),
                                         Quantity = reader.GetDouble("quantity"),
                                         UnitId =  reader.GetInt32("unit_id"),
                                         FoodItemId = reader.GetInt32("food_item_id")
                                     },
                                     ConvertedQuantity = conversionHandler.ConverFromtLiterOrKg(reader.GetDouble("quantity"), reader.GetDouble("conversion_multiplier")),
+                                    Multiplier = reader.GetDouble("conversion_multiplier"),
                                     Ingredient = reader.GetString("ingredient"),
                                     Unit = reader.GetString("unit")
                                 }); 
@@ -249,7 +251,81 @@ namespace MatKollen.DAL.Repositories
                 }    
             }
         }
+
+        public int Update(Recipe recipe, out string errorMsg)
+        {
+            var myConnectionString = _connectionString;
+
+            using (var myConnection = new MySqlConnection(myConnectionString))
+            {
+                string query  = "UPDATE `recipes` SET `title` = @title, `description` = @description, `recipe_category_id` = @categoryId WHERE `id` = @recipeId";
+
+                try
+                {
+                    MySqlCommand myCommand = new MySqlCommand(query, myConnection);
+                    myConnection.Open();
+
+                    myCommand.Parameters.Add("@recipeId", MySqlDbType.Int32).Value = recipe.Id;
+                    myCommand.Parameters.Add("@title", MySqlDbType.VarChar, 50).Value = recipe.Title;
+                    myCommand.Parameters.Add("@description", MySqlDbType.VarChar, 1000).Value = recipe.Description;
+                    myCommand.Parameters.Add("@categoryId", MySqlDbType.Int32).Value = recipe.RecipeCategoryId;
+
+                    errorMsg = "";
+
+                    var rowsAffected = myCommand.ExecuteNonQuery();
+
+                    if (rowsAffected == 0)
+                    {
+                        errorMsg = "Gick inte att updatera receptet.";
+                        return 0;
+                    }
+                    
+                    return rowsAffected;
+                }
+                catch (MySqlException e)
+                {
+                    errorMsg = e.Message;
+                    return 0;
+                }    
+            }
+        }
         
+        public int UpdateQuantity(int id, double nr, out string errorMsg)
+        {
+            var myConnectionString = _connectionString;
+
+            using (var myConnection = new MySqlConnection(myConnectionString))
+            {
+                string query  = "Update recipe_has_fooditems SET quantity = ROUND((quantity + @nr), 4) WHERE id = @id";
+
+                try
+                {
+                    MySqlCommand myCommand = new MySqlCommand(query, myConnection);
+                    myConnection.Open();
+
+                    myCommand.Parameters.Add("@nr", MySqlDbType.Double).Value = nr;
+                    myCommand.Parameters.Add("@id", MySqlDbType.Int32).Value = id;
+
+                    errorMsg = "";
+
+                    var rowsAffected = myCommand.ExecuteNonQuery();
+
+                    if (rowsAffected == 0)
+                    {
+                        errorMsg = "Gick inte att updatera antalet.";
+                        return 0;
+                    }
+                    
+                    return rowsAffected;
+                }
+                catch (MySqlException e)
+                {
+                    errorMsg = e.Message;
+                    return 0;
+                }    
+            }
+        }
+
         public int Delete(int recipeId, out string errorMsg)
         {
             var myConnectionString = _connectionString;
@@ -277,6 +353,45 @@ namespace MatKollen.DAL.Repositories
                     if (rowsAffected == 0)
                     {
                         errorMsg = "Inget recept togs bort";
+                        return 0;
+                    }
+                    
+                    return rowsAffected;
+                }
+                catch (MySqlException e)
+                {
+                    errorMsg = e.Message;
+                    return 0;
+                }    
+            }
+        }
+        public int DeleteIngredient(int ingredientId, out string errorMsg)
+        {
+            var myConnectionString = _connectionString;
+
+            using (var myConnection = new MySqlConnection(myConnectionString))
+            {
+                //Creates a new user and a grozery list for that user at the same time
+                string query  = "DELETE FROM recipe_has_fooditems WHERE id = @ingredientId;";
+
+                try
+                {
+                    // create a MySQL command and set the SQL statement with parameters
+                    MySqlCommand myCommand = new MySqlCommand(query, myConnection);
+
+                    //open a connection
+                    myConnection.Open();
+
+                    myCommand.Parameters.Add("@ingredientId", MySqlDbType.Int32).Value = ingredientId;
+
+                    errorMsg = "";
+
+                    // execute the command and read the results
+                    var rowsAffected = myCommand.ExecuteNonQuery();
+
+                    if (rowsAffected == 0)
+                    {
+                        errorMsg = "Ingen ingrediens togs bort";
                         return 0;
                     }
                     

@@ -17,9 +17,14 @@
     {
         foreach(var item in Model.Ingredients)
         {
-            <p style="@(item.UserHasIngredient ? "" : "text-decoration: line-through; color: maroon;")"><strong>@item.ConvertedQuantity@item.Unit</strong> @item.Ingredient</p>
+            <div class="my-4" style="@(item.UserHasIngredient ? "" : "text-decoration: line-through; color: maroon;")">
+                <span style="padding: 10px; border-radius: 99px;" class="bg-custom"><strong>@item.ConvertedQuantity@item.Unit</strong> @item.Ingredient
+                <i class="bi bi-plus"></i>
+                <i class="bi bi-dash"></i>
+                <i class="bi bi-trash3"></i>
+                </span>
+            </div>
         }
-        <a class="btn-primary" type="submit" asp-controller="Recipe" asp-action="AddIngredient" asp-route-recipeId="@Model.Recipe.Id" asp-route-title="@Model.Recipe.Title">Lägg till ingredienser</a>
         <form method="post" asp-action="AddFromRecipe" asp-controller="GroceryList">
             @{
                 if(ViewBag.groceryListItemsExists.Count > 0)
@@ -41,7 +46,6 @@
     else 
     {
         <p>Detta recept har inga ingredienser än.</p>
-        <a class="btn-primary" type="submit" asp-controller="Recipe" asp-action="AddIngredient" asp-route-recipeId="@Model.Recipe.Id" asp-route-title="@Model.Recipe.Title">Lägg till ingredienser</a>
 
     }
 }

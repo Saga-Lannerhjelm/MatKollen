@@ -1,7 +1,69 @@
+@model RecipeDetailsViewModel
+
 @{
-    ViewData["Title"] = "Ändra recept";
+    ViewData["Title"] = "Recept detalj";
 }
 
 <h2>@ViewData["Title"]</h2>
+    <p><small>Publicerad @Model.Recipe.CreatedAt</small> av @Model.Username</p>
+<form method="post" asp-controller="Recipe" asp-action="Edit">
 
-<p>Hello from our View Template!</p>
+    <h4><input asp-for="Recipe.Title" value="@Model.Recipe.Title" style="width: 100%; border: 1px solid lightgray;"/></h4>
+    <small>
+        <div class="mb-3">
+                    <select class="form-select" asp-for="@Model.Recipe.RecipeCategoryId">
+                        @foreach (var category in (List<RecipeCategory>)ViewData["categories"])
+                        {
+                        <option value="@category.Id" selected="@(category.Id == Model.Recipe.RecipeCategoryId)">
+                            @category.Name
+                        </option>
+                        }
+                    </select>
+                    @Html.ValidationMessageFor(m => m.Recipe.RecipeCategoryId, "", new { @class = "text-danger" })
+        </div>
+    </small>
+    <p><textarea asp-for="Recipe.Description" value="@Model.Recipe.Description" rows="4" style="width: 100%; border: 1px solid lightgray;"></textarea></p>
+    <input asp-for="Recipe.Id" value="@Model.Recipe.Id" type="hidden"/>
+    <button type="submit" class="btn btn-primary btn-sm" type="submit">Spara ändringar</button>
+</form>
+    <h3>Ingredienser:</h3>
+
+    @{
+        if(Model.Ingredients.Count != 0)
+        {
+            <div>
+            @foreach(var item in Model.Ingredients)
+            {
+                <span class="my-3 bg-custom d-flex align-items-center p-2 px-3" style="border-radius: 99px; display: inline-blovk; white-space: nowrap;">
+                   <span class="mr-3"><strong>@item.ConvertedQuantity@item.Unit</strong> @item.Ingredient </span>
+                    <form method="post" asp-controller="Recipe" asp-action="IncreaseQuantity">
+                        <input type="hidden" name="id" value="@item.IngredientDetails.Id">
+                        <input type="hidden" name="unitMultiplier" value="@item.Multiplier">
+                        <input type="hidden" name="unit" value="@item.Unit">
+                        <input type="hidden" name="recipeId" value="@Model.Recipe.Id">
+                        <button class="action-btn"><i class="bi bi-plus"></i></button>
+                    </form>
+                    <form method="post" asp-controller="Recipe" asp-action="DecreaseQuantity">
+                        <input type="hidden" name="id" value="@item.IngredientDetails.Id">
+                        <input type="hidden" name="unitMultiplier" value="@item.Multiplier">
+                        <input type="hidden" name="unit" value="@item.Unit">
+                        <input type="hidden" name="quantity" value="@item.IngredientDetails.Quantity">
+                        <input type="hidden" name="recipeId" value="@Model.Recipe.Id">
+                        <button class="action-btn"><i class="bi bi-dash"></i></button>
+                    </form>
+                    <form method="post" asp-controller="Recipe" asp-action="DeleteIngredient">
+                        <input type="hidden" name="id" value="@item.IngredientDetails.Id">
+                        <input type="hidden" name="recipeId" value="@Model.Recipe.Id">
+                        <button class="action-btn"><i class="bi bi-trash"></i></button>
+                    </form>
+                </span>
+            }
+            </div>
+        }
+        else 
+        {
+            <p>Detta recept har inga ingredienser än.</p>
+        }
+    }
+    <a class="btn btn-primary btn-sm" type="submit" asp-controller="Recipe" asp-action="AddIngredient" asp-route-recipeId="@Model.Recipe.Id" asp-route-title="@Model.Recipe.Title">Lägg till ingredienser</a>
+

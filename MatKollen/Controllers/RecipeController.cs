@@ -180,7 +180,7 @@ namespace MatKollen.Controllers
             var affectedRows = _recipeRepository.InsertIngredient(ingredient, out error);
             if (error != "" || affectedRows == 0) TempData["error"] = "Det gick inte att lägga till ingrediensen."  + error;
             
-            return RedirectToAction("details", new {id = ingredient.RecipeId});
+            return RedirectToAction("edit", new {id = ingredient.RecipeId});
         }
 
         [HttpGet]
@@ -201,16 +201,60 @@ namespace MatKollen.Controllers
         //Recipe/Edit
         public IActionResult Edit(Recipe recipe)
         {
-            return View();
+            var affectedRows = _recipeRepository.Update(recipe, out string error);
+            if (error != "" || affectedRows == 0) 
+            {
+               TempData["error"] = error;
+               return RedirectToAction("My");
+            }
+            else
+            {
+                TempData["Success"] = "Receptet har uppdaterats";
+            } 
+
+            return RedirectToAction("Edit", new {id = recipe.Id});
+        }
+
+        [HttpPost]
+        public IActionResult IncreaseQuantity(int id, double unitMultiplier, string unit, int recipeId)
+        {
+            double incrementNr = unit != "kg" && unit != "L" ? 1 / unitMultiplier : 0.1;
+            var affectedRows = _recipeRepository.UpdateQuantity(id, incrementNr, out string error);
+            if (error != "") TempData["error"] = error;
+            if (affectedRows == 0) TempData["error"] = "Det gick inte att ändra antalet";
+            return RedirectToAction("Edit", new {id = recipeId});
+        }
+
+        [HttpPost]
+        public IActionResult DecreaseQuantity(int id, double unitMultiplier, double quantity, string unit, int recipeId)
+        {
+            if (quantity > 0)
+            {
+                double decreaseNr = (unit != "kg" && unit != "L" ? 1 / unitMultiplier : 0.1) * -1;
+                var affectedRows = _recipeRepository.UpdateQuantity(id, decreaseNr, out string error);
+                if (error != "") TempData["error"] = error;
+                if (affectedRows == 0) TempData["error"] = "Det gick inte att ändra antalet";
+            }
+            return RedirectToAction("Edit", new {id = recipeId});
         }
 
         [HttpPost]
         //Recipe/Delete
-        public IActionResult Delete(int id)
+        public IActionResult Delete(int id, int recipeId)
         {
             var affectedRows = _recipeRepository.Delete(id, out string error);
             if (error != "") TempData["error"] = error;
             if (affectedRows == 0) TempData["error"] = "Det gick inte att ta bort receptet";
+            return RedirectToAction("Edit", new {id = recipeId});
+        }
+
+        [HttpPost]
+        //Recipe/Delete
+        public IActionResult DeleteIngredient(int id)
+        {
+            var affectedRows = _recipeRepository.DeleteIngredient(id, out string error);
+            if (error != "") TempData["error"] = error;
+            if (affectedRows == 0) TempData["error"] = "Det gick inte att ta bort ingrediensen";
             return RedirectToAction("My");
         }
 
