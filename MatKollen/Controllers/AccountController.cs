@@ -11,8 +11,6 @@ using System.Security.Claims;
 
 namespace MatKollen.Controllers
 {
-    // [ApiController]
-    // [Route("api/[controller]")]
     public class AccountController : Controller
     {
         private IConfiguration _config;
@@ -34,6 +32,11 @@ namespace MatKollen.Controllers
         [HttpPost]
         public IActionResult Login(User user)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(user);
+            }
+
             var expirationTime = 2;
 
             var hashedPassword = CalculateSHA256(user.Password);
@@ -76,40 +79,52 @@ namespace MatKollen.Controllers
             }
             if (error != "")
             {
-                TempData["unsuccessful"] = "Fel: " + error;
+                TempData["error"] = "Fel: " + error;
             } else
             {
-                TempData["unsuccessful"] = "Fel användarnamn eller lösenord";
+                TempData["error"] = "Fel användarnamn eller lösenord";
             }
 
             return View(user);
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public IActionResult Register()
         {
             return View();
         }
 
+
+        [AllowAnonymous]
         [HttpPost]
         public IActionResult Register(User user)
         {
+            if (user.Email == null)
+            {
+                ModelState.AddModelError(nameof(user.Email), "Fältet kan inte vara tomt");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(user);
+            }
+            
             var hashedPassword = CalculateSHA256(user.Password);
             user.PasswordHashed = hashedPassword;
 
-            var rowsAffectd = _accountRepository.InertUser(user, out string error);
+            var rowsAffectd = _accountRepository.InsertUser(user, out string error);
 
             if (rowsAffectd != 0)
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Login", "Account");
             }
 
+            TempData["error"] = "Ingen användare skapades";
             if (error != "")
             {
-                TempData["unsuccessful"] = "Fel: " + error;
+                TempData["error"] = "Fel: " + error;
             }
-
-            TempData["unsuccessful"] = "Ingen användare skapades";
             return View();
         }
 
