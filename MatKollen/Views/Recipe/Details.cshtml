@@ -13,13 +13,13 @@
 <p>Ingredienser:</p>
 
 @{
-    if(Model.Ingredients == null)
+    if(Model.Ingredients.Count != 0)
     {
         foreach(var item in Model.Ingredients)
         {
             <p style="@(item.UserHasIngredient ? "" : "text-decoration: line-through; color: maroon;")"><strong>@item.ConvertedQuantity@item.Unit</strong> @item.Ingredient</p>
         }
-
+        <a class="btn-primary" type="submit" asp-controller="Recipe" asp-action="AddIngredient" asp-route-recipeId="@Model.Recipe.Id" asp-route-title="@Model.Recipe.Title">Lägg till ingredienser</a>
         <form method="post" asp-action="AddFromRecipe" asp-controller="GroceryList">
             @{
                 if(ViewBag.groceryListItemsExists.Count > 0)
@@ -40,10 +40,8 @@
     }
     else 
     {
-    <form method="post" asp-action="..." asp-controller="Recipe">
         <p>Detta recept har inga ingredienser än.</p>
-        <button class="btn-primary" type="submit">Lägg till ingredienser</button>
-    </form>
+        <a class="btn-primary" type="submit" asp-controller="Recipe" asp-action="AddIngredient" asp-route-recipeId="@Model.Recipe.Id" asp-route-title="@Model.Recipe.Title">Lägg till ingredienser</a>
 
     }
 }

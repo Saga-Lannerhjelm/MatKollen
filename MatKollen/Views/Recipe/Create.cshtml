@@ -1,7 +1,38 @@
+@model Recipe
+
 @{
     ViewData["Title"] = "Lägg till recept";
 }
 
 <h2>@ViewData["Title"]</h2>
 
-<p>Hello from our View Template!</p>
+<div class="d-flex justify-content-center mt-5">
+  <div class="card" style="width: 50vw;">
+    <div class="card-body">
+        <form method="post" asp-action="Create" asp-controller="Recipe">
+            <div class="mb-3">
+                <label asp-for="Title" class="form-label">Titel</label>
+                <input type="text" asp-for="Title" class="form-control">
+                @Html.ValidationMessageFor(m => m.Title, "", new { @class = "text-danger" })
+            </div>
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label">Beskrivning</label>
+                <textarea asp-for="Description" id="" rows="5"  class="form-control"></textarea>
+                @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger" })
+            </div>
+            <div class="mb-3">
+                 <label asp-for="RecipeCategoryId" class="form-label">Kategori</label>
+                <select class="form-select" asp-for="RecipeCategoryId">
+                    <option value="0" disabled>Välj kategori</option>
+                    @foreach (var category in (List<RecipeCategory>)ViewData["categories"])
+                    {
+                    <option value="@category.Id">@category.Name</option>
+                    }
+                </select>
+                @Html.ValidationMessageFor(m => m.RecipeCategoryId, "", new { @class = "text-danger" })
+            </div>
+            <input type="submit" class="btn btn-primary" value="Lägg till recept"/>
+        </form>
+    </div>
+  </div>
+}

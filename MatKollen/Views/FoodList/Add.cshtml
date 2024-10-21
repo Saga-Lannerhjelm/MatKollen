@@ -12,7 +12,7 @@
             <div class="mb-3">
                 <label asp-for="FoodItemId" class="form-label">Matvara</label>
                 <select class="form-select" asp-for="FoodItemId">
-                    <option value="0" disabled>Välj det matvara du vill lägga till</option>
+                    <option value="0" disabled>Välj den matvara du vill lägga till</option>
                     @foreach (var item in (List<FoodItem>)ViewData["foodItems"])
                     {
                     <option value="@item.Id">@item.Name</option>

@@ -2,8 +2,10 @@ using MatKollen.Controllers.Repositories;
 using MatKollen.DAL.Repositories;
 using MatKollen.Extensions;
 using MatKollen.Models;
+using MatKollen.Services;
 using MatKollen.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Mysqlx;
 
 namespace MatKollen.Controllers
 {
@@ -12,19 +14,19 @@ namespace MatKollen.Controllers
         private readonly RecipeRepository _recipeRepository;
         private readonly FoodRepository _foodRepository;
         private readonly GroceryListRepository _groceryListRepository;
+        private readonly GetListsRepository _getListsRepository;
 
-        public RecipeController(RecipeRepository recipeRepository, FoodRepository foodRepository, GroceryListRepository groceryListRepository)
+        public RecipeController(RecipeRepository recipeRepository, FoodRepository foodRepository, GroceryListRepository groceryListRepository, GetListsRepository getListsRepository)
         {
             _recipeRepository = recipeRepository;
             _foodRepository = foodRepository;
             _groceryListRepository = groceryListRepository;
+            _getListsRepository = getListsRepository;
         }
 
         //Recipe
         public IActionResult Index()
-        {
-            var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value);
-            
+        {   
             var recipeList = _recipeRepository.GetRecipes(out string error);
             return View(recipeList);
         }
@@ -79,29 +81,108 @@ namespace MatKollen.Controllers
         }
 
         //Recipe/Saved
-        public IActionResult Saved()
+        public IActionResult My()
         {
-            return View();
+            var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value);
+            
+            var recipeList = _recipeRepository.GetUsersRecipes(userId, out string error);
+            return View(recipeList);
         }
 
         //Recipe/Create
         [HttpGet]       
         public IActionResult Create()
         {
+            List<RecipeCategory> categoryList = _getListsRepository.GetRecipeCategories(out string error);
+
+            if (error != "")
+            {
+                TempData["error"] = error;
+            }
+
+            ViewData["categories"] = categoryList;
+
             return View();
         }
 
         [HttpPost]       
         public IActionResult Create(Recipe recipe)
         {
-            return View();
+            if (!ModelState.IsValid)
+            {
+                return View(recipe);
+            }
+            var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value);
+            recipe.UserId = userId;
+
+            int recipeId = _recipeRepository.InsertRecipe(recipe, out string error);
+            if (recipeId == 0 || error != "")
+            {
+                 TempData["error"] = "Gick inte att skapa receptet. " + error;
+                 return View();
+            }
+            return RedirectToAction("AddIngredient", new {recipeId, title = recipe.Title});
+        }
+
+        //Recipe/AddIngredient
+        [HttpGet]       
+        public IActionResult AddIngredient(int recipeId, string title)
+        {
+            List<MeasurementUnit> unitList = _getListsRepository.GetUnits(out string unitsError);
+            List<FoodItem>? foodItemList = _foodRepository.GetFoodItems(out string error);
+
+            if (unitsError != "" || error != "") {
+                TempData["error"] = unitsError + " " + error;
+                return RedirectToAction("My");
+            }
+
+            ViewData["units"] = unitList;
+            ViewData["foodItems"] = foodItemList;
+
+            var model = new RecipeFoodItem()
+            {
+                RecipeId = recipeId
+            };
+            ViewBag.recipe = title;
+            return View(model);
+        }
+
+        [HttpPost]       
+        public IActionResult AddIngredient(RecipeFoodItem ingredient)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(ingredient);
+            }
+            
+            var quantityConverter = new ConvertQuantityHandler();
+            var measurementMultipliers = _getListsRepository.GetUnits(out string unitsError);
+            if (unitsError != "")
+            {
+                TempData["error"] = unitsError;
+                return View(ingredient);
+            }
+            double multiplier = measurementMultipliers.Find(m => m.Id == ingredient.UnitId).Multiplier;
+            ingredient.Quantity = quantityConverter.ConverToLiterOrKg(ingredient.Quantity, multiplier);
+
+            var affectedRows = _recipeRepository.InsertIngredient(ingredient, out string error);
+            if (error != "" || affectedRows == 0) TempData["error"] = "Det gick inte att lägga till ingrediensen."  + error;
+            
+            return RedirectToAction("details", new {id = ingredient.RecipeId});
         }
 
         [HttpGet]
         //Recipe/Edit
         public IActionResult Edit(int id)
         {
-            return View();
+            string error = "";
+            var recipe = _recipeRepository.GetRecipe(id, out error);
+            var categories = _getListsRepository.GetRecipeCategories(out error);
+
+            if (error != "") TempData["error"] = error;
+            if (categories == null) TempData["error"] = "Gick inte att hämta kategorier";
+            else ViewData["categories"] = categories;
+            return View(recipe);
         }
 
         [HttpPost]

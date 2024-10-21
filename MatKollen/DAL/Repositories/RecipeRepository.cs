@@ -184,5 +184,110 @@ namespace MatKollen.DAL.Repositories
             }
         }
 
+        public int InsertRecipe(Recipe recipe, out string errorMsg)
+        {
+            var myConnectionString = _connectionString;
+
+            using (var myConnection = new MySqlConnection(myConnectionString))
+            {
+                string query  = "INSERT INTO recipes (title, description, recipe_category_id, user_id) VALUES (@title, @description, @recipeCategoryId, @userId); SELECT LAST_INSERT_ID();";
+                try
+                {
+                    // create a MySQL command and set the SQL statement with parameters
+                    MySqlCommand myCommand = new MySqlCommand(query, myConnection);
+                    myConnection.Open();
+
+                    myCommand.Parameters.Add("@title", MySqlDbType.VarChar, 50).Value = recipe.Title;
+                    myCommand.Parameters.Add("@description", MySqlDbType.VarChar, 1000).Value = recipe.Description;
+                    myCommand.Parameters.Add("@recipeCategoryId", MySqlDbType.Int32).Value = recipe.RecipeCategoryId;
+                    myCommand.Parameters.Add("@userId", MySqlDbType.Int32).Value = recipe.UserId;
+
+                    errorMsg = "";
+
+                    int lastInsertedId = Convert.ToInt32(myCommand.ExecuteScalar());
+                    
+                    return lastInsertedId;
+                }
+                catch (MySqlException e)
+                {
+                    errorMsg = e.Message;
+                    return 0;
+                }    
+            }
+        }
+
+        public int InsertIngredient(RecipeFoodItem ingredient, out string errorMsg)
+        {
+            var myConnectionString = _connectionString;
+
+            using (var myConnection = new MySqlConnection(myConnectionString))
+            {
+                string query  = "INSERT INTO recipe_has_fooditems (quantity, unit_id, recipe_id, food_item_id) VALUES (@quantity, @unitId, @recipeId, @foodItemId); SELECT LAST_INSERT_ID();";
+                try
+                {
+                    // create a MySQL command and set the SQL statement with parameters
+                    MySqlCommand myCommand = new MySqlCommand(query, myConnection);
+                    myConnection.Open();
+
+                    myCommand.Parameters.Add("@quantity", MySqlDbType.Decimal).Value = ingredient.Quantity;
+                    myCommand.Parameters["@quantity"].Precision = 9;
+                    myCommand.Parameters["@quantity"].Scale = 4;
+                    myCommand.Parameters.Add("@unitId", MySqlDbType.VarChar, 1000).Value = ingredient.UnitId;
+                    myCommand.Parameters.Add("@recipeId", MySqlDbType.Int32).Value = ingredient.RecipeId;
+                    myCommand.Parameters.Add("@foodItemId", MySqlDbType.Int32).Value = ingredient.FoodItemId;
+
+                    errorMsg = "";
+
+                    int affectedRows = myCommand.ExecuteNonQuery();
+                    
+                    return affectedRows;
+                }
+                catch (MySqlException e)
+                {
+                    errorMsg = e.Message;
+                    return 0;
+                }    
+            }
+        }
+        
+        public int Delete(int recipeId, out string errorMsg)
+        {
+            var myConnectionString = _connectionString;
+
+            using (var myConnection = new MySqlConnection(myConnectionString))
+            {
+                //Creates a new user and a grozery list for that user at the same time
+                string query  = "DELETE FROM recipes WHERE id = @recipeId;";
+
+                try
+                {
+                    // create a MySQL command and set the SQL statement with parameters
+                    MySqlCommand myCommand = new MySqlCommand(query, myConnection);
+
+                    //open a connection
+                    myConnection.Open();
+
+                    myCommand.Parameters.Add("@recipeId", MySqlDbType.Int32).Value = recipeId;
+
+                    errorMsg = "";
+
+                    // execute the command and read the results
+                    var rowsAffected = myCommand.ExecuteNonQuery();
+
+                    if (rowsAffected == 0)
+                    {
+                        errorMsg = "Inget recept togs bort";
+                        return 0;
+                    }
+                    
+                    return rowsAffected;
+                }
+                catch (MySqlException e)
+                {
+                    errorMsg = e.Message;
+                    return 0;
+                }    
+            }
+        }
     }
 }

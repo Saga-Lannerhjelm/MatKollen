@@ -1,0 +1,45 @@
+@model RecipeFoodItem
+
+@{
+    ViewData["Title"] = "Lägg till Ingredienser";
+}
+
+<h2>@ViewData["Title"] till @ViewBag.recipe</h2>
+
+<div class="d-flex justify-content-center mt-5">
+  <div class="card" style="width: 50vw;">
+    <div class="card-body">
+        <form method="post" asp-action="AddIngredient" asp-controller="Recipe">
+              <div class="mb-3">
+                <label asp-for="FoodItemId" class="form-label">Matvara</label>
+                <select class="form-select" asp-for="FoodItemId">
+                    <option value="0" disabled>Välj den matvara du vill lägga till</option>
+                    @foreach (var item in (List<FoodItem>)ViewData["foodItems"])
+                    {
+                    <option value="@item.Id">@item.Name</option>
+                    }
+                </select>
+                    @Html.ValidationMessageFor(m => m.FoodItemId, "", new { @class = "text-danger" })
+            </div>
+            <p><small>Hittar du inte marvaran?<a asp-action="AddFoodItem" asp-controller="FoodList" asp-route-url="Recipe/AddIngredient/@Model.Id">Lägg till den här!</a></small></p>
+            <div class="mb-3">
+                <label asp-for="Quantity" class="form-label">Quantity</label>
+                <input type="number" step="0.1" asp-for="Quantity" class="form-control">
+                @Html.ValidationMessageFor(m => m.Quantity, "", new { @class = "text-danger" })
+            </div>
+            <div class="mb-3">
+                 <label asp-for="UnitId" class="form-label">Enhet</label>
+                <select class="form-select" asp-for="UnitId">
+                    <option value="0" disabled>Välj vilken enhet du vill lägga till matvaran i</option>
+                    @foreach (var unit in (List<MeasurementUnit>)ViewData["units"])
+                    {
+                    <option value="@unit.Id">@unit.Unit</option>
+                    }
+                </select>
+                @Html.ValidationMessageFor(m => m.UnitId, "", new { @class = "text-danger" })
+            </div>
+            <input type="hidden" asp-for="RecipeId" value="@Model.RecipeId">
+            <input type="submit" class="btn btn-primary" value="Lägg till ingrediens"/>
+        </form>
+    </div>
+</div>
