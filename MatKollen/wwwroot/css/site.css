@@ -86,6 +86,10 @@ a {
   background-color: #ffb6b6;
 }
 
+.bg-out{
+  background-color: #eeeded;
+  opacity: 0.7;
+}
 
 .bg-transparent {
   background-color: transparent;
