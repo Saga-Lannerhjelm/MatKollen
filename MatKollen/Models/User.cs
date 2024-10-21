@@ -10,15 +10,15 @@ namespace MatKollen.Models
 
         [Required (ErrorMessage = "Fältet kan inte vara tomt")]              
         [StringLength(20, ErrorMessage = "Användarnamnet kan inte vara längre än 20 tecken.")]
-        public string Username { get; set; }    
+        public string? Username { get; set; }    
                                
         [StringLength(320, ErrorMessage = "Email kan inte vara längre än 320 tecken.")]
         [EmailAddress(ErrorMessage = "Ogiltig emailadress")]
         public string? Email { get; set; }   
 
         [Required (ErrorMessage = "Fältet kan inte vara tomt")]
-        public string Password { get; set; }  
+        public string? Password { get; set; }  
 
-        public byte[] PasswordHashed { get; set; }  
+        public byte[]? PasswordHashed { get; set; }  
     }
 }
