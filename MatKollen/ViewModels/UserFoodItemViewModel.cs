@@ -20,10 +20,12 @@ namespace MatKollen.ViewModels
 
             DateOnly today = DateOnly.FromDateTime(DateTime.Now);
 
-            foreach (var date in UserFoodItems)
+            foreach (var item in UserFoodItems)
             {
-                DateTime expirationDateTime = date.FoodDetails.ExpirationDate.ToDateTime(TimeOnly.MinValue);
+                DateTime expirationDateTime = item.FoodDetails.ExpirationDate.ToDateTime(TimeOnly.MinValue);
                 int daysUntilExpiration = (expirationDateTime - today.ToDateTime(TimeOnly.MinValue)).Days;
+
+                if (item.FoodDetails.Quantity <= 0) return "out";
 
                 if (daysUntilExpiration < threeDays) return "critical";
                 if (daysUntilExpiration < daysinWeek) return "attention";
