@@ -148,24 +148,36 @@ namespace MatKollen.Controllers
         }
 
         [HttpPost]       
-        public IActionResult AddIngredient(RecipeFoodItem ingredient)
+        public IActionResult AddIngredient(RecipeFoodItem ingredient, string title)
         {
+            List<MeasurementUnit> unitList = _getListsRepository.GetUnits(out string unitsError);
+            string error = "";
             if (!ModelState.IsValid)
             {
+                List<FoodItem>? foodItemList = _foodRepository.GetFoodItems(out error);
+
+                if (unitsError != "" || error != "") {
+                    TempData["error"] = unitsError + " " + error;
+                    return RedirectToAction("My");
+                }
+
+                ViewData["units"] = unitList;
+                ViewData["foodItems"] = foodItemList;
+
+                ViewBag.recipe = title;
                 return View(ingredient);
             }
             
             var quantityConverter = new ConvertQuantityHandler();
-            var measurementMultipliers = _getListsRepository.GetUnits(out string unitsError);
             if (unitsError != "")
             {
                 TempData["error"] = unitsError;
                 return View(ingredient);
             }
-            double multiplier = measurementMultipliers.Find(m => m.Id == ingredient.UnitId).Multiplier;
+            double multiplier = unitList.Find(m => m.Id == ingredient.UnitId).Multiplier;
             ingredient.Quantity = quantityConverter.ConverToLiterOrKg(ingredient.Quantity, multiplier);
 
-            var affectedRows = _recipeRepository.InsertIngredient(ingredient, out string error);
+            var affectedRows = _recipeRepository.InsertIngredient(ingredient, out error);
             if (error != "" || affectedRows == 0) TempData["error"] = "Det gick inte att lägga till ingrediensen."  + error;
             
             return RedirectToAction("details", new {id = ingredient.RecipeId});

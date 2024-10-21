@@ -39,6 +39,7 @@
                 @Html.ValidationMessageFor(m => m.UnitId, "", new { @class = "text-danger" })
             </div>
             <input type="hidden" asp-for="RecipeId" value="@Model.RecipeId">
+            <input type="hidden" name="title" value="@ViewBag.recipe">
             <input type="submit" class="btn btn-primary" value="Lägg till ingrediens"/>
         </form>
     </div>
