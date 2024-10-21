@@ -204,9 +204,13 @@ namespace MatKollen.Controllers
 
 
         [HttpPost]
-        public IActionResult Delete(int id)
+        public IActionResult Delete(int foodId, int userId, string type)
         {
-            return View();
+            var affectedRows = _foodRepository.Delete(foodId, userId, type, out string error);
+
+            if (error != "") TempData["error"] = error;
+            if (affectedRows == 0) TempData["error"] = "Det gick inte att ta bort varan";
+            return RedirectToAction("index");
         }
 
     }

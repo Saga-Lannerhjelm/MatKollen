@@ -21,10 +21,25 @@
             var sum = item.UserFoodItems.Sum(q => q.FoodDetails.Quantity);
 
             <div class="col">
-                <div class="card rounded-5 bg-@item.CriticalLevel()" style="border-radius: 1.25rem; max-height: 100%;">
+                <div class="card rounded-5 bg-@item.CriticalLevel()" style="border-radius: 1.25rem; min-height: 22vh;">
                     <div class="card-body">
-                        <div class="d-flex">
-                            <h1 class="bg-@item.CriticalLevel()">@(item.UserFoodItems?.Count == 1 ? item.UserFoodItems[0].ConvertedQuantity.ToString() + item.UserFoodItems[0].UnitInfo.Unit : sum.ToString() + (item.UserFoodItems[0].UnitInfo.Type == "weight" ? "kg" : (item.UserFoodItems[0].UnitInfo.Type == "volume" ? "L" : item.UserFoodItems[0].UnitInfo.Unit)))</h1>
+                        <div class="d-flex justify-content-between">
+                            <h1 class="bg-@item.CriticalLevel()">
+                                @(item.UserFoodItems?.Count == 1 
+                                    ? item.UserFoodItems[0].ConvertedQuantity.ToString() + item.UserFoodItems[0].UnitInfo.Unit 
+                                    : sum.ToString() + (item.UserFoodItems[0].UnitInfo.Type == "weight" 
+                                        ? "kg" 
+                                        : (item.UserFoodItems[0].UnitInfo.Type == "volume" 
+                                            ? "L" 
+                                            : item.UserFoodItems[0].UnitInfo.Unit)))
+                                </h1>
+                            <form method="post" asp-action="Delete" asp-controller="FoodList">
+                                <input type="hidden" value="@item.UserFoodItems[0].FoodDetails.Id" name="id">
+                                <input type="hidden" value="@item.UserFoodItems[0].FoodDetails.UserId" name="userId">
+                                <input type="hidden" value="@item.UserFoodItems[0].UnitInfo.Type" name="type">
+                                <button type="submit" class="update-btn"><i class="bi bi-trash3" style="font-size: 1.2rem;"></i></button>
+                            </form>
+                           
                         </div>
                         @* <small class="card-meta mb-2">@item.CategoryName</small> *@
                         <h4 class="card-title mt-0 ">@item.FoodItemName</h4>

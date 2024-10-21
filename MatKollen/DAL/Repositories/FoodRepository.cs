@@ -56,6 +56,7 @@ namespace MatKollen.Controllers.Repositories
                                             {
                                                 Id = reader.GetInt32("id"),
                                                 Quantity = reader.GetDouble("quantity"),
+                                                UserId = reader.GetInt32("user_id"),
                                                 ExpirationDate = DateOnly.FromDateTime(reader.GetDateTime("expiration_date")),
                                                 FoodItemId = reader.GetInt16("food_item_id"),
                                                 UnitId = reader.GetInt16("unit_id"),
@@ -79,6 +80,7 @@ namespace MatKollen.Controllers.Repositories
                                             {
                                                 Id = reader.GetInt32("id"),
                                                 Quantity = reader.GetDouble("quantity"),
+                                                UserId = reader.GetInt32("user_id"),
                                                 ExpirationDate = DateOnly.FromDateTime(reader.GetDateTime("expiration_date")),
                                                 FoodItemId = reader.GetInt16("food_item_id"),
                                                 UnitId = reader.GetInt16("unit_id"),
@@ -250,6 +252,48 @@ namespace MatKollen.Controllers.Repositories
                     if (rowsAffected == 0)
                     {
                         errorMsg = "Gick inte att updatera antalet.";
+                        return 0;
+                    }
+                    
+                    return rowsAffected;
+                }
+                catch (MySqlException e)
+                {
+                    errorMsg = e.Message;
+                    return 0;
+                }    
+            }
+        }
+
+        public int Delete(int foodId, int userId, string type, out string errorMsg)
+        {
+            var myConnectionString = _connectionString;
+
+            using (var myConnection = new MySqlConnection(myConnectionString))
+            {
+                //Creates a new user and a grozery list for that user at the same time
+                string query  = "DELETE uhf FROM user_has_fooditems AS uhf INNER JOIN measurement_units AS ms ON ms.id = uhf.unit_id WHERE uhf.food_item_id = @foodId AND uhf.user_id = @userId AND ms.type = @type;";
+
+                try
+                {
+                    // create a MySQL command and set the SQL statement with parameters
+                    MySqlCommand myCommand = new MySqlCommand(query, myConnection);
+
+                    //open a connection
+                    myConnection.Open();
+
+                    myCommand.Parameters.Add("@foodId", MySqlDbType.Int32).Value = foodId;
+                    myCommand.Parameters.Add("@userId", MySqlDbType.Int32).Value = userId;
+                    myCommand.Parameters.Add("@type", MySqlDbType.VarChar, 50).Value = type;
+
+                    errorMsg = "";
+
+                    // execute the command and read the results
+                    var rowsAffected = myCommand.ExecuteNonQuery();
+
+                    if (rowsAffected == 0)
+                    {
+                        errorMsg = "Ingen matvara togs bort";
                         return 0;
                     }
                     
