@@ -5,7 +5,7 @@
 
 <div class="d-flex justify-content-between py-2">
     <h2>@ViewData["Title"]</h2>
-    <a asp-action="Create" asp-controller="Recipe" class="update-btn d-flex align-items-center gap-2 px-2"> Lägg till nytt recept <i class="bi bi-plus-circle" style="font-size: 1.5rem;"></i></a>
+    <a asp-action="Create" asp-controller="Recipe" class="action-btn d-flex align-items-center gap-2 px-2"> Lägg till nytt recept <i class="bi bi-plus-circle" style="font-size: 1.5rem;"></i></a>
 </div>
 
 @{
@@ -16,13 +16,13 @@
                 <div class="d-flex justify-content-between">
                     <h4 class="card-title">@recipe.Recipe.Title</h4>
                     <div class="d-flex">
-                        <form method="post" asp-action="Edit" asp-controller="Recipe">
+                        <form method="get" asp-action="Edit" asp-controller="Recipe">
                             <input type="hidden" name="id" value="@recipe.Recipe.Id">
-                            <button type="submit" class="update-btn"><i class="bi bi-pencil" style="font-size: 1.2rem;"></i></button>
+                            <button type="submit" class="action-btn"><i class="bi bi-pencil" style="font-size: 1.2rem;"></i></button>
                         </form>    
                         <form method="post" asp-action="Delete" asp-controller="Recipe">
                             <input type="hidden" name="id" value="@recipe.Recipe.Id">
-                            <button type="submit" class="update-btn"><i class="bi bi-trash3" style="font-size: 1.2rem;"></i></button>
+                            <button type="submit" class="action-btn"><i class="bi bi-trash3" style="font-size: 1.2rem;"></i></button>
                         </form>                   
                     </div>
                 </div>

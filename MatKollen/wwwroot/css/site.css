@@ -143,19 +143,19 @@ a {
   transform: scale(0.95);
 }
 
-.update-btn {
+.action-btn {
   background-color: transparent; 
   border: none;
   transition: transform 330ms ease-in-out;
 }
 
-.update-btn:hover{
+.action-btn:hover{
   background-color: rgba(0, 0, 0, 0.1);
   border-radius: 99px;
 }
 
-.update-btn i {
-  font-size: 1.5rem; 
+.action-btn i {
+  font-size: 1.2rem; 
   color: green;
   transition: transform 330ms ease-in-out;
 }
