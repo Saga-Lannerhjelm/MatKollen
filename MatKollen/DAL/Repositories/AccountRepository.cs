@@ -17,7 +17,7 @@ namespace MatKollen.DAL.Repositories
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
-        public int InertUser(User user, out string errorMsg)
+        public int InsertUser(User user, out string errorMsg)
         {
             var myConnectionString = _connectionString;
 
