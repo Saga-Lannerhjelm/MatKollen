@@ -1,3 +1,4 @@
+using System.Net;
 using System.Text;
 using MatKollen.Controllers;
 using MatKollen.Controllers.Repositories;
@@ -90,6 +91,18 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+// Code taken from https://learn.microsoft.com/en-us/answers/questions/1114785/how-to-make-login-path-without-using-cookie-in-asp
+app.UseStatusCodePages(async context => {  
+    var request = context.HttpContext.Request;  
+    var response = context.HttpContext.Response;  
+
+    if (response.StatusCode == (int)HttpStatusCode.Unauthorized)  
+    {  
+        response.Redirect("/Account/Login");
+    }  
+}); 
+
 app.UseSession();
 app.UseRouting();
 app.UseAuthentication();
@@ -97,6 +110,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Account}/{action=Login}/{id?}");
+    pattern: "{controller=FoodList}/{action=Index}/{id?}");
 
 app.Run();
