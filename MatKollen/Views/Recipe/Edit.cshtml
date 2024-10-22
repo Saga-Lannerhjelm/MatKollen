@@ -3,11 +3,20 @@
 @{
     ViewData["Title"] = "Recept detalj";
 }
-
-<h2>@ViewData["Title"]</h2>
+<div class="d-flex justify-content-between">
     <p><small>Publicerad @Model.Recipe.CreatedAt</small> av @Model.Username</p>
+    <div class="d-flex flex-row">
+        <form method="get" asp-action="Details" asp-controller="Recipe">
+            <input type="hidden" name="id" value="@Model.Recipe.Id">
+            <button type="submit" class="action-btn d-flex align-items-center gap-2"><small>Gå till detalj sidan</small><i class="bi bi-x-circle" style="font-size: 1.2rem;"></i></button>
+        </form>
+        <form method="post" asp-action="Delete" asp-controller="Recipe">
+            <input type="hidden" name="id" value="@Model.Recipe.Id">
+            <button type="submit" class="action-btn"><i class="bi bi-trash3" style="font-size: 1.2rem;"></i></button>
+        </form>                 
+    </div>
+</div>
 <form method="post" asp-controller="Recipe" asp-action="Edit">
-
     <h4><input asp-for="Recipe.Title" value="@Model.Recipe.Title" style="width: 100%; border: 1px solid lightgray;"/></h4>
     <small>
         <div class="mb-3">
@@ -26,39 +35,41 @@
     <input asp-for="Recipe.Id" value="@Model.Recipe.Id" type="hidden"/>
     <button type="submit" class="btn btn-primary btn-sm" type="submit">Spara ändringar</button>
 </form>
-    <h3>Ingredienser:</h3>
+    <h5>Ingredienser:</h5>
 
     @{
         if(Model.Ingredients.Count != 0)
         {
-            <div>
+            @* <div> *@
             @foreach(var item in Model.Ingredients)
             {
-                <span class="my-3 bg-custom d-flex align-items-center p-2 px-3" style="border-radius: 99px; display: inline-blovk; white-space: nowrap;">
-                   <span class="mr-3"><strong>@item.ConvertedQuantity@item.Unit</strong> @item.Ingredient </span>
-                    <form method="post" asp-controller="Recipe" asp-action="IncreaseQuantity">
-                        <input type="hidden" name="id" value="@item.IngredientDetails.Id">
-                        <input type="hidden" name="unitMultiplier" value="@item.Multiplier">
-                        <input type="hidden" name="unit" value="@item.Unit">
-                        <input type="hidden" name="recipeId" value="@Model.Recipe.Id">
-                        <button class="action-btn"><i class="bi bi-plus"></i></button>
-                    </form>
-                    <form method="post" asp-controller="Recipe" asp-action="DecreaseQuantity">
-                        <input type="hidden" name="id" value="@item.IngredientDetails.Id">
-                        <input type="hidden" name="unitMultiplier" value="@item.Multiplier">
-                        <input type="hidden" name="unit" value="@item.Unit">
-                        <input type="hidden" name="quantity" value="@item.IngredientDetails.Quantity">
-                        <input type="hidden" name="recipeId" value="@Model.Recipe.Id">
-                        <button class="action-btn"><i class="bi bi-dash"></i></button>
-                    </form>
-                    <form method="post" asp-controller="Recipe" asp-action="DeleteIngredient">
-                        <input type="hidden" name="id" value="@item.IngredientDetails.Id">
-                        <input type="hidden" name="recipeId" value="@Model.Recipe.Id">
-                        <button class="action-btn"><i class="bi bi-trash"></i></button>
-                    </form>
-                </span>
+                <div class="my-4">
+                    <span style="padding: 10px; border-radius: 99px;" class="bg-custom align-items-center">
+                        <strong>@item.ConvertedQuantity@item.Unit</strong> @item.Ingredient
+                        <form method="post" asp-controller="Recipe" asp-action="IncreaseQuantity" style="display: inline;">
+                            <input type="hidden" name="id" value="@item.IngredientDetails.Id">
+                            <input type="hidden" name="unitMultiplier" value="@item.Multiplier">
+                            <input type="hidden" name="unit" value="@item.Unit">
+                            <input type="hidden" name="recipeId" value="@Model.Recipe.Id">
+                            <button class="action-btn"><i class="bi bi-plus" style="font-size: 1rem; margin: -2px;"></i></button>
+                        </form>
+                        <form method="post" asp-controller="Recipe" asp-action="DecreaseQuantity" style="display: inline;">
+                            <input type="hidden" name="id" value="@item.IngredientDetails.Id">
+                            <input type="hidden" name="unitMultiplier" value="@item.Multiplier">
+                            <input type="hidden" name="unit" value="@item.Unit">
+                            <input type="hidden" name="quantity" value="@item.IngredientDetails.Quantity">
+                            <input type="hidden" name="recipeId" value="@Model.Recipe.Id">
+                            <button class="action-btn"><i class="bi bi-dash" style="font-size: 1rem; margin: -2px;"></i></button>
+                        </form>
+                        <form method="post" asp-controller="Recipe" asp-action="DeleteIngredient" style="display: inline;">
+                            <input type="hidden" name="id" value="@item.IngredientDetails.Id">
+                            <input type="hidden" name="recipeId" value="@Model.Recipe.Id">
+                            <button class="action-btn"><i class="bi bi-trash" style="font-size: 1rem; margin: -2px;"></i></button>
+                        </form>
+                    </span>
+                </div>
             }
-            </div>
+            @* </div> *@
         }
         else 
         {
