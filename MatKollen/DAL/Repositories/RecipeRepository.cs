@@ -170,6 +170,7 @@ namespace MatKollen.DAL.Repositories
                                     },
                                     ConvertedQuantity = conversionHandler.ConverFromtLiterOrKg(reader.GetDouble("quantity"), reader.GetDouble("conversion_multiplier")),
                                     Multiplier = reader.GetDouble("conversion_multiplier"),
+                                    Type = reader.GetString("type"),
                                     Ingredient = reader.GetString("ingredient"),
                                     Unit = reader.GetString("unit")
                                 }); 

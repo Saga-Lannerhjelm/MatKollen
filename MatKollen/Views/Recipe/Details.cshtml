@@ -24,26 +24,39 @@
         {
             <div class="my-4">
                 <span style="padding: 10px; border-radius: 99px;" class=" @(item.UserHasIngredient ? "bg-custom" : "bg-out")">
-                    <strong>@item.ConvertedQuantity@item.Unit</strong> @item.Ingredient
+                    <strong>@item.ConvertedQuantity@item.Unit</strong> @item.Ingredient <i class="bi bi-exclamation-lg text-danger" style="@(item.IngredientExistInOtherType ? "" : "display: none;")"></i>
                 </span>
             </div>
         }
+        <p>*<i class="bi bi-exclamation-lg text-danger"></i><small><em>Du har varan, men i en annan enhetstyp än det i receptet. Dubbelkolla så att mängden stämmer (Funktionalitetn för att omvandla mellan volym och vikt finns inte än)</em></small></p>
+        <hr class="hr" />
         <form method="post" asp-action="AddFromRecipe" asp-controller="GroceryList">
             @{
                 if(ViewBag.groceryListItemsExists.Count > 0)
                 {
-                    <p>Du har readan tillräckligt av dessa ingredienser i din inköpslista.</p>
-                    <ul>
+                    <p>
+                        Du har redan tillräckligt av dessa ingredienser i din inköpslista: <br/>
+                        <small><em><strong>Tryck</strong> på de du vill lägga till igen (utöver de du saknar)</em></small>
+                    </p>
+                   
+                    <ul class="p-0" style="list-style: none;">
                         @foreach (var item in ViewBag.groceryListItemsExists)
                         {
-                            <li>@item</li>
+                            <li class="my-4" style="text-decoration: none;">
+                                <label for="@item.Key">
+                                    <span style="border-radius: 99px;" class="bg-attention">
+                                    <input type="checkbox" id="@item.Key" name="checkedItems" value="@item.Key" checked>
+                                    <span class="custom-checkbox">
+                                        @item.Value
+                                    </span>
+                                    </span>
+                                </label>
+                            </li>
                         }
                     </ul>
-                    <input type="checkbox" id="check">
-                    <label for="check">Jag vill lägga till ingredienserna igen</label>
                 }
             }
-            <button class="btn-primary" type="submit">Lägg till det du saknar i inköpslista</button>
+            <button class="btn btn-primary" type="submit">Lägg till det du saknar i inköpslista</button>
         </form>
     }
     else 

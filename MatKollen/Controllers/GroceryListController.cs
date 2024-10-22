@@ -2,6 +2,7 @@ using MatKollen.DAL.Repositories;
 using MatKollen.Extensions;
 using MatKollen.Models;
 using Microsoft.AspNetCore.Mvc;
+using Mysqlx;
 
 namespace MatKollen.Controllers
 {
@@ -43,19 +44,20 @@ namespace MatKollen.Controllers
         }
 
          [HttpPost]
-        public IActionResult AddFromRecipe()
+        public IActionResult AddFromRecipe(List<int> checkedItems)
         {
             int userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "id").Value);
             var groceryListItems = HttpContext.Session.GetObject<List<ListFoodItem>>("groceryList");
+            var filteredGroceryItems = groceryListItems.Where(g => !checkedItems.Contains(g.FoodItemId)).ToList();
 
-            foreach (var item in groceryListItems)
+            foreach (var item in filteredGroceryItems)
             {
-                if (_groceryListRepository.GroceryListItemsExists(item.FoodItemId, item.UnitId, out string error))
+                int rowsAffected = _groceryListRepository.InsertOrUpdateFoodItems(item, userId, out string error);
+                if (error != "")
                 {
-                    
-                    
+                    TempData["error"] = error;
+                    break;
                 }
-                int rowsAffected = _groceryListRepository.InsertOrUpdateFoodItems(item, userId, out error);
             }
             return RedirectToAction("Index");
         }

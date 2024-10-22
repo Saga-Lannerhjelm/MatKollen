@@ -130,7 +130,7 @@ namespace MatKollen.DAL.Repositories
                     //open a connection
                     myConnection.Open();
 
-                    myCommand.Parameters.Add("@addedQuantity", MySqlDbType.Int32).Value = food.Quantity;
+                    myCommand.Parameters.Add("@addedQuantity", MySqlDbType.Double).Value = food.Quantity;
                     myCommand.Parameters.Add("@foodItemId", MySqlDbType.Int32).Value = food.FoodItemId;
 
                     errorMsg = "";

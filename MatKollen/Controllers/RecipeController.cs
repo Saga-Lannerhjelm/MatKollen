@@ -39,7 +39,7 @@ namespace MatKollen.Controllers
             int userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "id").Value);
             var userFoodItems = _foodRepository.GetUserFoodList(userId, out string listError);
             var foodItemsForGroceryList = new List<ListFoodItem>();
-            var existingItems = new List<string>();
+            var existingItems = new Dictionary<int, string>();
 
             foreach(var item in recipe.Ingredients)
             {
@@ -47,12 +47,16 @@ namespace MatKollen.Controllers
                 var matchingItem = userFoodItems?.Find(food => food?.UserFoodItems?[0].FoodDetails.FoodItemId == item.IngredientDetails.FoodItemId);
 
                 // Find matching food items between a recipe and the items in the grocery list
-                var matchingListItem = _groceryListRepository.GetGroceryList(userId, out error).Find(listItem => listItem.FoodDetails.FoodItemId == item.IngredientDetails.FoodItemId);
+                var matchingGroceryListItem = _groceryListRepository.GetGroceryList(userId, out error).Find(listItem => listItem.FoodDetails.FoodItemId == item.IngredientDetails.FoodItemId);
 
                 // If the item exists among the user's food items and the amount is equal to or more than in the recipe
                 if (matchingItem != null && (matchingItem?.UserFoodItems?[0].FoodDetails.Quantity >= item.IngredientDetails.Quantity))
                 {
                     item.UserHasIngredient = true;   
+                }
+                else if (matchingItem != null && (matchingItem?.UserFoodItems[0].UnitInfo.Type != item.Type)) {
+                    item.UserHasIngredient = true;
+                    item.IngredientExistInOtherType = true;
                 }
                 else
                 {
@@ -65,11 +69,10 @@ namespace MatKollen.Controllers
 
                     // The non-matching food items are added to a list
                     foodItemsForGroceryList.Add(foodItem);
-                }
-
-                if (_groceryListRepository.GroceryListItemsExists(item.IngredientDetails.FoodItemId, userId, out error) && (matchingListItem.FoodDetails.Quantity >= item.IngredientDetails.Quantity))
-                {
-                    existingItems.Add(item.Ingredient);
+                    if (_groceryListRepository.GroceryListItemsExists(item.IngredientDetails.FoodItemId, userId, out error) && (matchingGroceryListItem.FoodDetails.Quantity >= item.IngredientDetails.Quantity))
+                    {
+                        existingItems.Add(item.IngredientDetails.FoodItemId, item.Ingredient);
+                    }
                 }
             }
 

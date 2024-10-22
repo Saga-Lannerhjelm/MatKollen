@@ -157,5 +157,32 @@ a {
 .action-btn i {
   font-size: 1.2rem; 
   color: green;
-  transition: transform 330ms ease-in-out;
+  transition: transform 100ms ease-in-out;
+}
+
+/* checkmark */
+
+/* Remove checkmark defaul apperance */
+input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.custom-checkbox {
+  padding: 10px;
+  border-radius: 99px;
+  background-color: #aff0ff;
+  transition: background-color 0.2s ease;
+  transition: font-size 0.2s ease;
+}
+
+input[type="checkbox"]:checked + .custom-checkbox {
+  background-color: #f0f0f0;
+  font-size: 0.9rem;
+}
+
+input[type="checkbox"] + .custom-checkbox:hover {
+  cursor: pointer;
+  font-size: 1.001rem;
 }

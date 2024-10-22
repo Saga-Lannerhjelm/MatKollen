@@ -11,7 +11,13 @@ namespace MatKollen.ViewModels
         public required string FoodItemName { get; set; }
         public string? CategoryName { get; set; }
         public List<(double ConvertedQuantity, UserFoodItem FoodDetails, MeasurementUnit UnitInfo)>? UserFoodItems { get; set; }
-        public double SumOfQuantities { get; set;}
+        public double SumOfQuantities 
+        { 
+            get 
+            {
+                return UserFoodItems?.Sum(q => q.FoodDetails.Quantity) ?? 0;
+            }
+        }
 
         public string CriticalLevel()
         {
