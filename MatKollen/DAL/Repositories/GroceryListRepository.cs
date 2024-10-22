@@ -242,5 +242,44 @@ namespace MatKollen.DAL.Repositories
                 }
             }
         }
+
+        public int Delete(int id, out string errorMsg)
+        {
+            var myConnectionString = _connectionString;
+
+            using (var myConnection = new MySqlConnection(myConnectionString))
+            {
+                string query  = "DELETE FROM list_has_fooditems WHERE id = @id";
+
+                try
+                {
+                    // create a MySQL command and set the SQL statement with parameters
+                    MySqlCommand myCommand = new MySqlCommand(query, myConnection);
+
+                    //open a connection
+                    myConnection.Open();
+
+                    myCommand.Parameters.Add("@id", MySqlDbType.Double).Value = id;
+
+                    errorMsg = "";
+
+                    // execute the command and read the results
+                    var rowsAffected = myCommand.ExecuteNonQuery();
+
+                    if (rowsAffected == 0)
+                    {
+                        errorMsg = "Gick inte att ta bort";
+                        return 0;
+                    }
+                    
+                    return rowsAffected;
+                }
+                catch (MySqlException e)
+                {
+                    errorMsg = e.Message;
+                    return 0;
+                }    
+            }
+        }
     }
 }

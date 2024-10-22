@@ -61,9 +61,19 @@ namespace MatKollen.Controllers
         }
 
         [HttpPost]
-        public IActionResult DeleteItem(int id)
+        public IActionResult Delete(int id)
         {
-            return View();
+            var rowsAffected = _groceryListRepository.Delete(id, out string error);
+            if (error != "")
+            {
+                TempData["error"] = error;
+            }
+            if (rowsAffected == 0)
+            {
+                TempData["error"] = "Gick inte att markera varan som köpt";
+            }
+
+            return RedirectToAction("Index");
         }
 
         [HttpPost]
