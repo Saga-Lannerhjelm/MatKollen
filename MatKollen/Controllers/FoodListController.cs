@@ -155,6 +155,60 @@ namespace MatKollen.Controllers
 
             return RedirectToAction("Index");
         }
+
+        //FoodList/AddNewIngredientFoodItem
+        [HttpGet]
+        public IActionResult AddNewIngredientFoodItem(int id)
+        {
+            var model = new NewIngredientViewModel
+            {
+                FoodItem = new FoodItem(),
+                RecipeFoodItem = new RecipeFoodItem()
+                {
+                    RecipeId = id,
+                }
+            };
+            GetFormLists();
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult AddNewIngredientFoodItem(NewIngredientViewModel item)
+        {
+            if (!ModelState.IsValid)
+            {
+                GetFormLists();
+                return View(item);
+            }
+
+            // Find multiplier based on unit id
+            var measurementMultipliers = _getListRepository.GetUnits(out string unitsError);
+            if (unitsError != "")
+            {
+                TempData["error"] = unitsError;
+                return View(item);
+            }
+            double multiplier = measurementMultipliers.Find(m => m.Id == item.RecipeFoodItem.UnitId).Multiplier;
+
+
+            // Recalculate quantity
+            var conversionHandler = new ConvertQuantityHandler();
+            item.RecipeFoodItem.Quantity = conversionHandler.ConverToLiterOrKg(item.RecipeFoodItem.Quantity, multiplier);
+
+            // Insert values in database
+            int affectedRows = _foodRepository.InsertIngredientFoodItem(item, out string error);
+
+            if (error != "")
+            {
+                TempData["error"] = "Det gick inte att lägga till matvaran:" + error;
+            }
+
+            if (affectedRows == 0) TempData["error"] = "Det gick inte att lägga till matvaran";
+            else TempData["success"] = "Matvara tillagd!";
+
+            return RedirectToAction("Edit", "Recipe", new {id = item.RecipeFoodItem.RecipeId});
+        }
+
         private void GetFormLists()
         {
             var unitList = _getListRepository.GetUnits(out string unitsError);

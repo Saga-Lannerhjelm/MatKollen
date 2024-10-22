@@ -21,7 +21,7 @@
                 </select>
                     @Html.ValidationMessageFor(m => m.FoodItemId, "", new { @class = "text-danger" })
             </div>
-            <p><small>Hittar du inte marvaran?<a asp-action="AddFoodItem" asp-controller="FoodList" asp-route-url="Recipe/AddIngredient/@Model.Id">Lägg till den här!</a></small></p>
+            <p><small>Hittar du inte marvaran?<a asp-action="AddNewIngredientFoodItem" asp-controller="FoodList" asp-route-id="@Model.RecipeId">Lägg till den här!</a></small></p>
             <div class="mb-3">
                 <label asp-for="Quantity" class="form-label">Quantity</label>
                 <input type="number" step="0.1" asp-for="Quantity" class="form-control">

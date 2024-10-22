@@ -189,6 +189,51 @@ namespace MatKollen.Controllers.Repositories
             }
         }
 
+        public int InsertIngredientFoodItem(NewIngredientViewModel foodItem, out string errorMsg)
+        {
+            var myConnectionString = _connectionString;
+
+            using (var myConnection = new MySqlConnection(myConnectionString))
+            {
+                //Creates a new user and a grozery list for that user at the same time
+                string query  = "CALL `insert_food_and_assign_to_recipe`(@foodName, @categoryId, @quantity, @recipeId, @unitId);";
+                var testList = new List<string>();
+
+                try
+                {
+                    // create a MySQL command and set the SQL statement with parameters
+                    MySqlCommand myCommand = new MySqlCommand(query, myConnection);
+
+                    //open a connection
+                    myConnection.Open();
+
+                    myCommand.Parameters.Add("@foodName", MySqlDbType.VarChar, 50).Value = foodItem.FoodItem.Name;
+                    myCommand.Parameters.Add("@categoryId", MySqlDbType.Int32).Value = foodItem.FoodItem.FoodCategoryId;
+                    myCommand.Parameters.Add("@quantity", MySqlDbType.Decimal).Value = foodItem.RecipeFoodItem.Quantity;
+                    myCommand.Parameters.Add("@recipeId", MySqlDbType.Int32).Value = foodItem.RecipeFoodItem.RecipeId;
+                    myCommand.Parameters.Add("@unitId", MySqlDbType.Int32).Value = foodItem.RecipeFoodItem.UnitId;
+
+                    errorMsg = "";
+
+                    // execute the command and read the results
+                    var rowsAffected = Convert.ToInt32(myCommand.ExecuteScalar());
+
+                    if (rowsAffected == 0)
+                    {
+                        errorMsg = "Ingen matvara lades till.";
+                        return 0;
+                    }
+                    
+                    return rowsAffected;
+                }
+                catch (MySqlException e)
+                {
+                    errorMsg = e.Message;
+                    return 0;
+                }    
+            }
+        }
+
         public int AddFoodItem(UserFoodItem foodItem, out string errorMsg)
         {
             var myConnectionString = _connectionString;
