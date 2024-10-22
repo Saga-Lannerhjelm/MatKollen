@@ -22,10 +22,8 @@ namespace MatKollen.Controllers
 
             if (error != "")
             {
-                TempData["error"] = "Gick inte att hämta listan";
+                TempData["error"] = error;
             }
-
-            ViewData["Title"] = groceryItems.Count != 0 ? groceryItems[0].ListName : "Inköpslista";
 
             return View(groceryItems);
         }
@@ -69,9 +67,20 @@ namespace MatKollen.Controllers
         }
 
         [HttpPost]
-        public IActionResult MarkAsComplete(int id)
+        public IActionResult MarkAsComplete(int id, bool completed)
         {
-            return View();
+            completed = !completed;
+            var rowsAffected = _groceryListRepository.UpdateCompletedState(id, completed, out string error);
+            if (error != "")
+            {
+                TempData["error"] = error;
+            }
+            if (rowsAffected == 0)
+            {
+                TempData["error"] = "Gick inte att markera varan som köpt";
+            }
+
+            return RedirectToAction("Index");
         }
     }
 }

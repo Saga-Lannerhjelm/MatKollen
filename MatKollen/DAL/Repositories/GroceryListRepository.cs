@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using MatKollen.Models;
 using MatKollen.Services;
 using MatKollen.ViewModels;
@@ -153,6 +149,48 @@ namespace MatKollen.DAL.Repositories
                 }    
             }
         }
+
+        public int UpdateCompletedState (int id, bool completed, out string errorMsg)
+        {
+            var myConnectionString = _connectionString;
+
+            using (var myConnection = new MySqlConnection(myConnectionString))
+            {
+                string query  = "UPDATE list_has_fooditems SET completed = @value WHERE id = @id";
+                var testList = new List<string>();
+
+                try
+                {
+                    // create a MySQL command and set the SQL statement with parameters
+                    MySqlCommand myCommand = new MySqlCommand(query, myConnection);
+
+                    //open a connection
+                    myConnection.Open();
+
+                    myCommand.Parameters.Add("@id", MySqlDbType.Double).Value = id;
+                    myCommand.Parameters.AddWithValue("@value", completed);
+
+                    errorMsg = "";
+
+                    // execute the command and read the results
+                    var rowsAffected = myCommand.ExecuteNonQuery();
+
+                    if (rowsAffected == 0)
+                    {
+                        errorMsg = "Gick inte att lägga till matvaran i inköpslistan";
+                        return 0;
+                    }
+                    
+                    return rowsAffected;
+                }
+                catch (MySqlException e)
+                {
+                    errorMsg = e.Message;
+                    return 0;
+                }    
+            }
+        }
+        
         public List<GroceryListViewModel> GetGroceryList(int userId, out string errorMsg)
         {
             var myConnectionString = _connectionString;

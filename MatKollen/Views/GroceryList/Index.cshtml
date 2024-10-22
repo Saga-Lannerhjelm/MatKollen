@@ -1,13 +1,36 @@
 @model List<GroceryListViewModel>
 
+@{
+    ViewData["Title"] = "Inköpslista";
+}
+
 <h2>@ViewData["Title"]</h2>
 
-<ul>
+<ul class="p-0" style="list-style: none;">
     @{
         foreach(var item in Model)
         {
-            <li>@item.ConvertedQuantity@item.Unit @item.FoodItemName</li>
+            <li class="my-3 d-flex align-items-center">
+                <form method="post" asp-action="MarkAsComplete" asp-controller="GroceryList">
+                    <button type="submit" style="background-color: transparent; border: none;">
+                        <input type="hidden" name="id" value="@item.FoodDetails.Id">
+                        <input type="hidden" name="completed" value="@item.FoodDetails.Completed">
+                        <label>
+                            <span style="border-radius: 99px;">
+                                <input type="checkbox" checked="@item.FoodDetails.Completed">
+                                <span>@item.ConvertedQuantity@item.Unit @item.FoodItemName</span>
+                            </span>
+                        </label>   
+                    </button>
+                </form>
+                <form method="post" asp-action="Delete" style="display: inline;">
+                    <button type="submit" class="action-btn"><i class="bi bi-trash3"></i></button>
+                </form>
+            </li>
         }
     }
 </ul>
+<form method="post">
+    <button type="submit" class="btn btn-primary">Lägg till klarmarkerade varor!</button>
+</form>
 

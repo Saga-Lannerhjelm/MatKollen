@@ -163,7 +163,7 @@ a {
 /* checkmark */
 
 /* Remove checkmark defaul apperance */
-input[type="checkbox"] {
+input[type="checkbox"].custom {
   position: absolute;
   opacity: 0;
   cursor: pointer;
