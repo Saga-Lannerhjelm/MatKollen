@@ -243,6 +243,51 @@ namespace MatKollen.DAL.Repositories
             }
         }
 
+        public List<ListFoodItem> GetCompletedItems(int userId, out string errorMsg)
+        {
+            var myConnectionString = _connectionString;
+            string query  = "SELECT * FROM vw_grocery_list_details WHERE `list_id` = (SELECT id FROM lists WHERE user_id = @userId) AND completed = true";
+            
+            var foodItems = new List<ListFoodItem>();
+            var conversionHandler = new ConvertQuantityHandler();
+
+            using (var myConnection = new MySqlConnection(myConnectionString))
+            {
+                try
+                {
+                    MySqlCommand myCommand = new MySqlCommand(query, myConnection);
+                    myConnection.Open();
+
+                    myCommand.Parameters.AddWithValue("@userId", userId);
+
+                    errorMsg = "";
+
+                    using var reader = myCommand.ExecuteReader();
+                    {
+                        while (reader.Read())
+                        {
+                            var foodItem = new ListFoodItem()
+                            {
+                                Id = reader.GetInt32("id"),
+                                Quantity = reader.GetDouble("quantity"),
+                                UnitId = reader.GetInt16("unit_id"),
+                                ListId = reader.GetInt16("list_id"),
+                                FoodItemId = reader.GetInt16("food_item_id"),
+                                Completed = reader.GetBoolean("completed")
+                                };
+                            foodItems.Add(foodItem);
+                        }
+                    }
+                    return foodItems;
+                }
+                catch (MySqlException e)
+                {
+                    errorMsg = e.Message;
+                    return null;
+                }
+            }
+        }
+
         public int Delete(int id, out string errorMsg)
         {
             var myConnectionString = _connectionString;

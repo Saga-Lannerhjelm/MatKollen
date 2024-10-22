@@ -20,6 +20,7 @@
                                 <span style="border-radius: 99px;">
                                     <input type="checkbox" checked="@item.FoodDetails.Completed">
                                     <span>@item.ConvertedQuantity@item.Unit @item.FoodItemName</span>
+                                    @item.FoodDetails.Completed
                                 </span>
                             </label>   
                         </button>
@@ -32,7 +33,7 @@
             }
         }
     </ul>
-    <form method="post">
+    <form method="post" asp-action="AddFoodItems">
         <button type="submit" class="btn btn-primary">Lägg till klarmarkerade varor!</button>
     </form>
 } else {

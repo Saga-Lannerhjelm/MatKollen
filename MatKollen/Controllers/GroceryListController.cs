@@ -1,3 +1,4 @@
+using MatKollen.Controllers.Repositories;
 using MatKollen.DAL.Repositories;
 using MatKollen.Extensions;
 using MatKollen.Models;
@@ -9,10 +10,12 @@ namespace MatKollen.Controllers
     public class GroceryListController : Controller
     {
         private readonly GroceryListRepository _groceryListRepository;
+        private readonly FoodRepository _foodRepository;
 
-        public GroceryListController(GroceryListRepository groceryListRepository)
+        public GroceryListController(GroceryListRepository groceryListRepository, FoodRepository foodRepository)
         {
             _groceryListRepository = groceryListRepository;
+            _foodRepository = foodRepository;
         }
         //GroceryList
         public IActionResult Index()
@@ -26,6 +29,50 @@ namespace MatKollen.Controllers
             }
 
             return View(groceryItems);
+        }
+
+        [HttpPost]
+        public IActionResult AddFoodItems()
+        {
+            int userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "id").Value);
+            var foodItems = _groceryListRepository.GetCompletedItems(userId, out string error);
+
+            if (error != "")
+            {
+                TempData["error"] = error;
+            }
+
+            if (foodItems != null)
+            {
+                foreach (var food in foodItems)
+                {
+                    var userFoodItem = new UserFoodItem()
+                    {
+                        Quantity = food.Quantity,
+                        UserId = userId,
+                        FoodItemId = food.FoodItemId,
+                        UnitId = food.UnitId
+                    };
+                    
+                    var affectedRows = _foodRepository.AddFoodItem(userFoodItem, out string insertError);
+
+                    if (insertError != "")
+                    {
+                        TempData["error"] = error;
+                    }
+
+                    if (affectedRows > 0)
+                    {
+                        _groceryListRepository.Delete(food.Id, out string deleteError);
+                        if (deleteError != "")
+                        {
+                            TempData["error"] = error;
+                        }
+                    }
+                }
+            }
+
+            return RedirectToAction("index");
         }
 
         //GroceryList/AddItem
