@@ -73,6 +73,7 @@ namespace MatKollen.Controllers
                 }
             }
 
+            ViewBag.user = userId;
             ViewBag.groceryListItemsExists = existingItems;
             // Saves the non-matching food items to a session variabel
             HttpContext.Session.SetObject("groceryList", foodItemsForGroceryList);

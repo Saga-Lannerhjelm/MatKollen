@@ -3,25 +3,28 @@
 @{
     ViewData["Title"] = "Recept detalj";
 }
-
-<h2>@ViewData["Title"]</h2>
-
-<h4>@Model.Recipe.Title</h4>
+<div class="d-flex justify-content-between">
+    <h4>@Model.Recipe.Title</h4>
+    @if (ViewBag.user == Model.Recipe.UserId){
+        <form method="get" asp-action="Edit" asp-controller="Recipe">
+            <input type="hidden" name="id" value="@Model.Recipe.Id">
+            <button type="submit" class="action-btn"><i class="bi bi-pencil" style="font-size: 1.2rem;"></i></button>
+        </form>             
+    }
+</div>
 <p><small>@Model.Recipe.CreatedAt</small> by user @Model.Username</p>
 <p>@Model.Recipe.Description</p>
 
-<p>Ingredienser:</p>
+<h5>Ingredienser:</h5>
 
 @{
     if(Model.Ingredients.Count != 0)
     {
         foreach(var item in Model.Ingredients)
         {
-            <div class="my-4" style="@(item.UserHasIngredient ? "" : "text-decoration: line-through; color: maroon;")">
-                <span style="padding: 10px; border-radius: 99px;" class="bg-custom"><strong>@item.ConvertedQuantity@item.Unit</strong> @item.Ingredient
-                <i class="bi bi-plus"></i>
-                <i class="bi bi-dash"></i>
-                <i class="bi bi-trash3"></i>
+            <div class="my-4">
+                <span style="padding: 10px; border-radius: 99px;" class=" @(item.UserHasIngredient ? "bg-custom" : "bg-out")">
+                    <strong>@item.ConvertedQuantity@item.Unit</strong> @item.Ingredient
                 </span>
             </div>
         }

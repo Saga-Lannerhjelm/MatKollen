@@ -8,14 +8,13 @@
 @{
     foreach(var recipe in Model)
     {
-        <a class="card rounded-5" href="Details/@recipe.Recipe.Id">
+        <a class="card rounded-5" asp-action="Details" asp-route-id="@recipe.Recipe.Id">
             <div class="card-body">
                 <h4 class="card-title">@recipe.Recipe.Title</h4>
                  <small>@recipe.Recipe.CreatedAt by @recipe.Username</small>
                  <p>@recipe.Recipe.Description</p>
                  <small><em>@recipe.Category</em></small>
             </div>
-
         </a>
     }
 }
