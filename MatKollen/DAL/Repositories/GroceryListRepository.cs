@@ -84,7 +84,7 @@ namespace MatKollen.DAL.Repositories
                     myConnection.Open();
 
                     myCommand.Parameters.Add("@userId", MySqlDbType.Int32).Value = userId;
-                    myCommand.Parameters.Add("@quantity", MySqlDbType.Double).Value = food.Quantity;
+                    myCommand.Parameters.Add("@quantity", MySqlDbType.Decimal).Value = food.Quantity;
                     myCommand.Parameters.Add("@unitId", MySqlDbType.Int32).Value = food.UnitId;
                     myCommand.Parameters.Add("@foodItemId", MySqlDbType.Int32).Value = food.FoodItemId;
 
@@ -126,7 +126,7 @@ namespace MatKollen.DAL.Repositories
                     //open a connection
                     myConnection.Open();
 
-                    myCommand.Parameters.Add("@addedQuantity", MySqlDbType.Double).Value = food.Quantity;
+                    myCommand.Parameters.Add("@addedQuantity", MySqlDbType.Decimal).Value = food.Quantity;
                     myCommand.Parameters.Add("@foodItemId", MySqlDbType.Int32).Value = food.FoodItemId;
 
                     errorMsg = "";
@@ -167,7 +167,7 @@ namespace MatKollen.DAL.Repositories
                     //open a connection
                     myConnection.Open();
 
-                    myCommand.Parameters.Add("@id", MySqlDbType.Double).Value = id;
+                    myCommand.Parameters.Add("@id", MySqlDbType.Int32).Value = id;
                     myCommand.Parameters.AddWithValue("@value", completed);
 
                     errorMsg = "";
@@ -219,13 +219,13 @@ namespace MatKollen.DAL.Repositories
                                 FoodDetails = new ListFoodItem()
                                 {
                                     Id = reader.GetInt32("id"),
-                                    Quantity = reader.GetDouble("quantity"),
+                                    Quantity = reader.GetDecimal("quantity"),
                                     UnitId = reader.GetInt16("unit_id"),
                                     ListId = reader.GetInt16("list_id"),
                                     FoodItemId = reader.GetInt16("food_item_id"),
                                     Completed = reader.GetBoolean("completed")
                                 },
-                                ConvertedQuantity = conversionHandler.ConverFromtLiterOrKg(reader.GetDouble("quantity"), reader.GetDouble("conversion_multiplier")),
+                                ConvertedQuantity = conversionHandler.ConverFromtLiterOrKg(reader.GetDecimal("quantity"), reader.GetDouble("conversion_multiplier")),
                                 FoodItemName = reader.GetString("food_item"),
                                 Unit = reader.GetString("unit"),
                                 ListName = reader.GetString("list_name"),
@@ -269,7 +269,7 @@ namespace MatKollen.DAL.Repositories
                             var foodItem = new ListFoodItem()
                             {
                                 Id = reader.GetInt32("id"),
-                                Quantity = reader.GetDouble("quantity"),
+                                Quantity = reader.GetDecimal("quantity"),
                                 UnitId = reader.GetInt16("unit_id"),
                                 ListId = reader.GetInt16("list_id"),
                                 FoodItemId = reader.GetInt16("food_item_id"),

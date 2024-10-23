@@ -40,6 +40,7 @@ namespace MatKollen.Controllers.Repositories
                     {
                         while (reader.Read())
                         {
+                            // Find if an tiem with the name and type already exists 
                             var existingItem = foodItems.Find(item => item.FoodItemName.Contains(reader.GetString("item")));
 
                             if (existingItem == null)
@@ -51,11 +52,11 @@ namespace MatKollen.Controllers.Repositories
                                     UserFoodItems = 
                                     [
                                         (
-                                            ConvertedQuantity: conversionHandler.ConverFromtLiterOrKg(reader.GetDouble("quantity"), reader.GetDouble("conversion_multiplier")),
+                                            ConvertedQuantity: conversionHandler.ConverFromtLiterOrKg(reader.GetDecimal("quantity"), reader.GetDouble("conversion_multiplier")),
                                             FoodDetails: new UserFoodItem()
                                             {
                                                 Id = reader.GetInt32("id"),
-                                                Quantity = reader.GetDouble("quantity"),
+                                                Quantity = reader.GetDecimal("quantity"),
                                                 UserId = reader.GetInt32("user_id"),
                                                 ExpirationDate = DateOnly.FromDateTime(reader.GetDateTime("expiration_date")),
                                                 FoodItemId = reader.GetInt16("food_item_id"),
@@ -75,11 +76,11 @@ namespace MatKollen.Controllers.Repositories
                             {
                                 existingItem?.UserFoodItems.Add(
                                     (
-                                            ConvertedQuantity: conversionHandler.ConverFromtLiterOrKg(reader.GetDouble("quantity"), reader.GetDouble("conversion_multiplier")),
+                                            ConvertedQuantity: conversionHandler.ConverFromtLiterOrKg(reader.GetDecimal("quantity"), reader.GetDouble("conversion_multiplier")),
                                             FoodDetails: new UserFoodItem()
                                             {
                                                 Id = reader.GetInt32("id"),
-                                                Quantity = reader.GetDouble("quantity"),
+                                                Quantity = reader.GetDecimal("quantity"),
                                                 UserId = reader.GetInt32("user_id"),
                                                 ExpirationDate = DateOnly.FromDateTime(reader.GetDateTime("expiration_date")),
                                                 FoodItemId = reader.GetInt16("food_item_id"),
@@ -163,7 +164,7 @@ namespace MatKollen.Controllers.Repositories
 
                     myCommand.Parameters.Add("@foodName", MySqlDbType.VarChar, 50).Value = foodItem.FoodItem.Name;
                     myCommand.Parameters.Add("@categoryId", MySqlDbType.Int32).Value = foodItem.FoodItem.FoodCategoryId;
-                    myCommand.Parameters.Add("@quantity", MySqlDbType.Double).Value = foodItem.UserFoodItem.Quantity;
+                    myCommand.Parameters.Add("@quantity", MySqlDbType.Decimal).Value = foodItem.UserFoodItem.Quantity;
                     myCommand.Parameters.Add("@expirationDate", MySqlDbType.Date).Value = foodItem.UserFoodItem.ExpirationDate;
                     myCommand.Parameters.Add("@userId", MySqlDbType.Int32).Value = foodItem.UserFoodItem.UserId;
                     myCommand.Parameters.Add("@unitId", MySqlDbType.Int32).Value = foodItem.UserFoodItem.UnitId;
@@ -248,7 +249,7 @@ namespace MatKollen.Controllers.Repositories
                     MySqlCommand myCommand = new MySqlCommand(query, myConnection);
                     myConnection.Open();
 
-                    myCommand.Parameters.Add("@quantity", MySqlDbType.Double).Value = foodItem.Quantity;
+                    myCommand.Parameters.Add("@quantity", MySqlDbType.Decimal).Value = foodItem.Quantity;
                     myCommand.Parameters.Add("@expirationDate", MySqlDbType.Date).Value = foodItem.ExpirationDate;
                     myCommand.Parameters.Add("@userId", MySqlDbType.Int32).Value = foodItem.UserId;
                     myCommand.Parameters.Add("@foodItemId", MySqlDbType.Int32).Value = foodItem.FoodItemId;
@@ -274,20 +275,20 @@ namespace MatKollen.Controllers.Repositories
             }
         }
 
-        public int UpdateQuantity(int id, double nr, out string errorMsg)
+        public int UpdateQuantity(int id, decimal nr, out string errorMsg)
         {
             var myConnectionString = _connectionString;
 
             using (var myConnection = new MySqlConnection(myConnectionString))
             {
-                string query  = "Update user_has_fooditems SET quantity = ROUND((quantity + @nr), 4) WHERE id = @id";
+                string query  = "UPDATE user_has_fooditems SET quantity = quantity + @nr WHERE id = @id";
 
                 try
                 {
                     MySqlCommand myCommand = new MySqlCommand(query, myConnection);
                     myConnection.Open();
 
-                    myCommand.Parameters.Add("@nr", MySqlDbType.Double).Value = nr;
+                    myCommand.Parameters.Add("@nr", MySqlDbType.Decimal).Value = nr;
                     myCommand.Parameters.Add("@id", MySqlDbType.Int32).Value = id;
 
                     errorMsg = "";

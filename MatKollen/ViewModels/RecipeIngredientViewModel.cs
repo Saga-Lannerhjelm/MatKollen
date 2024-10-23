@@ -13,7 +13,7 @@ namespace MatKollen.ViewModels
         public required string Unit { get; set; }
         public required string Type { get; set; }
         public double Multiplier { get; set; }
-        public double ConvertedQuantity { get; set; }
+        public decimal ConvertedQuantity { get; set; }
         public bool UserHasIngredient { get; set; } = false;
         public bool IngredientExistInOtherType { get; set; } = false;
     }

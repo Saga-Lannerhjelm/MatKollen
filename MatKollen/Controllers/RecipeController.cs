@@ -222,7 +222,7 @@ namespace MatKollen.Controllers
         [HttpPost]
         public IActionResult IncreaseQuantity(int id, double unitMultiplier, string unit, int recipeId)
         {
-            double incrementNr = unit != "kg" && unit != "L" ? 1 / unitMultiplier : 0.1;
+            decimal incrementNr = Convert.ToDecimal(unit != "kg" && unit != "L" ? 1 / unitMultiplier : 0.1);
             var affectedRows = _recipeRepository.UpdateQuantity(id, incrementNr, out string error);
             if (error != "") TempData["error"] = error;
             if (affectedRows == 0) TempData["error"] = "Det gick inte att ändra antalet";
@@ -230,11 +230,11 @@ namespace MatKollen.Controllers
         }
 
         [HttpPost]
-        public IActionResult DecreaseQuantity(int id, double unitMultiplier, double quantity, string unit, int recipeId)
+        public IActionResult DecreaseQuantity(int id, double unitMultiplier, decimal quantity, string unit, int recipeId)
         {
             if (quantity > 0)
             {
-                double decreaseNr = (unit != "kg" && unit != "L" ? 1 / unitMultiplier : 0.1) * -1;
+                decimal decreaseNr = Convert.ToDecimal((unit != "kg" && unit != "L" ? 1 / unitMultiplier : 0.1) * -1);
                 var affectedRows = _recipeRepository.UpdateQuantity(id, decreaseNr, out string error);
                 if (error != "") TempData["error"] = error;
                 if (affectedRows == 0) TempData["error"] = "Det gick inte att ändra antalet";

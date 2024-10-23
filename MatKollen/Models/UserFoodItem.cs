@@ -8,7 +8,7 @@ namespace MatKollen.Models
 
         [Required (ErrorMessage = "Fältet kan inte vara tomt")]
         [Range(0.01, int.MaxValue, ErrorMessage = "Fältet måste vara mer äm 0")]
-        public double Quantity { get; set; }
+        public decimal Quantity { get; set; }
         [Required (ErrorMessage = "Fältet kan inte vara tomt")]
         [DataType(DataType.ImageUrl, ErrorMessage = "Fältet måste vara ett giltigt datum")]
         public DateOnly ExpirationDate { get; set; }

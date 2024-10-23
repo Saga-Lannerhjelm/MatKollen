@@ -18,7 +18,7 @@
     @{
         foreach (var item in Model)
         {
-            var sum = item.UserFoodItems.Sum(q => q.FoodDetails.Quantity);
+            var sum = Convert.ToDouble(item.UserFoodItems.Sum(q => q.FoodDetails.Quantity));
 
             <div class="col">
                 <div class="card rounded-5 bg-@item.CriticalLevel()" style="border-radius: 1.25rem; min-height: 22vh;">

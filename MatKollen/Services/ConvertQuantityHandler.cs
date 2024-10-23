@@ -8,21 +8,23 @@ namespace MatKollen.Services
 {
     public class ConvertQuantityHandler
     {
-        public double ConverFromtLiterOrKg(double quanity, double conversionMultiplier)
+        public decimal ConverFromtLiterOrKg(decimal quanity, double conversionMultiplier)
         {
-            var convertedValue = quanity * conversionMultiplier;
+            decimal conversionMultiplierDecimal = Convert.ToDecimal(conversionMultiplier);
+            var convertedValue = quanity * conversionMultiplierDecimal;
             var convertedValueString = convertedValue.ToString(CultureInfo.InvariantCulture);
             // The method vill return an int if the number after the dot it 0 
             if (convertedValueString.Substring(convertedValueString.IndexOf(".") + 1, 1) == "0")
             {
-                return (int)Math.Round(quanity * conversionMultiplier);
+                return (int)Math.Round(quanity * conversionMultiplierDecimal);
             }
-            return quanity * conversionMultiplier;
+            return quanity * conversionMultiplierDecimal;
         }
 
-        public double ConverToLiterOrKg(double quanity, double conversionMultiplier)
+        public decimal ConverToLiterOrKg(decimal quanity, double conversionMultiplier)
         {
-            return quanity * Math.Round(1 / conversionMultiplier, 3);
+            decimal conversionMultiplierDecimal = Convert.ToDecimal(conversionMultiplier);
+            return quanity * Math.Round(1 / conversionMultiplierDecimal, 3);
         }
     }
 }

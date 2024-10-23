@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using MatKollen.Models;
@@ -164,11 +165,11 @@ namespace MatKollen.DAL.Repositories
                                     IngredientDetails = new RecipeFoodItem()
                                     {
                                         Id = reader.GetInt32("ingredient_id"),
-                                        Quantity = reader.GetDouble("quantity"),
+                                        Quantity = reader.GetDecimal("quantity"),
                                         UnitId =  reader.GetInt32("unit_id"),
                                         FoodItemId = reader.GetInt32("food_item_id")
                                     },
-                                    ConvertedQuantity = conversionHandler.ConverFromtLiterOrKg(reader.GetDouble("quantity"), reader.GetDouble("conversion_multiplier")),
+                                    ConvertedQuantity = conversionHandler.ConverFromtLiterOrKg(reader.GetDecimal("quantity"), reader.GetDouble("conversion_multiplier")),
                                     Multiplier = reader.GetDouble("conversion_multiplier"),
                                     Type = reader.GetString("type"),
                                     Ingredient = reader.GetString("ingredient"),
@@ -291,7 +292,7 @@ namespace MatKollen.DAL.Repositories
             }
         }
         
-        public int UpdateQuantity(int id, double nr, out string errorMsg)
+        public int UpdateQuantity(int id, decimal nr, out string errorMsg)
         {
             var myConnectionString = _connectionString;
 
@@ -304,7 +305,7 @@ namespace MatKollen.DAL.Repositories
                     MySqlCommand myCommand = new MySqlCommand(query, myConnection);
                     myConnection.Open();
 
-                    myCommand.Parameters.Add("@nr", MySqlDbType.Double).Value = nr;
+                    myCommand.Parameters.Add("@nr", MySqlDbType.Decimal).Value = nr;
                     myCommand.Parameters.Add("@id", MySqlDbType.Int32).Value = id;
 
                     errorMsg = "";

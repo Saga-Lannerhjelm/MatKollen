@@ -12,7 +12,7 @@ namespace MatKollen.Models
 
         [Required (ErrorMessage = "Fältet kan inte vara tomt")]
         [Range(0.1, int.MaxValue, ErrorMessage = "Välj ett högre värde, och/eller byt enhet")]
-        public double Quantity { get; set; }
+        public decimal Quantity { get; set; }
         [Range(1, int.MaxValue, ErrorMessage = "Du måste välja en enhet")]
         public int UnitId { get; set; }
         public int RecipeId { get; set; } 
