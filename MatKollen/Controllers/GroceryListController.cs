@@ -2,6 +2,7 @@ using MatKollen.Controllers.Repositories;
 using MatKollen.DAL.Repositories;
 using MatKollen.Extensions;
 using MatKollen.Models;
+using MatKollen.Services;
 using Microsoft.AspNetCore.Mvc;
 using Mysqlx;
 
@@ -11,12 +12,23 @@ namespace MatKollen.Controllers
     {
         private readonly GroceryListRepository _groceryListRepository;
         private readonly FoodRepository _foodRepository;
+        private readonly GetListsRepository _getListRepository;
+        private readonly ConvertQuantityHandler _convertQuantityHandler;
 
-        public GroceryListController(GroceryListRepository groceryListRepository, FoodRepository foodRepository)
+        public GroceryListController
+        (
+            GroceryListRepository groceryListRepository, 
+            FoodRepository foodRepository, 
+            GetListsRepository getListsRepository, 
+            ConvertQuantityHandler convertQuantityHandler
+        )
         {
             _groceryListRepository = groceryListRepository;
             _foodRepository = foodRepository;
+            _getListRepository = getListsRepository;
+            _convertQuantityHandler = convertQuantityHandler;
         }
+
         //GroceryList
         public IActionResult Index()
         {
@@ -32,7 +44,7 @@ namespace MatKollen.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddFoodItems()
+        public IActionResult AddCompletedItemsToUserInventory()
         {
             int userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "id").Value);
             var foodItems = _groceryListRepository.GetCompletedItems(userId, out string error);
@@ -73,20 +85,65 @@ namespace MatKollen.Controllers
                 }
             }
 
-            return RedirectToAction("index");
+            return RedirectToAction("index", "FoodList");
         }
 
         //GroceryList/AddItem
         [HttpGet]
-        public IActionResult AddItem()
+        public IActionResult AddItemToGroceryList()
         {
-            return View();
+            var foodItem = new ListFoodItem();
+            GetLists();
+            return View(foodItem);
         }
 
         [HttpPost]
-        public IActionResult AddItem(FoodItem item)
+        public IActionResult AddItemToGroceryList(ListFoodItem item)
         {
-            return View();
+            if (!ModelState.IsValid)
+            {
+                GetLists();
+                return View(item);
+            }
+
+            // Find multiplier based on unit id
+            var measurementMultipliers = _getListRepository.GetUnits(out string unitsError);
+            if (unitsError != "")
+            {
+                TempData["error"] = unitsError;
+                return View(item);
+            }
+            double multiplier = measurementMultipliers.Find(m => m.Id == item.UnitId).Multiplier;
+
+            //Get user id
+            var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "id").Value);
+
+            // Recalculate quantity
+            item.Quantity = _convertQuantityHandler.ConverToLiterOrKg(item.Quantity, multiplier);
+
+            // Insert values in database
+            int affectedRows = _groceryListRepository.InsertFoodItemInList(item, userId, out string error);
+
+            if (error != "")
+            {
+                TempData["error"] = "Det gick inte att lägga till matvaran:" + error;
+            }
+
+            if (affectedRows == 0) TempData["error"] = "Det gick inte att lägga till matvaran";
+            else TempData["success"] = "Matvara tillagd!";
+
+            return RedirectToAction("Index");
+        }
+
+        private void GetLists()
+        {
+            List<MeasurementUnit> unitList = _getListRepository.GetUnits(out string unitsError);
+            List<FoodItem>? foodItemList = _foodRepository.GetFoodItems(out string error);
+
+            if (unitsError != "" || error != "") TempData["error"] = unitsError + " " + error;
+
+            ViewData["units"] = unitList;
+            ViewData["foodItems"] = foodItemList;
         }
 
          [HttpPost]

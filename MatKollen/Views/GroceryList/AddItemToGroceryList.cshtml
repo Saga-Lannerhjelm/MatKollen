@@ -1,0 +1,45 @@
+@model ListFoodItem
+@{
+    ViewData["Title"] = "Skapa en ny matvara";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div class="d-flex justify-content-center mt-5">
+  <div class="card" style="width: 50vw;">
+    <div class="card-body">
+        <form method="post" asp-action="AddItemToGroceryList">
+            <div class="mb-3">
+                <label asp-for="FoodItemId" class="form-label">Matvara</label>
+                <select class="form-select" asp-for="FoodItemId">
+                    <option value="0" disabled>Välj den matvara du vill lägga till</option>
+                    @foreach (var item in (List<FoodItem>)ViewData["foodItems"])
+                    {
+                    <option value="@item.Id">@item.Name</option>
+                    }
+                </select>
+                    @Html.ValidationMessageFor(m => m.FoodItemId, "", new { @class = "text-danger" })
+            </div>
+            <div class="mb-3">
+                <div>
+                    <label asp-for="Quantity" class="form-label">Mängd/Antal</label>
+                    <input type="number" step="0.1" asp-for="Quantity" class="form-control">
+                    @Html.ValidationMessageFor(m => m.Quantity, "", new { @class = "text-danger" })
+                </div>
+                <div>
+                    <label asp-for="UnitId" class="form-label">Enhet</label>
+                    <select class="form-select" asp-for="UnitId">
+                        <option value="0" disabled>Välj vilken enhet du vill lägga till matvaran i</option>
+                        @foreach (var unit in (List<MeasurementUnit>)ViewData["units"])
+                        {
+                        <option value="@unit.Id">@unit.Unit</option>
+                        }
+                    </select>
+                    @Html.ValidationMessageFor(m => m.UnitId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <input type="submit" class="btn btn-primary" value="Lägg till matvara"/>
+        </form>
+        <p>Finns inte varan du letar efter? <a asp-action="AddNewFoodItem" asp-controller="FoodList">Lägg till den här!</a></p>
+    </div>
+  </div>

@@ -29,10 +29,18 @@
                 </li>
             }
         }
+        <li class="my-3 d-flex align-items-center">
+            <a asp-action="AddItemToGroceryList" asp-controller="GroceryList" style="background-color: transparent; border: none; color: gray;" class="d-flex align-items-center gap-3">
+                <i class="bi bi-plus-circle-dotted" style="font-size: 1.5rem;"></i>
+                <span style="border-radius: 99px;">
+                    <span>Lägg till ny rad...</span>
+                </span>
+            </a>
+        </li>
     </ul>
     if (Model.Any(i => i.FoodDetails.Completed))
     {
-        <form method="post" asp-action="AddFoodItems">
+        <form method="post" asp-action="AddCompletedItemsToUserInventory">
             <button type="submit" class="btn btn-primary">Lägg till klarmarkerade varor!</button>
         </form>
     }
