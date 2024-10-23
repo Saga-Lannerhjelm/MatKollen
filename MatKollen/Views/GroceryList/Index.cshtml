@@ -13,16 +13,13 @@
             {
                 <li class="my-3 d-flex align-items-center">
                     <form method="post" asp-action="MarkAsComplete" asp-controller="GroceryList">
-                        <button type="submit" style="background-color: transparent; border: none;">
+                        <button type="submit" style="background-color: transparent; border: none;" class="d-flex align-items-center gap-2">
                             <input type="hidden" name="id" value="@item.FoodDetails.Id">
-                            <input type="hidden" name="completed" value="@item.FoodDetails.Completed">
-                            <label>
-                                <span style="border-radius: 99px;">
-                                    <input type="checkbox" checked="@item.FoodDetails.Completed">
-                                    <span>@item.ConvertedQuantity@item.Unit @item.FoodItemName</span>
-                                    @item.FoodDetails.Completed
-                                </span>
-                            </label>   
+                            <input type="hidden" name="completed" value="@item.FoodDetails.Completed.ToString()">
+                            <i class="bi bi-@(item.FoodDetails.Completed ? "check-circle" : "circle")" style="font-size: 1.5rem; @(item.FoodDetails.Completed ? "color: var(--main-color)" : "")"></i>
+                            <span style="border-radius: 99px;">
+                                <span style="@(item.FoodDetails.Completed ? "text-decoration: line-through" : "")">@item.ConvertedQuantity@item.Unit @item.FoodItemName</span>
+                            </span>
                         </button>
                     </form>
                     <form method="post" asp-action="Delete" style="display: inline;">
@@ -33,9 +30,12 @@
             }
         }
     </ul>
-    <form method="post" asp-action="AddFoodItems">
-        <button type="submit" class="btn btn-primary">Lägg till klarmarkerade varor!</button>
-    </form>
+    if (Model.Any(i => i.FoodDetails.Completed))
+    {
+        <form method="post" asp-action="AddFoodItems">
+            <button type="submit" class="btn btn-primary">Lägg till klarmarkerade varor!</button>
+        </form>
+    }
 } else {
     <p>Du har inga varor i inköpslistan än.</p>
 }
