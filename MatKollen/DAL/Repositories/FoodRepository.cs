@@ -41,7 +41,7 @@ namespace MatKollen.Controllers.Repositories
                         while (reader.Read())
                         {
                             // Find if an tiem with the name and type already exists 
-                            var existingItem = foodItems.Find(item => item.FoodItemName.Contains(reader.GetString("item")));
+                            var existingItem = foodItems.Find(item => item.FoodItemName.Contains(reader.GetString("item")) && item.UserFoodItems[0].UnitInfo.Type.Contains(reader.GetString("type")));
 
                             if (existingItem == null)
                             {
