@@ -310,6 +310,42 @@ namespace MatKollen.Controllers.Repositories
             }
         }
 
+        public int UpdateExpirationDate(int id, DateOnly ExpirationDate, out string errorMsg)
+        {
+            var myConnectionString = _connectionString;
+
+            using (var myConnection = new MySqlConnection(myConnectionString))
+            {
+                string query  = "UPDATE user_has_fooditems SET expiration_date = @expirationDate WHERE id = @id";
+
+                try
+                {
+                    MySqlCommand myCommand = new MySqlCommand(query, myConnection);
+                    myConnection.Open();
+
+                    myCommand.Parameters.Add("@id", MySqlDbType.Int32).Value = id;
+                    myCommand.Parameters.Add("@expirationDate", MySqlDbType.Date).Value = ExpirationDate;
+
+                    errorMsg = "";
+
+                    var rowsAffected = myCommand.ExecuteNonQuery();
+
+                    if (rowsAffected == 0)
+                    {
+                        errorMsg = "Gick inte att lägga till datumet datumet";
+                        return 0;
+                    }
+                    
+                    return rowsAffected;
+                }
+                catch (MySqlException e)
+                {
+                    errorMsg = e.Message;
+                    return 0;
+                }    
+            }
+        }
+
         public int Delete(int foodId, int userId, string type, out string errorMsg)
         {
             var myConnectionString = _connectionString;

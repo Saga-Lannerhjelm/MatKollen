@@ -34,7 +34,7 @@
                                             : item.UserFoodItems[0].UnitInfo.Unit)))
                             </h1>
                             <form method="post" asp-action="Delete" asp-controller="FoodList">
-                                <input type="hidden" value="@item.UserFoodItems[0].FoodDetails.Id" name="id">
+                                <input type="hidden" value="@item.UserFoodItems[0].FoodDetails.FoodItemId" name="foodId">
                                 <input type="hidden" value="@item.UserFoodItems[0].FoodDetails.UserId" name="userId">
                                 <input type="hidden" value="@item.UserFoodItems[0].UnitInfo.Type" name="type">
                                 <button type="submit" class="action-btn"><i class="bi bi-trash3" style="font-size: 1.2rem;"></i></button>
@@ -85,7 +85,18 @@
                         } else
                         {
                             <div class="d-flex align-items-center justify-content-between">
-                                <p class="m-0"><small>@item.UserFoodItems[0].FoodDetails.ExpirationDate</small></p>
+                                @if (item.UserFoodItems[0].FoodDetails.ExpirationDate == new DateOnly())
+                                {
+                                    <form method="post" asp-action="AddExpirationDate" asp-controller="FoodList">
+                                        <input type="hidden" name="id" value="@item.UserFoodItems[0].FoodDetails.Id"/>
+                                        <input type="date" name="expirationDate"/>
+                                        <button type="submit">Lägg till datum</button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <p class="m-0"><small>@item.UserFoodItems[0].FoodDetails.ExpirationDate</small></p>
+                                }
                                 <div class="d-flex">
                                     <form method="post" asp-action="DecreaseQuantity">
                                         <input type="hidden" value="@item.UserFoodItems[0].FoodDetails.Id" name="id">

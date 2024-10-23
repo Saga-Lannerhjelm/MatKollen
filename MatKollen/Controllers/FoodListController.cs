@@ -234,7 +234,7 @@ namespace MatKollen.Controllers
         }
 
         [HttpPost]
-        public IActionResult IncreaseQuantity(int id, double unitMultiplier, double quantity, string unit, string showAccordionName)
+        public IActionResult IncreaseQuantity(int id, double unitMultiplier, string unit, string showAccordionName)
         {
             double incrementNr = unit != "kg" && unit != "L" ? 1 / unitMultiplier : 0.1;
             var affectedRows = _foodRepository.UpdateQuantity(id, incrementNr, out string error);
@@ -250,10 +250,20 @@ namespace MatKollen.Controllers
             {
                 double decreaseNr = (unit != "kg" && unit != "L" ? 1 / unitMultiplier : 0.1) * -1;
                 var affectedRows = _foodRepository.UpdateQuantity(id, decreaseNr, out string error);
-                if (error != "") TempData["error"] = error;
                 if (affectedRows == 0) TempData["error"] = "Det gick inte att ändra antalet";
+                if (error != "") TempData["error"] = error;
             }
             return RedirectToAction("Index", new {showAccordionName});
+        }
+
+        [HttpPost]
+        public IActionResult AddExpirationDate(int id, DateOnly expirationDate)
+        {
+             var affectedRows = _foodRepository.UpdateExpirationDate(id, expirationDate, out string error);
+            if (affectedRows == 0) TempData["error"] = "Gick inte att lägga till datumet datumet";
+            if (error != "") TempData["error"] = error;
+            
+            return RedirectToAction("Index");
         }
 
 

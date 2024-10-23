@@ -32,6 +32,7 @@ namespace MatKollen.ViewModels
                 int daysUntilExpiration = (expirationDateTime - today.ToDateTime(TimeOnly.MinValue)).Days;
 
                 if (item.FoodDetails.Quantity <= 0) return "out";
+                if (item.FoodDetails.ExpirationDate == new DateOnly()) return "transparent";
 
                 if (daysUntilExpiration < threeDays) return "critical";
                 if (daysUntilExpiration < daysinWeek) return "attention";
