@@ -44,7 +44,7 @@ namespace MatKollen.Controllers
 
             if (fetchedUser != null)
             {
-                bool userIsValid = hashedPassword.SequenceEqual(fetchedUser.PasswordHashed);
+                bool userIsValid = hashedPassword.SequenceEqual(fetchedUser.Password);
 
                 if (userIsValid)
                 {
@@ -111,7 +111,7 @@ namespace MatKollen.Controllers
             }
             
             var hashedPassword = CalculateSHA256(user.Password);
-            user.PasswordHashed = hashedPassword;
+            user.Password = hashedPassword;
 
             var rowsAffectd = _accountRepository.InsertUser(user, out string error);
 
@@ -131,14 +131,15 @@ namespace MatKollen.Controllers
 
         // Implementerad baserat på kodexempel 
         // från https://www.thatsoftwaredude.com/content/6218/how-to-encrypt-passwords-using-sha-256-in-c-and-net
-        private byte[] CalculateSHA256(string password)
+        private string CalculateSHA256(string password)
         {
             SHA256 sha256 = SHA256.Create();
             byte[] hashValue;
             UTF8Encoding objUtf8 = new UTF8Encoding();
             hashValue = sha256.ComputeHash(objUtf8.GetBytes(password));
+            string hashValueString = Convert.ToBase64String(hashValue);
 
-            return hashValue;
+            return hashValueString;
         }
 
         public IActionResult Logout()

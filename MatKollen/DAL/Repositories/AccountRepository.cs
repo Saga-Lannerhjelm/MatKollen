@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
 using MatKollen.Models;
 using MySql.Data.MySqlClient;
 
@@ -37,7 +32,7 @@ namespace MatKollen.DAL.Repositories
 
                     myCommand.Parameters.Add("@username", MySqlDbType.VarChar, 50).Value = user.Username;
                     myCommand.Parameters.Add("@email", MySqlDbType.VarChar, 320).Value = user.Email;
-                    myCommand.Parameters.Add("@password", MySqlDbType.Binary, 32).Value = user.PasswordHashed;
+                    myCommand.Parameters.Add("@password", MySqlDbType.VarChar, 500).Value = user.Password;
                     myCommand.Parameters.Add("@groceryListName", MySqlDbType.VarChar, 50).Value = user.Username + "s Inköpslista";
 
                     errorMsg = "";
@@ -89,10 +84,10 @@ namespace MatKollen.DAL.Repositories
                         {
                             userCredentials.Id = myReader.GetInt32("id");
                             userCredentials.Username = myReader.GetString("username");
-                            userCredentials.PasswordHashed = (byte[])myReader["password"];
+                            userCredentials.Password = myReader.GetString("password");
                         }
                     }
-                    if (userCredentials.PasswordHashed == null)
+                    if (userCredentials.Password == null)
                     {
                         errorMsg = "Fel användarnamn eller lösenord";
                         return null;
