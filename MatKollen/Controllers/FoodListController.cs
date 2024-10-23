@@ -232,10 +232,9 @@ namespace MatKollen.Controllers
         public IActionResult IncreaseQuantity(int id, double unitMultiplier, string unit, string showAccordionName)
         {
             decimal incrementNr = Convert.ToDecimal(unit != "kg" && unit != "L" ? 1 / unitMultiplier : 0.1);
-            var affectedRows = _foodRepository.UpdateQuantity(id, incrementNr, out string error);
-            if (affectedRows == 0) TempData["error"] = "Det gick inte att ändra antalet";
+            var newQuantity = _foodRepository.UpdateQuantity(id, incrementNr, out string error);
             if (error != "") TempData["error"] = error;
-            return RedirectToAction("Index", new {showAccordionName});
+            return new JsonResult(new { success = true, newQuantity });
         }
 
         [HttpPost]

@@ -42,7 +42,11 @@ namespace MatKollen.Controllers.Repositories
                         while (reader.Read())
                         {
                             // Find if an tiem with the name and type already exists 
-                            var existingItem = foodItems.Find(item => item.FoodItemName.Contains(reader.GetString("item")) && item.UserFoodItems[0].UnitInfo.Type.Contains(reader.GetString("type")));
+                            UserFoodItemViewModel existingItem = null;
+                            if (DateOnly.FromDateTime(reader.GetDateTime("expiration_date")) != new DateOnly())
+                            {   
+                                existingItem = foodItems.Find(item => item.FoodItemName.Contains(reader.GetString("item")) && item.UserFoodItems[0].UnitInfo.Type.Contains(reader.GetString("type")));
+                            }
 
                             if (existingItem == null)
                             {
@@ -276,13 +280,13 @@ namespace MatKollen.Controllers.Repositories
             }
         }
 
-        public int UpdateQuantity(int id, decimal nr, out string errorMsg)
+        public double UpdateQuantity(int id, decimal nr, out string errorMsg)
         {
             var myConnectionString = _connectionString;
 
             using (var myConnection = new MySqlConnection(myConnectionString))
             {
-                string query  = "UPDATE user_has_fooditems SET quantity = quantity + @nr WHERE id = @id";
+                string query  = "CALL `update_user_food_item_quantity`(@id, @nr)";
 
                 try
                 {
@@ -293,16 +297,16 @@ namespace MatKollen.Controllers.Repositories
                     myCommand.Parameters.Add("@id", MySqlDbType.Int32).Value = id;
 
                     errorMsg = "";
+                    double newQuantity = 0;
 
-                    var rowsAffected = myCommand.ExecuteNonQuery();
+                    var reader = myCommand.ExecuteReader();
 
-                    if (rowsAffected == 0)
+                    while (reader.Read())
                     {
-                        errorMsg = "Gick inte att updatera antalet.";
-                        return 0;
+                        newQuantity = Convert.ToDouble(reader.GetDecimal("quantity"));
                     }
-                    
-                    return rowsAffected;
+
+                    return newQuantity;
                 }
                 catch (MySqlException e)
                 {
@@ -318,7 +322,7 @@ namespace MatKollen.Controllers.Repositories
 
             using (var myConnection = new MySqlConnection(myConnectionString))
             {
-                string query  = "UPDATE user_has_fooditems SET expiration_date = @expirationDate WHERE id = @id";
+                string query  = "SELECT `quantity` FROM `user_has_fooditems` WHERE `id` = paramId;";
 
                 try
                 {
@@ -337,7 +341,7 @@ namespace MatKollen.Controllers.Repositories
                         errorMsg = "Gick inte att lägga till datumet datumet";
                         return 0;
                     }
-                    
+
                     return rowsAffected;
                 }
                 catch (MySqlException e)

@@ -122,7 +122,7 @@
                                         <input type="hidden" value="@item.UserFoodItems[0].UnitInfo.Unit" name="unit">
                                         @* <button type="submit" class="action-btn"><i class="bi bi-plus"></i></button> *@
                                     </form>
-                                    <button onclick="IncreaseQuantity(item.UserFoodItems[0].FoodDetails.Id, item.UserFoodItems[0].UnitInfo.Multiplier, item.UserFoodItems[0].FoodDetails.Quantity, item.UserFoodItems[0].UnitInfo.Unit)" class="action-btn"><i class="bi bi-plus"></i></button>
+                                    <button onclick="IncreaseQuantity(@item.UserFoodItems[0].FoodDetails.Id, @item.UserFoodItems[0].UnitInfo.Multiplier, '@item.UserFoodItems[0].UnitInfo.Unit')" class="action-btn"><i class="bi bi-plus"></i></button>
                                 </div>
                             </div>
                         }
@@ -152,26 +152,26 @@
                 error: errorCallback
             }); *@
 
-            function IncreaseQuantity(foodItemId, unitMultiplier, quantity, unit) {
+            
+        });
+        function IncreaseQuantity(foodItemId, unitMultiplier, unit) {
                 $.ajax({
                     type: 'POST',
                     url: '@Url.Action("IncreaseQuantity", "FoodList")',
                     data: {
                         id: foodItemId,
                         unitMultiplier: unitMultiplier,
-                        quantity: quantity,
                         unit: unit
                     },
                     success: function (response) {
-                        // Uppdatera vyn med det nya värdet
-                        @* $("#quantity-display-" + foodItemId).text(response.); *@
-                        alert("Kvantiteten uppdaterades framgångsrikt!");
+                        console.log(response.newQuantity);
+                        @* $("#quantity-display-" + foodItemId).text(response); *@
+                        @* alert("Kvantiteten uppdaterades framgångsrikt!"); *@
                     },
                     error: function (error) {
                         console.log(error);
                     }
                 });
             }
-        });
     </script>
 }
