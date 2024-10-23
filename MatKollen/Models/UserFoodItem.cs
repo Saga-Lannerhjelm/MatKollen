@@ -11,7 +11,7 @@ namespace MatKollen.Models
         public decimal Quantity { get; set; }
         [Required (ErrorMessage = "Fältet kan inte vara tomt")]
         [DataType(DataType.ImageUrl, ErrorMessage = "Fältet måste vara ett giltigt datum")]
-        public DateOnly ExpirationDate { get; set; }
+        public DateOnly ExpirationDate { get; set; } = DateOnly.FromDateTime(DateTime.Now);
         public int UserId { get; set; } 
         public int FoodItemId { get; set; }
 
