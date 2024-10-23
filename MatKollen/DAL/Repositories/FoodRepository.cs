@@ -346,7 +346,7 @@ namespace MatKollen.Controllers.Repositories
             }
         }
 
-        public int Delete(int foodId, int userId, string type, out string errorMsg)
+        public int DeleteAllOfFoodItem(int foodId, int userId, string type, out string errorMsg)
         {
             var myConnectionString = _connectionString;
 
@@ -366,6 +366,46 @@ namespace MatKollen.Controllers.Repositories
                     myCommand.Parameters.Add("@foodId", MySqlDbType.Int32).Value = foodId;
                     myCommand.Parameters.Add("@userId", MySqlDbType.Int32).Value = userId;
                     myCommand.Parameters.Add("@type", MySqlDbType.VarChar, 50).Value = type;
+
+                    errorMsg = "";
+
+                    // execute the command and read the results
+                    var rowsAffected = myCommand.ExecuteNonQuery();
+
+                    if (rowsAffected == 0)
+                    {
+                        errorMsg = "Ingen matvara togs bort";
+                        return 0;
+                    }
+                    
+                    return rowsAffected;
+                }
+                catch (MySqlException e)
+                {
+                    errorMsg = e.Message;
+                    return 0;
+                }    
+            }
+        }
+
+        public int DeleteFoodItem(int id, out string errorMsg)
+        {
+            var myConnectionString = _connectionString;
+
+            using (var myConnection = new MySqlConnection(myConnectionString))
+            {
+                //Creates a new user and a grozery list for that user at the same time
+                string query  = "DELETE FROM user_has_fooditems WHERE id = @id;";
+
+                try
+                {
+                    // create a MySQL command and set the SQL statement with parameters
+                    MySqlCommand myCommand = new MySqlCommand(query, myConnection);
+
+                    //open a connection
+                    myConnection.Open();
+
+                    myCommand.Parameters.Add("@id", MySqlDbType.Int32).Value = id;
 
                     errorMsg = "";
 

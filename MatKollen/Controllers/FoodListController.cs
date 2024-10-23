@@ -244,7 +244,7 @@ namespace MatKollen.Controllers
         }
 
         [HttpPost]
-        public IActionResult DecreaseQuantity(int id, double unitMultiplier, double quantity, string unit, string showAccordionName)
+        public IActionResult DecreaseQuantity(int id, double unitMultiplier, double quantity, string unit, string showAccordionName, bool canDelete)
         {
             if (quantity > 0)
             {
@@ -252,6 +252,13 @@ namespace MatKollen.Controllers
                 var affectedRows = _foodRepository.UpdateQuantity(id, decreaseNr, out string error);
                 if (affectedRows == 0) TempData["error"] = "Det gick inte att ändra antalet";
                 if (error != "") TempData["error"] = error;
+            }
+            else if (canDelete)
+            {
+                 var affectedRows = _foodRepository.DeleteFoodItem(id, out string error);
+
+            if (affectedRows == 0) TempData["error"] = "Det gick inte att ta bort varan";
+            if (error != "") TempData["error"] = error;
             }
             return RedirectToAction("Index", new {showAccordionName});
         }
@@ -270,7 +277,7 @@ namespace MatKollen.Controllers
         [HttpPost]
         public IActionResult Delete(int foodId, int userId, string type)
         {
-            var affectedRows = _foodRepository.Delete(foodId, userId, type, out string error);
+            var affectedRows = _foodRepository.DeleteAllOfFoodItem(foodId, userId, type, out string error);
 
             if (error != "") TempData["error"] = error;
             if (affectedRows == 0) TempData["error"] = "Det gick inte att ta bort varan";
