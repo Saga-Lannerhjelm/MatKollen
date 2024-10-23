@@ -20,8 +20,9 @@ namespace MatKollen.Controllers
             _getListRepository = getListsRepository;
             _convertQuantityHandler = convertQuantityHandler;
         }
+
+        // Get
         
-        //FoodList
         public IActionResult Index(string showAccordionName)
         {
             var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "id").Value);
@@ -41,7 +42,8 @@ namespace MatKollen.Controllers
             return View(foodList);
         }
 
-        //FoodList/Add
+         // Create
+        
         [HttpGet]
         public IActionResult Add()
         {
@@ -106,7 +108,6 @@ namespace MatKollen.Controllers
             ViewData["foodItems"] = foodItemList;
         }
 
-        //FoodList/AddNewFoodItem
         [HttpGet]
         public IActionResult AddNewFoodItem()
         {
@@ -115,7 +116,7 @@ namespace MatKollen.Controllers
                 FoodItem = new FoodItem(),
                 UserFoodItem = new UserFoodItem()
             };
-            GetFormLists();
+            GetUnitsAndCategories();
             return View(model);
         }
 
@@ -129,7 +130,7 @@ namespace MatKollen.Controllers
 
             if (!ModelState.IsValid)
             {
-                GetFormLists();
+                GetUnitsAndCategories();
                 return View(item);
             }
 
@@ -163,7 +164,6 @@ namespace MatKollen.Controllers
             return RedirectToAction("Index");
         }
 
-        //FoodList/AddNewIngredientFoodItem
         [HttpGet]
         public IActionResult AddNewIngredientFoodItem(int id)
         {
@@ -175,7 +175,7 @@ namespace MatKollen.Controllers
                     RecipeId = id,
                 }
             };
-            GetFormLists();
+            GetUnitsAndCategories();
             return View(model);
         }
 
@@ -184,7 +184,7 @@ namespace MatKollen.Controllers
         {
             if (!ModelState.IsValid)
             {
-                GetFormLists();
+                GetUnitsAndCategories();
                 return View(item);
             }
 
@@ -215,7 +215,7 @@ namespace MatKollen.Controllers
             return RedirectToAction("Edit", "Recipe", new {id = item.RecipeFoodItem.RecipeId});
         }
 
-        private void GetFormLists()
+        private void GetUnitsAndCategories()
         {
             var unitList = _getListRepository.GetUnits(out string unitsError);
             var categoryList = _getListRepository.GetFoodCategories(out string categoryError);
@@ -226,18 +226,7 @@ namespace MatKollen.Controllers
             ViewData["categories"] = categoryList;
         }
 
-        //FoodList/Edit
-        [HttpGet]
-        public IActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult Edit(FoodItem item)
-        {
-            return View();
-        }
+        // Update
 
         [HttpPost]
         public IActionResult IncreaseQuantity(int id, double unitMultiplier, string unit, string showAccordionName)
@@ -279,6 +268,8 @@ namespace MatKollen.Controllers
             return RedirectToAction("Index");
         }
 
+
+        // Delete
 
         [HttpPost]
         public IActionResult Delete(int foodId, int userId, string type)
