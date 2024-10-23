@@ -27,13 +27,6 @@ namespace MatKollen.Controllers
             
             if (error != "") TempData["error"] = error;
 
-            // sort lists by expiration date
-            for (int i = 0; i < foodList?.Count; i++)
-            {
-                foodList[i].UserFoodItems.Sort((a, b) => a.FoodDetails.ExpirationDate.CompareTo(b.FoodDetails.ExpirationDate));
-            }
-            foodList.Sort((a,b) => a.UserFoodItems[0].FoodDetails.ExpirationDate.CompareTo(b.UserFoodItems[0].FoodDetails.ExpirationDate));
-
             ViewBag.showAccordionName = showAccordionName;
 
             return View(foodList);

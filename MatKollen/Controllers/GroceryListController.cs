@@ -50,6 +50,7 @@ namespace MatKollen.Controllers
                     {
                         Quantity = food.Quantity,
                         UserId = userId,
+                        ExpirationDate = new DateOnly(),
                         FoodItemId = food.FoodItemId,
                         UnitId = food.UnitId
                     };
