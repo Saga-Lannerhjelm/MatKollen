@@ -15,13 +15,21 @@ namespace MatKollen.Controllers
         private readonly FoodRepository _foodRepository;
         private readonly GroceryListRepository _groceryListRepository;
         private readonly GetListsRepository _getListsRepository;
+        private readonly ConvertQuantityHandler _convertQuantityHandler;
 
-        public RecipeController(RecipeRepository recipeRepository, FoodRepository foodRepository, GroceryListRepository groceryListRepository, GetListsRepository getListsRepository)
+        public RecipeController(
+            RecipeRepository recipeRepository, 
+            FoodRepository foodRepository, 
+            GroceryListRepository groceryListRepository, 
+            GetListsRepository getListsRepository, 
+            ConvertQuantityHandler convertQuantityHandler
+        )
         {
             _recipeRepository = recipeRepository;
             _foodRepository = foodRepository;
             _groceryListRepository = groceryListRepository;
             _getListsRepository = getListsRepository;
+            _convertQuantityHandler = convertQuantityHandler;
         }
 
         //Recipe
@@ -172,14 +180,13 @@ namespace MatKollen.Controllers
                 return View(ingredient);
             }
             
-            var quantityConverter = new ConvertQuantityHandler();
             if (unitsError != "")
             {
                 TempData["error"] = unitsError;
                 return View(ingredient);
             }
             double multiplier = unitList.Find(m => m.Id == ingredient.UnitId).Multiplier;
-            ingredient.Quantity = quantityConverter.ConverToLiterOrKg(ingredient.Quantity, multiplier);
+            ingredient.Quantity = _convertQuantityHandler.ConverToLiterOrKg(ingredient.Quantity, multiplier);
 
             var affectedRows = _recipeRepository.InsertIngredient(ingredient, out error);
             if (error != "" || affectedRows == 0) TempData["error"] = "Det gick inte att lägga till ingrediensen."  + error;

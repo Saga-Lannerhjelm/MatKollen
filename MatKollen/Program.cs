@@ -3,6 +3,7 @@ using System.Text;
 using MatKollen.Controllers;
 using MatKollen.Controllers.Repositories;
 using MatKollen.DAL.Repositories;
+using MatKollen.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -66,7 +67,7 @@ builder.Services.AddScoped<RecipeRepository>();
 builder.Services.AddScoped<GroceryListRepository>();
 builder.Services.AddScoped<GetListsRepository>();
 
-
+builder.Services.AddScoped<ConvertQuantityHandler>();
 builder.Services.AddScoped<FoodService>();
 
 // Added to handle sessions. Retrieved from https://www.canvas.umu.se/courses/15315/pages/undervisningsfilmer-asp-dot-net-mvc 4th september 2024

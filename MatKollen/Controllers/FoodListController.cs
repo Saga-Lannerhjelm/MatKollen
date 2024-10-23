@@ -12,11 +12,13 @@ namespace MatKollen.Controllers
     {
         private readonly FoodRepository _foodRepository;
         private readonly GetListsRepository _getListRepository;
+        private readonly ConvertQuantityHandler _convertQuantityHandler;
 
-        public FoodListController(FoodRepository foodRepository, GetListsRepository getListsRepository)
+        public FoodListController(FoodRepository foodRepository, GetListsRepository getListsRepository, ConvertQuantityHandler convertQuantityHandler)
         {
             _foodRepository = foodRepository;
             _getListRepository = getListsRepository;
+            _convertQuantityHandler = convertQuantityHandler;
         }
         
         //FoodList
@@ -77,8 +79,7 @@ namespace MatKollen.Controllers
             item.UserId = userId;
 
             // Recalculate quantity
-            var conversionHandler = new ConvertQuantityHandler();
-            item.Quantity = conversionHandler.ConverToLiterOrKg(item.Quantity, multiplier);
+            item.Quantity = _convertQuantityHandler.ConverToLiterOrKg(item.Quantity, multiplier);
 
             // Insert values in database
             int affectedRows = _foodRepository.AddFoodItem(item, out string error);
@@ -146,8 +147,7 @@ namespace MatKollen.Controllers
             item.UserFoodItem.UserId = userId;
 
             // Recalculate quantity
-            var conversionHandler = new ConvertQuantityHandler();
-            item.UserFoodItem.Quantity = conversionHandler.ConverToLiterOrKg(item.UserFoodItem.Quantity, multiplier);
+            item.UserFoodItem.Quantity = _convertQuantityHandler.ConverToLiterOrKg(item.UserFoodItem.Quantity, multiplier);
 
             // Insert values in database
             int affectedRows = _foodRepository.InsertFoodItem(item, out string error);
@@ -199,8 +199,7 @@ namespace MatKollen.Controllers
 
 
             // Recalculate quantity
-            var conversionHandler = new ConvertQuantityHandler();
-            item.RecipeFoodItem.Quantity = conversionHandler.ConverToLiterOrKg(item.RecipeFoodItem.Quantity, multiplier);
+            item.RecipeFoodItem.Quantity = _convertQuantityHandler.ConverToLiterOrKg(item.RecipeFoodItem.Quantity, multiplier);
 
             // Insert values in database
             int affectedRows = _foodRepository.InsertIngredientFoodItem(item, out string error);

@@ -9,10 +9,12 @@ namespace MatKollen.DAL.Repositories
     public class GroceryListRepository
     {
         private readonly string _connectionString;
+        private readonly ConvertQuantityHandler _convertQuantityHandler;
         
-        public GroceryListRepository(IConfiguration configuration)
+        public GroceryListRepository(IConfiguration configuration, ConvertQuantityHandler convertQuantityHandler)
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection");
+            _convertQuantityHandler = convertQuantityHandler;
         }
 
         public int InsertOrUpdateFoodItems (ListFoodItem food, int userId, out string errorMsg)
@@ -197,7 +199,6 @@ namespace MatKollen.DAL.Repositories
             string query  = "SELECT * FROM vw_grocery_list_details WHERE `list_id` = (SELECT id FROM lists WHERE user_id = @userId)";
             
             var foodItems = new List<GroceryListViewModel>();
-            var conversionHandler = new ConvertQuantityHandler();
 
             using (var myConnection = new MySqlConnection(myConnectionString))
             {
@@ -225,7 +226,7 @@ namespace MatKollen.DAL.Repositories
                                     FoodItemId = reader.GetInt16("food_item_id"),
                                     Completed = reader.GetBoolean("completed")
                                 },
-                                ConvertedQuantity = conversionHandler.ConverFromtLiterOrKg(reader.GetDecimal("quantity"), reader.GetDouble("conversion_multiplier")),
+                                ConvertedQuantity = _convertQuantityHandler.ConverFromtLiterOrKg(reader.GetDecimal("quantity"), reader.GetDouble("conversion_multiplier")),
                                 FoodItemName = reader.GetString("food_item"),
                                 Unit = reader.GetString("unit"),
                                 ListName = reader.GetString("list_name"),
@@ -249,7 +250,6 @@ namespace MatKollen.DAL.Repositories
             string query  = "SELECT * FROM vw_grocery_list_details WHERE `list_id` = (SELECT id FROM lists WHERE user_id = @userId) AND completed = true";
             
             var foodItems = new List<ListFoodItem>();
-            var conversionHandler = new ConvertQuantityHandler();
 
             using (var myConnection = new MySqlConnection(myConnectionString))
             {

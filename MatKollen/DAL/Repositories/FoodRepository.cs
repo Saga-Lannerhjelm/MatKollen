@@ -14,10 +14,12 @@ namespace MatKollen.Controllers.Repositories
     public class FoodRepository
     {
         private readonly string _connectionString;
+        private readonly ConvertQuantityHandler _convertQuantityHandler;
         
-        public FoodRepository(IConfiguration configuration)
+        public FoodRepository(IConfiguration configuration, ConvertQuantityHandler convertQuantityHandler)
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection");
+            _convertQuantityHandler = convertQuantityHandler;
         }
 
         public List<UserFoodItemViewModel>? GetUserFoodList(int userId, out string errorMsg)
@@ -25,7 +27,6 @@ namespace MatKollen.Controllers.Repositories
             var myConnectionString = _connectionString;
             string query  = "SELECT * FROM vw_user_food_details WHERE user_id = @userid";
             var foodItems = new List<UserFoodItemViewModel>();
-            var conversionHandler = new ConvertQuantityHandler();
 
             using (var myConnection = new MySqlConnection(myConnectionString))
             {
@@ -52,7 +53,7 @@ namespace MatKollen.Controllers.Repositories
                                     UserFoodItems = 
                                     [
                                         (
-                                            ConvertedQuantity: conversionHandler.ConverFromtLiterOrKg(reader.GetDecimal("quantity"), reader.GetDouble("conversion_multiplier")),
+                                            ConvertedQuantity: _convertQuantityHandler.ConverFromtLiterOrKg(reader.GetDecimal("quantity"), reader.GetDouble("conversion_multiplier")),
                                             FoodDetails: new UserFoodItem()
                                             {
                                                 Id = reader.GetInt32("id"),
@@ -76,7 +77,7 @@ namespace MatKollen.Controllers.Repositories
                             {
                                 existingItem?.UserFoodItems.Add(
                                     (
-                                            ConvertedQuantity: conversionHandler.ConverFromtLiterOrKg(reader.GetDecimal("quantity"), reader.GetDouble("conversion_multiplier")),
+                                            ConvertedQuantity: _convertQuantityHandler.ConverFromtLiterOrKg(reader.GetDecimal("quantity"), reader.GetDouble("conversion_multiplier")),
                                             FoodDetails: new UserFoodItem()
                                             {
                                                 Id = reader.GetInt32("id"),

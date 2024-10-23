@@ -13,10 +13,12 @@ namespace MatKollen.DAL.Repositories
     public class RecipeRepository
     {
         private readonly string _connectionString;
+        private readonly ConvertQuantityHandler _convertQuantityHandler;
         
-        public RecipeRepository(IConfiguration configuration)
+        public RecipeRepository(IConfiguration configuration, ConvertQuantityHandler convertQuantityHandler)
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection");
+            _convertQuantityHandler = convertQuantityHandler;
         }
         public List<RecipeDetailsViewModel>? GetRecipes( out string errorMsg)
         {
@@ -125,7 +127,6 @@ namespace MatKollen.DAL.Repositories
             {
                 string query  = "SELECT * FROM vw_recipe_with_ingredients WHERE id = @recipeId";
                 var recipe = new RecipeDetailsViewModel();
-                var conversionHandler = new ConvertQuantityHandler();
 
                 try
                 {
@@ -169,7 +170,7 @@ namespace MatKollen.DAL.Repositories
                                         UnitId =  reader.GetInt32("unit_id"),
                                         FoodItemId = reader.GetInt32("food_item_id")
                                     },
-                                    ConvertedQuantity = conversionHandler.ConverFromtLiterOrKg(reader.GetDecimal("quantity"), reader.GetDouble("conversion_multiplier")),
+                                    ConvertedQuantity = _convertQuantityHandler.ConverFromtLiterOrKg(reader.GetDecimal("quantity"), reader.GetDouble("conversion_multiplier")),
                                     Multiplier = reader.GetDouble("conversion_multiplier"),
                                     Type = reader.GetString("type"),
                                     Ingredient = reader.GetString("ingredient"),
