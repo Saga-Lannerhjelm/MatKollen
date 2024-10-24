@@ -44,7 +44,7 @@ namespace MatKollen.Controllers
         {
             var recipe = _recipeRepository.GetRecipe(id, out string error);
 
-            int userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "id").Value);
+            int userId = UserHelper.GetUserId(User);
             var userFoodItems = _foodRepository.GetUserFoodList(userId, out string listError);
             var foodItemsForGroceryList = new List<ListFoodItem>();
             var existingItems = new Dictionary<int, string>();
@@ -93,10 +93,10 @@ namespace MatKollen.Controllers
         }
 
         //Recipe/Saved
-        public IActionResult My()
+         public IActionResult My()
         {
-            var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value);
-            
+            int userId = UserHelper.GetUserId(User);
+
             var recipeList = _recipeRepository.GetUsersRecipes(userId, out string error);
             return View(recipeList);
         }

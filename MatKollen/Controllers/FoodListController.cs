@@ -25,7 +25,7 @@ namespace MatKollen.Controllers
         
         public IActionResult Index(string showAccordionName)
         {
-            var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "id").Value);
+            int userId = UserHelper.GetUserId(User);
             var foodList = _foodRepository.GetUserFoodList(userId, out string error);
             
             if (error != "") TempData["error"] = error;
@@ -77,7 +77,7 @@ namespace MatKollen.Controllers
             double multiplier = measurementMultipliers.Find(m => m.Id == item.UnitId).Multiplier;
 
             //Get user id
-            var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "id").Value);
+            int userId = UserHelper.GetUserId(User);
             item.UserId = userId;
 
             // Recalculate quantity
@@ -144,7 +144,7 @@ namespace MatKollen.Controllers
             double multiplier = measurementMultipliers.Find(m => m.Id == item.UserFoodItem.UnitId).Multiplier;
 
             //Get user id
-            var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "id").Value);
+            int userId = UserHelper.GetUserId(User);
             item.UserFoodItem.UserId = userId;
 
             // Recalculate quantity

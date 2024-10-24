@@ -32,7 +32,7 @@ namespace MatKollen.Controllers
         //GroceryList
         public IActionResult Index()
         {
-            int userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "id").Value);
+            int userId = UserHelper.GetUserId(User);
             var groceryItems = _groceryListRepository.GetGroceryList(userId, out string error);
 
             if (error != "")
@@ -46,7 +46,7 @@ namespace MatKollen.Controllers
         [HttpPost]
         public IActionResult AddCompletedItemsToUserInventory()
         {
-            int userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "id").Value);
+            int userId = UserHelper.GetUserId(User);
             var foodItems = _groceryListRepository.GetCompletedItems(userId, out string error);
 
             if (error != "")
@@ -116,7 +116,7 @@ namespace MatKollen.Controllers
             double multiplier = measurementMultipliers.Find(m => m.Id == item.UnitId).Multiplier;
 
             //Get user id
-            var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "id").Value);
+            int userId = UserHelper.GetUserId(User);
 
             // Recalculate quantity
             item.Quantity = _convertQuantityHandler.ConverToLiterOrKg(item.Quantity, multiplier);
@@ -149,7 +149,7 @@ namespace MatKollen.Controllers
          [HttpPost]
         public IActionResult AddFromRecipe(List<int> checkedItems)
         {
-            int userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "id").Value);
+            int userId = UserHelper.GetUserId(User);
             var groceryListItems = HttpContext.Session.GetObject<List<ListFoodItem>>("groceryList");
             var filteredGroceryItems = groceryListItems.Where(g => !checkedItems.Contains(g.FoodItemId)).ToList();
 
