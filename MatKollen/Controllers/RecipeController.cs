@@ -105,12 +105,7 @@ namespace MatKollen.Controllers
         [HttpGet]       
         public IActionResult Create()
         {
-            List<RecipeCategory> categoryList = _getListsRepository.GetRecipeCategories(out string error);
-
-            if (error != "")
-            {
-                TempData["error"] = error;
-            }
+            List<RecipeCategory> categoryList = GetCategories();
 
             ViewData["categories"] = categoryList;
 
@@ -122,6 +117,8 @@ namespace MatKollen.Controllers
         {
             if (!ModelState.IsValid)
             {
+                List<RecipeCategory> categoryList = GetCategories();
+                 ViewData["categories"] = categoryList;
                 return View(recipe);
             }
             var userId = int.Parse(User.Claims.FirstOrDefault(c => c.Type == "id")?.Value);
@@ -134,6 +131,18 @@ namespace MatKollen.Controllers
                  return View();
             }
             return RedirectToAction("AddIngredient", new {recipeId, title = recipe.Title});
+        }
+
+        private List<RecipeCategory> GetCategories()
+        {
+            List<RecipeCategory> categoryList = _getListsRepository.GetRecipeCategories(out string error);
+
+            if (error != "")
+            {
+                TempData["error"] = error;
+            }
+
+            return categoryList;
         }
 
         //Recipe/AddIngredient

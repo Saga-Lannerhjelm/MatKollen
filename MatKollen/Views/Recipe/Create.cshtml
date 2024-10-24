@@ -23,7 +23,7 @@
             <div class="mb-3">
                  <label asp-for="RecipeCategoryId" class="form-label">Kategori</label>
                 <select class="form-select" asp-for="RecipeCategoryId">
-                    <option value="0" disabled>Välj kategori</option>
+                    <option value="0">Välj kategori</option>
                     @foreach (var category in (List<RecipeCategory>)ViewData["categories"])
                     {
                     <option value="@category.Id">@category.Name</option>
