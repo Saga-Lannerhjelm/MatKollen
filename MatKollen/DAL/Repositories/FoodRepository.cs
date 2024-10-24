@@ -18,7 +18,8 @@ namespace MatKollen.Controllers.Repositories
         
         public FoodRepository(IConfiguration configuration, ConvertQuantityHandler convertQuantityHandler)
         {
-            _connectionString = configuration.GetConnectionString("DefaultConnection");
+            _connectionString = configuration.GetConnectionString("DefaultConnection")
+                                ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");;
             _convertQuantityHandler = convertQuantityHandler;
         }
 
@@ -42,7 +43,7 @@ namespace MatKollen.Controllers.Repositories
                         while (reader.Read())
                         {
                             // Find if an tiem with the name and type already exists 
-                            UserFoodItemViewModel existingItem = null;
+                            UserFoodItemViewModel? existingItem = null;
                             if (DateOnly.FromDateTime(reader.GetDateTime("expiration_date")) != new DateOnly())
                             {   
                                 existingItem = foodItems.Find(item => item.FoodItemName.Contains(reader.GetString("item")) && item.UserFoodItems[0].UnitInfo.Type.Contains(reader.GetString("type")));
@@ -54,11 +55,12 @@ namespace MatKollen.Controllers.Repositories
                                 {
                                     FoodItemName = reader.GetString("item"),
                                     CategoryName = reader.GetString("category"),
-                                    UserFoodItems = 
+                                    UserFoodItems =
                                     [
-                                        (
-                                            ConvertedQuantity: _convertQuantityHandler.ConverFromtLiterOrKg(reader.GetDecimal("quantity"), reader.GetDouble("conversion_multiplier")),
-                                            FoodDetails: new UserFoodItem()
+                                        new()
+                                        {
+                                            ConvertedQuantity = _convertQuantityHandler.ConverFromtLiterOrKg(reader.GetDecimal("quantity"), reader.GetDouble("conversion_multiplier")),
+                                            FoodDetails = new UserFoodItem()
                                             {
                                                 Id = reader.GetInt32("id"),
                                                 Quantity = reader.GetDecimal("quantity"),
@@ -67,37 +69,38 @@ namespace MatKollen.Controllers.Repositories
                                                 FoodItemId = reader.GetInt16("food_item_id"),
                                                 UnitId = reader.GetInt16("unit_id"),
                                             },
-                                            UnitInfo: new MeasurementUnit() 
+                                            UnitInfo = new MeasurementUnit() 
                                             {
                                                 Unit = reader.GetString("unit"),
                                                 Multiplier = reader.GetDouble("conversion_multiplier"),
                                                 Type = reader.GetString("type")
                                             }
-                                        )
+                                        } 
                                     ],
                                 }; 
                                 foodItems.Add(foodItem);
                             } else
                             {
                                 existingItem?.UserFoodItems.Add(
-                                    (
-                                            ConvertedQuantity: _convertQuantityHandler.ConverFromtLiterOrKg(reader.GetDecimal("quantity"), reader.GetDouble("conversion_multiplier")),
-                                            FoodDetails: new UserFoodItem()
-                                            {
-                                                Id = reader.GetInt32("id"),
-                                                Quantity = reader.GetDecimal("quantity"),
-                                                UserId = reader.GetInt32("user_id"),
-                                                ExpirationDate = DateOnly.FromDateTime(reader.GetDateTime("expiration_date")),
-                                                FoodItemId = reader.GetInt16("food_item_id"),
-                                                UnitId = reader.GetInt16("unit_id"),
-                                            },
-                                            UnitInfo: new MeasurementUnit() 
-                                            {
-                                                Unit = reader.GetString("unit"),
-                                                Multiplier = reader.GetDouble("conversion_multiplier"),
-                                                Type = reader.GetString("type")
-                                            }
-                                        )
+                                    new()
+                                    {
+                                        ConvertedQuantity = _convertQuantityHandler.ConverFromtLiterOrKg(reader.GetDecimal("quantity"), reader.GetDouble("conversion_multiplier")),
+                                        FoodDetails = new UserFoodItem()
+                                        {
+                                            Id = reader.GetInt32("id"),
+                                            Quantity = reader.GetDecimal("quantity"),
+                                            UserId = reader.GetInt32("user_id"),
+                                            ExpirationDate = DateOnly.FromDateTime(reader.GetDateTime("expiration_date")),
+                                            FoodItemId = reader.GetInt16("food_item_id"),
+                                            UnitId = reader.GetInt16("unit_id"),
+                                        },
+                                        UnitInfo = new MeasurementUnit() 
+                                        {
+                                            Unit = reader.GetString("unit"),
+                                            Multiplier = reader.GetDouble("conversion_multiplier"),
+                                            Type = reader.GetString("type")
+                                        }
+                                    } 
                                 );
                             }
                         }

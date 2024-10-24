@@ -10,7 +10,7 @@ namespace MatKollen.ViewModels
     {
         public required string FoodItemName { get; set; }
         public string? CategoryName { get; set; }
-        public List<(decimal ConvertedQuantity, UserFoodItem FoodDetails, MeasurementUnit UnitInfo)>? UserFoodItems { get; set; }
+        public required List<UserFoodDetailsViewModel> UserFoodItems { get; set; }
         public decimal SumOfQuantities 
         { 
             get 
