@@ -1,4 +1,4 @@
-@model ListFoodItem
+@model GroceryListFoodItem
 @{
     ViewData["Title"] = "Skapa en ny matvara";
 }
@@ -22,7 +22,7 @@
             </div>
             <div class="mb-3">
                 <div>
-                    <label asp-for="Quantity" class="form-label">Mängd/Antal</label>
+                    <label asp-for="Quantity" class="form-label">Mängd/Antal <small>(0 = ospecifierad mängd)</small></label>
                     <input type="number" step="0.1" asp-for="Quantity" class="form-control">
                     @Html.ValidationMessageFor(m => m.Quantity, "", new { @class = "text-danger" })
                 </div>
