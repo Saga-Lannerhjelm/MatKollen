@@ -35,6 +35,9 @@
                 <input type="password" asp-for="Password" name="password" class="form-control">
                 @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
             </div>
+            <div class="mb-3">
+                @Html.ValidationMessage("wrongCredentials", new { @class = "text-danger" })
+            </div>
             <input type="submit" class="btn btn-primary" value="Logga In"/>
         </form>
         <small class="mt-2">Har du inget konto? <a asp-action="Register" asp-controller="Account">Registrera dig!</a></small>

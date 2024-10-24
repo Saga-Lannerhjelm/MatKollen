@@ -87,11 +87,6 @@ namespace MatKollen.DAL.Repositories
                             userCredentials.Password = myReader.GetString("password");
                         }
                     }
-                    if (userCredentials.Password == null)
-                    {
-                        errorMsg = "Fel användarnamn eller lösenord";
-                        return null;
-                    }
                     return userCredentials;
                 }
                 catch (MySqlException e)

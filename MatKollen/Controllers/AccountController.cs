@@ -39,12 +39,20 @@ namespace MatKollen.Controllers
 
             var expirationTime = 2;
 
-            var hashedPassword = CalculateSHA256(user.Password);
+            var hashedPassword = HashPassword(user.Password);
             var fetchedUser = _accountRepository.GetUserCredentials(user, out string error);
+            if (fetchedUser?.Username == null && error == "")
+            {
+                ModelState.AddModelError("wrongCredentials", "Fel användarnamn eller lösenord");
+            }
 
-            if (fetchedUser != null)
+            if (fetchedUser?.Username != null)
             {
                 bool userIsValid = hashedPassword.SequenceEqual(fetchedUser.Password);
+                if (!userIsValid && error == "")
+                {
+                    ModelState.AddModelError("wrongCredentials", "Fel användarnamn eller lösenord");
+                }
 
                 if (userIsValid)
                 {
@@ -74,15 +82,12 @@ namespace MatKollen.Controllers
                     
                     Response.Cookies.Append("Jwt-cookie", tokenResult, cookieOptions);
 
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Index", "UserFoodItems");
                 }
             }
             if (error != "")
             {
                 TempData["error"] = "Fel: " + error;
-            } else
-            {
-                TempData["error"] = "Fel användarnamn eller lösenord";
             }
 
             return View(user);
@@ -110,7 +115,7 @@ namespace MatKollen.Controllers
                 return View(user);
             }
             
-            var hashedPassword = CalculateSHA256(user.Password);
+            var hashedPassword = HashPassword(user.Password);
             user.Password = hashedPassword;
 
             var rowsAffectd = _accountRepository.InsertUser(user, out string error);
@@ -129,9 +134,9 @@ namespace MatKollen.Controllers
         }
 
 
-        // Implementerad baserat på kodexempel 
-        // från https://www.thatsoftwaredude.com/content/6218/how-to-encrypt-passwords-using-sha-256-in-c-and-net
-        private string CalculateSHA256(string password)
+        // Implementerad based on code example 
+        // from https://www.thatsoftwaredude.com/content/6218/how-to-encrypt-passwords-using-sha-256-in-c-and-net
+        private string HashPassword(string password)
         {
             SHA256 sha256 = SHA256.Create();
             byte[] hashValue;
