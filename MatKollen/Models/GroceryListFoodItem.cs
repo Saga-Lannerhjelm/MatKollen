@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MatKollen.Models
 {
-    public class ListFoodItem
+    public class GroceryListFoodItem
     {
         public int Id { get; set; }
         public decimal Quantity { get; set; }

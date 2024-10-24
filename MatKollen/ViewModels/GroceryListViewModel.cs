@@ -8,8 +8,7 @@ namespace MatKollen.ViewModels
 {
     public class GroceryListViewModel
     {
-        public required ListFoodItem FoodDetails  { get; set; }
-
+        public required GroceryListFoodItem FoodDetails  { get; set; }
         public decimal ConvertedQuantity { get; set; }
         public required string FoodItemName { get; set; }
         public required string Unit { get; set; }

@@ -111,7 +111,7 @@ namespace MatKollen.Controllers
         [HttpGet]
         public IActionResult AddNewFoodItem()
         {
-            var model = new AddFoodAndUserItemViewModel
+            var model = new FoodAndUserFoodItemViewModel
             {
                 FoodItem = new FoodItem(),
                 UserFoodItem = new UserFoodItem()
@@ -121,7 +121,7 @@ namespace MatKollen.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddNewFoodItem(AddFoodAndUserItemViewModel item)
+        public IActionResult AddNewFoodItem(FoodAndUserFoodItemViewModel item)
         {
             if (item.UserFoodItem.ExpirationDate < DateOnly.FromDateTime(DateTime.Now))
             {
@@ -167,7 +167,7 @@ namespace MatKollen.Controllers
         [HttpGet]
         public IActionResult AddNewIngredientFoodItem(int id)
         {
-            var model = new NewIngredientViewModel
+            var model = new IngredientAndFoodItemViewModel
             {
                 FoodItem = new FoodItem(),
                 RecipeFoodItem = new RecipeFoodItem()
@@ -180,7 +180,7 @@ namespace MatKollen.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddNewIngredientFoodItem(NewIngredientViewModel item)
+        public IActionResult AddNewIngredientFoodItem(IngredientAndFoodItemViewModel item)
         {
             if (!ModelState.IsValid)
             {

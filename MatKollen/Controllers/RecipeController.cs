@@ -46,7 +46,7 @@ namespace MatKollen.Controllers
 
             int userId = UserHelper.GetUserId(User);
             var userFoodItems = _foodRepository.GetUserFoodList(userId, out string listError);
-            var foodItemsForGroceryList = new List<ListFoodItem>();
+            var foodItemsForGroceryList = new List<GroceryListFoodItem>();
             var existingItems = new Dictionary<int, string>();
 
             foreach(var item in recipe.Ingredients)
@@ -68,7 +68,7 @@ namespace MatKollen.Controllers
                 }
                 else
                 {
-                    var foodItem = new ListFoodItem()
+                    var foodItem = new GroceryListFoodItem()
                     {
                         Quantity = item.IngredientDetails.Quantity,
                         UnitId = item.IngredientDetails.UnitId,

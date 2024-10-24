@@ -152,7 +152,7 @@ namespace MatKollen.Controllers.Repositories
             }
         }
 
-        public int InsertFoodItem(AddFoodAndUserItemViewModel foodItem, out string errorMsg)
+        public int InsertFoodItem(FoodAndUserFoodItemViewModel foodItem, out string errorMsg)
         {
             var myConnectionString = _connectionString;
 
@@ -198,7 +198,7 @@ namespace MatKollen.Controllers.Repositories
             }
         }
 
-        public int InsertIngredientFoodItem(NewIngredientViewModel foodItem, out string errorMsg)
+        public int InsertIngredientFoodItem(IngredientAndFoodItemViewModel foodItem, out string errorMsg)
         {
             var myConnectionString = _connectionString;
 

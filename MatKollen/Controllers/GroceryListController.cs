@@ -92,13 +92,13 @@ namespace MatKollen.Controllers
         [HttpGet]
         public IActionResult AddItemToGroceryList()
         {
-            var foodItem = new ListFoodItem();
+            var foodItem = new GroceryListFoodItem();
             GetLists();
             return View(foodItem);
         }
 
         [HttpPost]
-        public IActionResult AddItemToGroceryList(ListFoodItem item)
+        public IActionResult AddItemToGroceryList(GroceryListFoodItem item)
         {
             if (!ModelState.IsValid)
             {
@@ -150,7 +150,7 @@ namespace MatKollen.Controllers
         public IActionResult AddFromRecipe(List<int> checkedItems)
         {
             int userId = UserHelper.GetUserId(User);
-            var groceryListItems = HttpContext.Session.GetObject<List<ListFoodItem>>("groceryList");
+            var groceryListItems = HttpContext.Session.GetObject<List<GroceryListFoodItem>>("groceryList");
             var filteredGroceryItems = groceryListItems.Where(g => !checkedItems.Contains(g.FoodItemId)).ToList();
 
             foreach (var item in filteredGroceryItems)

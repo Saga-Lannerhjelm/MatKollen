@@ -7,10 +7,10 @@ using MatKollen.Models;
 
 namespace MatKollen.ViewModels
 {
-    public class NewIngredientViewModel
+    public class FoodAndUserFoodItemViewModel
     {
         public required FoodItem FoodItem { get; set; }
-        public required RecipeFoodItem RecipeFoodItem { get; set; }
+        public required UserFoodItem UserFoodItem { get; set; }
 
     }
 }

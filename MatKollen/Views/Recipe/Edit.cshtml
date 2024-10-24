@@ -45,18 +45,18 @@
             {
                 <div class="my-4">
                     <span style="padding: 10px; border-radius: 99px;" class="bg-custom align-items-center">
-                        <strong>@item.ConvertedQuantity@item.Unit</strong> @item.Ingredient
+                        <strong>@item.ConvertedQuantity@item.UnitInfo.Unit</strong> @item.Ingredient
                         <form method="post" asp-controller="Recipe" asp-action="IncreaseQuantity" style="display: inline;">
                             <input type="hidden" name="id" value="@item.IngredientDetails.Id">
-                            <input type="hidden" name="unitMultiplier" value="@item.Multiplier">
-                            <input type="hidden" name="unit" value="@item.Unit">
+                            <input type="hidden" name="unitMultiplier" value="@item.UnitInfo.Multiplier">
+                            <input type="hidden" name="unit" value="@item.UnitInfo.Unit">
                             <input type="hidden" name="recipeId" value="@Model.Recipe.Id">
                             <button class="action-btn"><i class="bi bi-plus" style="font-size: 1rem; margin: -2px;"></i></button>
                         </form>
                         <form method="post" asp-controller="Recipe" asp-action="DecreaseQuantity" style="display: inline;">
                             <input type="hidden" name="id" value="@item.IngredientDetails.Id">
-                            <input type="hidden" name="unitMultiplier" value="@item.Multiplier">
-                            <input type="hidden" name="unit" value="@item.Unit">
+                            <input type="hidden" name="unitMultiplier" value="@item.UnitInfo.Multiplier">
+                            <input type="hidden" name="unit" value="@item.UnitInfo.Unit">
                             <input type="hidden" name="quantity" value="@item.IngredientDetails.Quantity">
                             <input type="hidden" name="recipeId" value="@Model.Recipe.Id">
                             <button class="action-btn"><i class="bi bi-dash" style="font-size: 1rem; margin: -2px;"></i></button>

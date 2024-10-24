@@ -20,10 +20,10 @@
         var sum = Convert.ToDouble(item?.UserFoodItems?.Sum(q => q.FoodDetails.Quantity));
 
         <div class="col">
-            <div class="card rounded-5 bg-@item?.CriticalLevel()" style="border-radius: 1.25rem; min-height: 22vh;">
+            <div class="card rounded-5 bg-@item?.StatusLevel()" style="border-radius: 1.25rem; min-height: 22vh;">
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
-                        <h1 class="bg-@item?.CriticalLevel()">
+                        <h1 class="bg-@item?.StatusLevel()">
                             @(item?.UserFoodItems?.Count == 1 
                                 ? item.UserFoodItems[0].ConvertedQuantity.ToString() + item.UserFoodItems[0].UnitInfo.Unit 
                                 : sum.ToString() + (item?.UserFoodItems?[0].UnitInfo.Type == "weight" 
@@ -46,12 +46,12 @@
                     <div class="accordion accordion-flush" id="accordionFlushExample">
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="flush-headingOne">
-                                <button class="accordion-button collapsed bg-@item?.CriticalLevel() p-0" type="button" data-bs-toggle="collapse" data-bs-target="#@item?.FoodItemName">
+                                <button class="accordion-button collapsed bg-@item?.StatusLevel() p-0" type="button" data-bs-toggle="collapse" data-bs-target="#@item?.FoodItemName">
                                     <small>Utgångsdatum</small>
                                 </button>
                             </h2>
                             <div id="@item?.FoodItemName" class="accordion-collapse collapse @(ViewBag.showAccordionName == @item?.FoodItemName ? "show" : "")" data-bs-parent="#accordionFlushExample">
-                                <div class="accordion-body bg-@item?.CriticalLevel() p-0">
+                                <div class="accordion-body bg-@item?.StatusLevel() p-0">
                                     @if (item?.UserFoodItems != null)
                                     {
                                         @foreach (var foodItem in item.UserFoodItems)

@@ -17,7 +17,7 @@ namespace MatKollen.DAL.Repositories
             _convertQuantityHandler = convertQuantityHandler;
         }
 
-        public int InsertOrUpdateFoodItems (ListFoodItem food, int userId, out string errorMsg)
+        public int InsertOrUpdateFoodItems (GroceryListFoodItem food, int userId, out string errorMsg)
         {
             if (GroceryListItemsExists(food.FoodItemId, userId, out errorMsg))
             {
@@ -68,7 +68,7 @@ namespace MatKollen.DAL.Repositories
             }
         }
 
-        public int InsertFoodItemInList (ListFoodItem food, int userId, out string errorMsg)
+        public int InsertFoodItemInList (GroceryListFoodItem food, int userId, out string errorMsg)
         {
             var myConnectionString = _connectionString;
 
@@ -111,7 +111,7 @@ namespace MatKollen.DAL.Repositories
             }
         }
         
-        public int UpdateFoodItemInList (ListFoodItem food, out string errorMsg)
+        public int UpdateFoodItemInList (GroceryListFoodItem food, out string errorMsg)
         {
             var myConnectionString = _connectionString;
 
@@ -217,7 +217,7 @@ namespace MatKollen.DAL.Repositories
                         {
                             var foodItem = new GroceryListViewModel()
                             {
-                                FoodDetails = new ListFoodItem()
+                                FoodDetails = new GroceryListFoodItem()
                                 {
                                     Id = reader.GetInt32("id"),
                                     Quantity = reader.GetDecimal("quantity"),
@@ -244,12 +244,12 @@ namespace MatKollen.DAL.Repositories
             }
         }
 
-        public List<ListFoodItem> GetCompletedItems(int userId, out string errorMsg)
+        public List<GroceryListFoodItem> GetCompletedItems(int userId, out string errorMsg)
         {
             var myConnectionString = _connectionString;
             string query  = "SELECT * FROM vw_grocery_list_details WHERE `list_id` = (SELECT id FROM lists WHERE user_id = @userId) AND completed = true";
             
-            var foodItems = new List<ListFoodItem>();
+            var foodItems = new List<GroceryListFoodItem>();
 
             using (var myConnection = new MySqlConnection(myConnectionString))
             {
@@ -266,7 +266,7 @@ namespace MatKollen.DAL.Repositories
                     {
                         while (reader.Read())
                         {
-                            var foodItem = new ListFoodItem()
+                            var foodItem = new GroceryListFoodItem()
                             {
                                 Id = reader.GetInt32("id"),
                                 Quantity = reader.GetDecimal("quantity"),
