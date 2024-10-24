@@ -12,6 +12,7 @@ namespace MatKollen.Controllers
     {
         private readonly GroceryListRepository _groceryListRepository;
         private readonly FoodRepository _foodRepository;
+        private readonly UserFoodItemRepository _userFoodItemRepository;
         private readonly UnitsRepository _unitRepository;
         private readonly ConvertQuantityHandler _convertQuantityHandler;
 
@@ -19,12 +20,14 @@ namespace MatKollen.Controllers
         (
             GroceryListRepository groceryListRepository, 
             FoodRepository foodRepository, 
+            UserFoodItemRepository userFoodItemRepository,
             UnitsRepository unitRepository,
             ConvertQuantityHandler convertQuantityHandler
         )
         {
             _groceryListRepository = groceryListRepository;
             _foodRepository = foodRepository;
+            _userFoodItemRepository = userFoodItemRepository;
             _unitRepository = unitRepository;
             _convertQuantityHandler = convertQuantityHandler;
         }
@@ -67,7 +70,7 @@ namespace MatKollen.Controllers
                         UnitId = food.UnitId
                     };
                     
-                    var affectedRows = _foodRepository.AddFoodItem(userFoodItem, out string insertError);
+                    var affectedRows = _userFoodItemRepository.AddFoodItem(userFoodItem, out string insertError);
 
                     if (insertError != "")
                     {

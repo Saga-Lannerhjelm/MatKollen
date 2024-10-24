@@ -9,13 +9,22 @@ namespace MatKollen.Controllers
     public class UserFoodItemsController : Controller
     {
         private readonly FoodRepository _foodRepository;
+        private readonly UserFoodItemRepository _userFoodItemRepository;
         private readonly UnitsRepository _unitRepository;
         private readonly FoodCategoriesRepository _foodCategoryRepository;
         private readonly ConvertQuantityHandler _convertQuantityHandler;
 
-        public UserFoodItemsController(FoodRepository foodRepository, UnitsRepository unitsRepository, FoodCategoriesRepository foodCategoriesRepository, ConvertQuantityHandler convertQuantityHandler)
+        public UserFoodItemsController
+        (
+            FoodRepository foodRepository, 
+            UserFoodItemRepository userFoodItemRepository,
+            UnitsRepository unitsRepository, 
+            FoodCategoriesRepository foodCategoriesRepository, 
+            ConvertQuantityHandler convertQuantityHandler
+        )
         {
             _foodRepository = foodRepository;
+            _userFoodItemRepository = userFoodItemRepository;
             _unitRepository = unitsRepository;
             _foodCategoryRepository = foodCategoriesRepository;
             _convertQuantityHandler = convertQuantityHandler;
@@ -24,7 +33,7 @@ namespace MatKollen.Controllers
         public IActionResult Index(string showAccordionName)
         {
             int userId = UserHelper.GetUserId(User);
-            var foodList = _foodRepository.GetUserFoodList(userId, out string error);
+            var foodList = _userFoodItemRepository.GetUserFoodList(userId, out string error);
             
             if (error != "") TempData["error"] = error;
 
@@ -80,7 +89,7 @@ namespace MatKollen.Controllers
             item.Quantity = _convertQuantityHandler.ConverToLiterOrKg(item.Quantity, multiplier);
 
             // Insert values in database
-            int affectedRows = _foodRepository.AddFoodItem(item, out string error);
+            int affectedRows = _userFoodItemRepository.AddFoodItem(item, out string error);
 
             if (error != "")
             {
@@ -110,7 +119,7 @@ namespace MatKollen.Controllers
         public IActionResult IncreaseQuantity(int id, double unitMultiplier, string unit, string showAccordionName)
         {
             decimal incrementNr = Convert.ToDecimal(unit != "kg" && unit != "L" ? 1 / unitMultiplier : 0.1);
-            var newQuantity = _foodRepository.UpdateQuantity(id, incrementNr, out string error);
+            var newQuantity = _userFoodItemRepository.UpdateQuantity(id, incrementNr, out string error);
             if (error != "") TempData["error"] = error;
             return new JsonResult(new { success = true, newQuantity });
         }
@@ -121,13 +130,13 @@ namespace MatKollen.Controllers
             if (quantity > 0)
             {
                 decimal decreaseNr = Convert.ToDecimal((unit != "kg" && unit != "L" ? 1 / unitMultiplier : 0.1) * -1);
-                var affectedRows = _foodRepository.UpdateQuantity(id, decreaseNr, out string error);
+                var affectedRows = _userFoodItemRepository.UpdateQuantity(id, decreaseNr, out string error);
                 if (affectedRows == 0) TempData["error"] = "Det gick inte att ändra antalet";
                 if (error != "") TempData["error"] = error;
             }
             else if (canDelete)
             {
-                 var affectedRows = _foodRepository.DeleteFoodItem(id, out string error);
+                 var affectedRows = _userFoodItemRepository.DeleteFoodItem(id, out string error);
 
             if (affectedRows == 0) TempData["error"] = "Det gick inte att ta bort varan";
             if (error != "") TempData["error"] = error;
@@ -138,7 +147,7 @@ namespace MatKollen.Controllers
         [HttpPost]
         public IActionResult AddExpirationDate(int id, DateOnly expirationDate)
         {
-             var affectedRows = _foodRepository.UpdateExpirationDate(id, expirationDate, out string error);
+             var affectedRows = _userFoodItemRepository.UpdateExpirationDate(id, expirationDate, out string error);
             if (affectedRows == 0) TempData["error"] = "Gick inte att lägga till datumet datumet";
             if (error != "") TempData["error"] = error;
             
@@ -151,7 +160,7 @@ namespace MatKollen.Controllers
         [HttpPost]
         public IActionResult Delete(int foodId, int userId, string type)
         {
-            var affectedRows = _foodRepository.DeleteAllOfFoodItem(foodId, userId, type, out string error);
+            var affectedRows = _userFoodItemRepository.DeleteAllOfFoodItem(foodId, userId, type, out string error);
 
             if (error != "") TempData["error"] = error;
             if (affectedRows == 0) TempData["error"] = "Det gick inte att ta bort varan";

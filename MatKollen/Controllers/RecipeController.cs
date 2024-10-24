@@ -13,6 +13,7 @@ namespace MatKollen.Controllers
     {
         private readonly RecipeRepository _recipeRepository;
         private readonly FoodRepository _foodRepository;
+        private readonly UserFoodItemRepository _userFoodItemRepository;
         private readonly GroceryListRepository _groceryListRepository;
         private readonly RecipeCategoriesRepository _recipeCategoriesRepository;
         private readonly UnitsRepository _unitRepository;
@@ -20,7 +21,8 @@ namespace MatKollen.Controllers
 
         public RecipeController(
             RecipeRepository recipeRepository, 
-            FoodRepository foodRepository, 
+            FoodRepository foodRepository,
+            UserFoodItemRepository userFoodItemRepository,
             GroceryListRepository groceryListRepository, 
             RecipeCategoriesRepository recipeCategoriesRepository, 
             UnitsRepository unitsRepository,
@@ -29,6 +31,7 @@ namespace MatKollen.Controllers
         {
             _recipeRepository = recipeRepository;
             _foodRepository = foodRepository;
+            _userFoodItemRepository = userFoodItemRepository;
             _groceryListRepository = groceryListRepository;
             _recipeCategoriesRepository = recipeCategoriesRepository;
             _unitRepository = unitsRepository;
@@ -48,7 +51,7 @@ namespace MatKollen.Controllers
             var recipe = _recipeRepository.GetRecipe(id, out string error);
 
             int userId = UserHelper.GetUserId(User);
-            var userFoodItems = _foodRepository.GetUserFoodList(userId, out string listError);
+            var userFoodItems = _userFoodItemRepository.GetUserFoodList(userId, out string listError);
             var foodItemsForGroceryList = new List<GroceryListFoodItem>();
             var existingItems = new Dictionary<int, string>();
 

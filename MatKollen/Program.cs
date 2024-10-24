@@ -62,6 +62,7 @@ builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
 // Register repositories
 builder.Services.AddScoped<FoodRepository>();
+builder.Services.AddScoped<UserFoodItemRepository>();
 builder.Services.AddScoped<AccountRepository>();
 builder.Services.AddScoped<RecipeRepository>();
 builder.Services.AddScoped<GroceryListRepository>();
