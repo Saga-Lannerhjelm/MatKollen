@@ -8,7 +8,7 @@
 
 
 <div class="row row-cols-2 row-cols-md-6 g-4">
-    <a class="col add-btn" asp-action="Add" asp-controller="FoodList">
+    <a class="col add-btn" asp-action="Add" asp-controller="UserFoodItems">
         <div class="card rounded-5" style="border-radius: 1.25rem; height: 100%; border: 3px dotted green;">
             <div class="card-body d-flex justify-content-center align-items-center">
                 <i class="bi bi-plus-lg" style="font-size: 4rem; color: green;"></i>
@@ -32,7 +32,7 @@
                                         ? "L" 
                                         : item?.UserFoodItems?[0].UnitInfo.Unit)))
                         </h1>
-                        <form method="post" asp-action="Delete" asp-controller="FoodList">
+                        <form method="post" asp-action="Delete" asp-controller="UserFoodItems">
                             <input type="hidden" value="@item?.UserFoodItems?[0].FoodDetails.FoodItemId" name="foodId">
                             <input type="hidden" value="@item?.UserFoodItems?[0].FoodDetails.UserId" name="userId">
                             <input type="hidden" value="@item?.UserFoodItems?[0].UnitInfo.Type" name="type">
@@ -98,7 +98,7 @@
                         <div class="d-flex align-items-center justify-content-between">
                             @if (item.UserFoodItems[0].FoodDetails.ExpirationDate == new DateOnly())
                             {
-                                <form method="post" asp-action="AddExpirationDate" asp-controller="FoodList">
+                                <form method="post" asp-action="AddExpirationDate" asp-controller="UserFoodItems">
                                     <input type="hidden" name="id" value="@item.UserFoodItems[0].FoodDetails.Id"/>
                                     <input type="date" name="expirationDate"/>
                                     <button type="submit">Lägg till datum</button>
@@ -157,7 +157,7 @@
         function IncreaseQuantity(foodItemId, unitMultiplier, unit) {
                 $.ajax({
                     type: 'POST',
-                    url: '@Url.Action("IncreaseQuantity", "FoodList")',
+                    url: '@Url.Action("IncreaseQuantity", "UserFoodItems")',
                     data: {
                         id: foodItemId,
                         unitMultiplier: unitMultiplier,
