@@ -65,7 +65,9 @@ builder.Services.AddScoped<FoodRepository>();
 builder.Services.AddScoped<AccountRepository>();
 builder.Services.AddScoped<RecipeRepository>();
 builder.Services.AddScoped<GroceryListRepository>();
-builder.Services.AddScoped<GetListsRepository>();
+builder.Services.AddScoped<RecipeCategoriesRepository>();
+builder.Services.AddScoped<FoodCategoriesRepository>();
+builder.Services.AddScoped<UnitsRepository>();
 
 builder.Services.AddScoped<ConvertQuantityHandler>();
 builder.Services.AddScoped<FoodService>();
@@ -111,6 +113,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=FoodList}/{action=Index}/{id?}");
+    pattern: "{controller=UserFoodItems}/{action=Index}/{id?}");
 
 app.Run();

@@ -12,20 +12,20 @@ namespace MatKollen.Controllers
     {
         private readonly GroceryListRepository _groceryListRepository;
         private readonly FoodRepository _foodRepository;
-        private readonly GetListsRepository _getListRepository;
+        private readonly UnitsRepository _unitRepository;
         private readonly ConvertQuantityHandler _convertQuantityHandler;
 
         public GroceryListController
         (
             GroceryListRepository groceryListRepository, 
             FoodRepository foodRepository, 
-            GetListsRepository getListsRepository, 
+            UnitsRepository unitRepository,
             ConvertQuantityHandler convertQuantityHandler
         )
         {
             _groceryListRepository = groceryListRepository;
             _foodRepository = foodRepository;
-            _getListRepository = getListsRepository;
+            _unitRepository = unitRepository;
             _convertQuantityHandler = convertQuantityHandler;
         }
 
@@ -85,7 +85,7 @@ namespace MatKollen.Controllers
                 }
             }
 
-            return RedirectToAction("index", "FoodList");
+            return RedirectToAction("index", "UserFoodItems");
         }
 
         //GroceryList/AddItem
@@ -107,7 +107,7 @@ namespace MatKollen.Controllers
             }
 
             // Find multiplier based on unit id
-            var measurementMultipliers = _getListRepository.GetUnits(out string unitsError);
+            var measurementMultipliers = _unitRepository.GetUnits(out string unitsError);
             if (unitsError != "")
             {
                 TempData["error"] = unitsError;
@@ -137,7 +137,7 @@ namespace MatKollen.Controllers
 
         private void GetLists()
         {
-            List<MeasurementUnit> unitList = _getListRepository.GetUnits(out string unitsError);
+            List<MeasurementUnit> unitList = _unitRepository.GetUnits(out string unitsError);
             List<FoodItem>? foodItemList = _foodRepository.GetFoodItems(out string error);
 
             if (unitsError != "" || error != "") TempData["error"] = unitsError + " " + error;

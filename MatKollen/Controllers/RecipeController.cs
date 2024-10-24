@@ -14,21 +14,24 @@ namespace MatKollen.Controllers
         private readonly RecipeRepository _recipeRepository;
         private readonly FoodRepository _foodRepository;
         private readonly GroceryListRepository _groceryListRepository;
-        private readonly GetListsRepository _getListsRepository;
+        private readonly RecipeCategoriesRepository _recipeCategoriesRepository;
+        private readonly UnitsRepository _unitRepository;
         private readonly ConvertQuantityHandler _convertQuantityHandler;
 
         public RecipeController(
             RecipeRepository recipeRepository, 
             FoodRepository foodRepository, 
             GroceryListRepository groceryListRepository, 
-            GetListsRepository getListsRepository, 
+            RecipeCategoriesRepository recipeCategoriesRepository, 
+            UnitsRepository unitsRepository,
             ConvertQuantityHandler convertQuantityHandler
         )
         {
             _recipeRepository = recipeRepository;
             _foodRepository = foodRepository;
             _groceryListRepository = groceryListRepository;
-            _getListsRepository = getListsRepository;
+            _recipeCategoriesRepository = recipeCategoriesRepository;
+            _unitRepository = unitsRepository;
             _convertQuantityHandler = convertQuantityHandler;
         }
 
@@ -62,7 +65,7 @@ namespace MatKollen.Controllers
                 {
                     item.UserHasIngredient = true;   
                 }
-                else if (matchingItem != null && (matchingItem?.UserFoodItems[0].UnitInfo.Type != item.Type)) {
+                else if (matchingItem != null && (matchingItem?.UserFoodItems[0].UnitInfo.Type != item.UnitInfo.Type)) {
                     item.UserHasIngredient = true;
                     item.IngredientExistInOtherType = true;
                 }
@@ -135,7 +138,7 @@ namespace MatKollen.Controllers
 
         private List<RecipeCategory> GetCategories()
         {
-            List<RecipeCategory> categoryList = _getListsRepository.GetRecipeCategories(out string error);
+            List<RecipeCategory> categoryList = _recipeCategoriesRepository.GetRecipeCategories(out string error);
 
             if (error != "")
             {
@@ -149,7 +152,7 @@ namespace MatKollen.Controllers
         [HttpGet]       
         public IActionResult AddIngredient(int recipeId, string title)
         {
-            List<MeasurementUnit> unitList = _getListsRepository.GetUnits(out string unitsError);
+            List<MeasurementUnit> unitList = _unitRepository.GetUnits(out string unitsError);
             List<FoodItem>? foodItemList = _foodRepository.GetFoodItems(out string error);
 
             if (unitsError != "" || error != "") {
@@ -171,7 +174,7 @@ namespace MatKollen.Controllers
         [HttpPost]       
         public IActionResult AddIngredient(RecipeFoodItem ingredient, string title)
         {
-            List<MeasurementUnit> unitList = _getListsRepository.GetUnits(out string unitsError);
+            List<MeasurementUnit> unitList = _unitRepository.GetUnits(out string unitsError);
             string error = "";
             if (!ModelState.IsValid)
             {
@@ -209,7 +212,7 @@ namespace MatKollen.Controllers
         {
             string error = "";
             var recipe = _recipeRepository.GetRecipe(id, out error);
-            var categories = _getListsRepository.GetRecipeCategories(out error);
+            var categories = _recipeCategoriesRepository.GetRecipeCategories(out error);
 
             if (error != "") TempData["error"] = error;
             if (categories == null) TempData["error"] = "Gick inte att hämta kategorier";
