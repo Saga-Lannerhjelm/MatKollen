@@ -18,5 +18,7 @@ namespace MatKollen.Models
 
         [Required (ErrorMessage = "Fältet kan inte vara tomt")]
         public string? Password { get; set; }  
+
+        public string? Salt { get; set;}
     }
 }

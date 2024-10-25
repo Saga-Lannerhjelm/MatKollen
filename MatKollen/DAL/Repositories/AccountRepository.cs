@@ -19,7 +19,7 @@ namespace MatKollen.DAL.Repositories
             using (var myConnection = new MySqlConnection(myConnectionString))
             {
                 //Creates a new user and a grozery list for that user at the same time
-                string query  = "INSERT INTO users (username, email, password) VALUES (@username, @email, @password); INSERT INTO lists (name, user_id) VALUES (@groceryListName, LAST_INSERT_ID())";
+                string query  = "INSERT INTO users (username, email, password, salt) VALUES (@username, @email, @password, @salt); INSERT INTO lists (name, user_id) VALUES (@groceryListName, LAST_INSERT_ID())";
                 var testList = new List<string>();
 
                 try
@@ -33,6 +33,7 @@ namespace MatKollen.DAL.Repositories
                     myCommand.Parameters.Add("@username", MySqlDbType.VarChar, 50).Value = user.Username;
                     myCommand.Parameters.Add("@email", MySqlDbType.VarChar, 320).Value = user.Email;
                     myCommand.Parameters.Add("@password", MySqlDbType.VarChar, 500).Value = user.Password;
+                    myCommand.Parameters.Add("@salt", MySqlDbType.VarChar, 500).Value = user.Salt;
                     myCommand.Parameters.Add("@groceryListName", MySqlDbType.VarChar, 50).Value = user.Username + "s Inköpslista";
 
                     errorMsg = "";
@@ -62,17 +63,18 @@ namespace MatKollen.DAL.Repositories
 
             using (var myConnection = new MySqlConnection(myConnectionString))
             {
-                string query  = "SELECT id, username, password FROM users WHERE username = @username;";
+                string query  = "SELECT id, username, password, salt FROM users WHERE username = @username;";
                 var userCredentials = new User();
 
                 try
                 {
-                    // create a MySQL command and set the SQL statement with parameters
+                    // create a MySQL command
                     MySqlCommand myCommand = new MySqlCommand(query, myConnection);
 
                     //open a connection
                     myConnection.Open();
 
+                    // set the SQL statement with parameters
                     myCommand.Parameters.AddWithValue("@username", user.Username);
 
                     errorMsg = "";
@@ -85,6 +87,7 @@ namespace MatKollen.DAL.Repositories
                             userCredentials.Id = myReader.GetInt32("id");
                             userCredentials.Username = myReader.GetString("username");
                             userCredentials.Password = myReader.GetString("password");
+                            userCredentials.Salt = myReader.GetString("salt");
                         }
                     }
                     return userCredentials;
