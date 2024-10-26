@@ -288,6 +288,41 @@ namespace MatKollen.DAL.Repositories
             }
         }
 
+        public int GetGroceryListId(int userId, out string errorMsg)
+        {
+            var myConnectionString = _connectionString;
+            string query  = "SELECT id FROM lists WHERE user_id = @userId";
+            
+            var listId = 0;
+
+            using (var myConnection = new MySqlConnection(myConnectionString))
+            {
+                try
+                {
+                    MySqlCommand myCommand = new MySqlCommand(query, myConnection);
+                    myConnection.Open();
+
+                    myCommand.Parameters.AddWithValue("@userId", userId);
+
+                    errorMsg = "";
+
+                    using var reader = myCommand.ExecuteReader();
+                    {
+                        while (reader.Read())
+                        {
+                            listId = reader.GetInt32("id");
+                        }
+                    }
+                    return listId;
+                }
+                catch (MySqlException e)
+                {
+                    errorMsg = e.Message;
+                    return 0;
+                }
+            }
+        }
+
         public int Delete(int id, out string errorMsg)
         {
             var myConnectionString = _connectionString;
