@@ -103,6 +103,10 @@ namespace MatKollen.Controllers
         [HttpPost]
         public IActionResult AddItemToGroceryList(GroceryListFoodItem item)
         {
+            if (item.FoodItemId == 0)
+            {
+                ModelState.AddModelError(nameof(item.FoodItemId), "Välj en matvara");
+            }
             if (!ModelState.IsValid)
             {
                 GetLists();
