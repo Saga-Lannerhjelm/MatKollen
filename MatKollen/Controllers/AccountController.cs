@@ -1,4 +1,3 @@
-#nullable disable
 using System.IdentityModel.Tokens;
 using System.Text;
 using MatKollen.Models;

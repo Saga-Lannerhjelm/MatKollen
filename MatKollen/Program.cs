@@ -4,7 +4,6 @@ using MatKollen.Controllers;
 using MatKollen.Controllers.Repositories;
 using MatKollen.DAL.Repositories;
 using MatKollen.Services;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
@@ -96,7 +95,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-// Code taken from https://learn.microsoft.com/en-us/answers/questions/1114785/how-to-make-login-path-without-using-cookie-in-asp
+// Code taken from https://stackoverflow.com/questions/46230596/how-to-redirect-to-log-in-page-on-401-using-jwt-authorization-in-asp-net-core
 app.UseStatusCodePages(async context => {  
     var request = context.HttpContext.Request;  
     var response = context.HttpContext.Response;  
