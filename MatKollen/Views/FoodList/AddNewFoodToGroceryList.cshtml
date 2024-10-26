@@ -15,7 +15,7 @@
                 @Html.ValidationMessageFor(m => m.FoodItem.Name, "", new { @class = "text-danger" })
             </div>
             <div class="mb-3">
-                <label asp-for="GroceryListFoodItem.Quantity" class="form-label">Mängd/Antal <small>(0 = ospecifierad)</small></label>
+                <label asp-for="GroceryListFoodItem.Quantity" class="form-label">Mängd/Antal</label>
                 <input type="number" step=".1" asp-for="GroceryListFoodItem.Quantity" class="form-control">
                 @Html.ValidationMessageFor(m => m.GroceryListFoodItem.Quantity, "", new { @class = "text-danger" })
             </div>

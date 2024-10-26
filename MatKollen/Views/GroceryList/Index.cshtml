@@ -18,7 +18,12 @@
                             <input type="hidden" name="completed" value="@item.FoodDetails.Completed.ToString()">
                             <i class="bi bi-@(item.FoodDetails.Completed ? "check-circle" : "circle")" style="font-size: 1.5rem; @(item.FoodDetails.Completed ? "color: var(--main-color)" : "")"></i>
                             <span style="border-radius: 99px;">
-                                <span style="@(item.FoodDetails.Completed ? "text-decoration: line-through" : "")">@item.ConvertedQuantity@item.Unit @item.FoodItemName</span>
+                                <span style="@(item.FoodDetails.Completed ? "text-decoration: line-through" : "")">
+                                    @if (item.ConvertedQuantity != 1 && item.Unit != "st")
+                                    {
+                                        @item.ConvertedQuantity@item.Unit
+                                    }
+                                    @item.FoodItemName</span>
                             </span>
                         </button>
                     </form>
