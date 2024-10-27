@@ -56,7 +56,13 @@
                     </ul>
                 }
             }
+            @if (ViewBag.itemsAreMissing)
+            {
             <button class="btn btn-primary" type="submit">Lägg till det du saknar i inköpslista</button>
+            } else
+            {
+                <p>Du har alla ingredienser till detta recep! :)</p>
+            }
         </form>
     }
     else 

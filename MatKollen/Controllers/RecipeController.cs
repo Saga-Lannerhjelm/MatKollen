@@ -94,6 +94,7 @@ namespace MatKollen.Controllers
             ViewBag.groceryListItemsExists = existingItems;
             // Saves the non-matching food items to a session variabel
             HttpContext.Session.SetObject("groceryList", foodItemsForGroceryList);
+            ViewBag.itemsAreMissing = foodItemsForGroceryList.Count > 0;
 
             return View(recipe);
         }
