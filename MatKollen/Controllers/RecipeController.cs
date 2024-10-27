@@ -51,7 +51,7 @@ namespace MatKollen.Controllers
             var recipe = _recipeRepository.GetRecipe(id, out string error);
 
             int userId = UserHelper.GetUserId(User);
-            var userFoodItems = _userFoodItemRepository.GetUserFoodList(userId, out string listError);
+            var userFoodItems = _userFoodItemRepository.GetUserFoodList(userId, "", "", "", out string listError);
             var foodItemsForGroceryList = new List<GroceryListFoodItem>();
             var existingItems = new Dictionary<int, string>();
 

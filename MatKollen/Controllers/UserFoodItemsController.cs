@@ -30,19 +30,27 @@ namespace MatKollen.Controllers
             _convertQuantityHandler = convertQuantityHandler;
         }
 
-        public IActionResult Index(string showAccordionName)
+        public IActionResult Index(string showAccordionName, string searchPrompt, string category, string filter)
         {
             int userId = UserHelper.GetUserId(User);
-            var foodList = _userFoodItemRepository.GetUserFoodList(userId, out string error);
+            var foodList = _userFoodItemRepository.GetUserFoodList(userId, searchPrompt, category, filter, out string error);
             
             if (error != "") TempData["error"] = error;
 
-            // sort lists by expiration date
-            for (int i = 0; i < foodList?.Count; i++)
+            var foodCategories = _foodCategoryRepository.GetFoodCategories(out string categoryError);
+
+            if (error != "")
             {
-                foodList[i].UserFoodItems.Sort((a, b) => a.FoodDetails.ExpirationDate.CompareTo(b.FoodDetails.ExpirationDate));
+                TempData[error] = categoryError;
             }
-            foodList.Sort((a,b) => a.UserFoodItems[0].FoodDetails.ExpirationDate.CompareTo(b.UserFoodItems[0].FoodDetails.ExpirationDate));
+            else
+            {
+                ViewData["categories"] = foodCategories;
+            }
+
+            ViewBag.searchPrompt = searchPrompt;
+            ViewBag.category = category;
+            ViewBag.filter = filter;
 
             ViewBag.showAccordionName = showAccordionName;
 

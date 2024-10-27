@@ -213,19 +213,90 @@ input[type="checkbox"].custom {
   transition: font-size 0.2s ease;
 }
 
-input[type="checkbox"]:checked + .custom-checkbox {
+input[type="checkbox"].custom:checked + .custom-checkbox {
   background-color: #f0f0f0;
   font-size: 0.9rem;
 }
 
-input[type="checkbox"] + .custom-checkbox:hover {
+input[type="checkbox"].custom + .custom-checkbox:hover {
   cursor: pointer;
   font-size: 1.001rem;
 }
+
+/* grocery list check box */
 
 .grocery-list-checkbox {
   width: 1.5rem;
   height: 1.5rem;
   border: 2px solid var(--main-color);
   border-radius: 100px;
+}
+
+/* filter check box */
+
+input[type="checkbox"].filter {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.filter-checkbox {
+  padding: 5px 10px;
+  font-size: 0.95rem;
+  border-radius: 99px;
+  border: 2px solid rgb(138, 138, 138);
+  opacity: 0.5;
+  transition: border 0.2s ease;
+  transition: opacity 0.2s ease;
+  transition: font-size 0.2s ease;
+}
+
+input[type="checkbox"].filter:checked + .filter-checkbox {
+  border: 2px solid var(--main-color);
+  opacity: 1;
+  font-size: 1.0rem;
+}
+
+input[type="checkbox"].filter + .filter-checkbox:hover {
+  cursor: pointer;
+}
+
+/* Filter */
+
+.filter-group {
+  display: flex;
+  flex: row;
+  justify-content: end;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  align-items: center;
+}
+
+.filter-dropdown {
+  padding: 5px 10px;
+  border-radius: 99px;
+  border: 2px solid var(--main-color);
+}
+
+.filter-search {
+  padding: 5px 10px;
+  border-radius: 99px;
+  border: 2px solid var(--main-color);
+}
+
+.filter-search input {
+  border: none;
+  padding: 0;
+}
+
+.filter-search input:focus-visible {
+  outline: none;
+}
+
+.btn-standard {
+  background-color: var(--main-color);
+  border: none;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 10px;
 }

@@ -16,7 +16,7 @@ namespace MatKollen.DAL.Repositories
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
-         public List<FoodCategory> GetFoodCategories(out string errorMsg)
+        public List<FoodCategory> GetFoodCategories(out string errorMsg)
         {
             var myConnectionString = _connectionString;
             string query  = "SELECT id, name FROM food_categories";

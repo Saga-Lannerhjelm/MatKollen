@@ -4,7 +4,28 @@
     ViewData["Title"] = "Matvaror";
 }
 
-<h2>@ViewData["Title"]</h2>
+<form  method="get" asp-action="Index" asp-controller="UserFoodItems">
+    <div class="filter-group">
+        <div class="filter-search">
+            <i class="bi bi-search"></i>
+            <input type="search" value="@(ViewBag.searchPrompt != null ? ViewBag.searchPrompt : "")" placeholder="Sök efter en matvara..." name="searchPrompt">
+        </div>
+        <select class="filter-dropdown" name="category">
+            <option value="default">Alla</option>
+            @foreach (var category in (List<FoodCategory>)ViewData["categories"])
+            {
+                <option value="@category.Name"  selected="@(ViewBag.category != null ? category.Name == ViewBag.category : false)">@category.Name</option>
+            }
+        </select>
+        <select class="filter-dropdown" name="filter">
+            <option value="default" selected="@(ViewBag.filter != null ? ViewBag.filter == "default" : false)">Inget valt</option>
+            <option value="expiration_date" selected="@(ViewBag.filter != null ? ViewBag.filter == "expiration_date" : false)">Utgångsdatum</option>
+            <option value="quantity" selected="@(ViewBag.filter != null ? ViewBag.filter == "quantity" : false)">Mängd</option>
+            <option value="unit" selected="@(ViewBag.filter != null ? ViewBag.filter == "unit" : false)">Enhet</option>
+        </select>
+        <button class="btn-standard" type="submit">Applicera</button>
+    </div>
+</form>
 
 
 <div class="row row-cols-2 row-cols-md-6 g-4">
