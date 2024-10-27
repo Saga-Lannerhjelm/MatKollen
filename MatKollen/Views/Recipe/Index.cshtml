@@ -5,16 +5,40 @@
 
 <h2>@ViewData["Title"]</h2>
 
+<form  method="get" asp-action="Index" asp-controller="Recipe">
+    <div class="filter-group">
+        <div class="filter-search">
+            <i class="bi bi-search"></i>
+            <input type="search" value="@(ViewBag.searchPrompt != null ? ViewBag.searchPrompt : "")" placeholder="Sök efter en recept..." name="searchPrompt">
+        </div>
+        <select class="filter-dropdown" name="category">
+            <option value="default">Alla</option>
+            @foreach (var category in (List<RecipeCategory>)ViewData["categories"])
+            {
+                <option value="@category.Id"  selected="@(ViewBag.category != null ? category.Id == ViewBag.category : false)">@category.Name</option>
+            }
+        </select>
+        <button class="btn-standard" type="submit">Applicera</button>
+    </div>
+</form>
+
 @{
-    foreach(var recipe in Model)
+    if (Model.Count != 0)
     {
-        <a class="card rounded-5" asp-action="Details" asp-route-id="@recipe.Recipe.Id">
-            <div class="card-body">
-                <h4 class="card-title">@recipe.Recipe.Title</h4>
-                 <small>@recipe.Recipe.CreatedAt by @recipe.Username</small>
-                 <p>@recipe.Recipe.Description</p>
-                 <small><em>@recipe.Category</em></small>
-            </div>
-        </a>
+        foreach(var recipe in Model)
+        {
+            <a class="card rounded-5" asp-action="Details" asp-route-id="@recipe.Recipe.Id">
+                <div class="card-body">
+                    <h4 class="card-title">@recipe.Recipe.Title</h4>
+                    <small>@recipe.Recipe.CreatedAt by @recipe.Username</small>
+                    <p>@recipe.Recipe.Description</p>
+                    <small><em>@recipe.Category</em></small>
+                </div>
+            </a>
+        }
+    }
+    else
+    {
+        <p>Gick inte att hitta några recept</p>
     }
 }

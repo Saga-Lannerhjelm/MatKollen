@@ -39,9 +39,29 @@ namespace MatKollen.Controllers
         }
 
         //Recipe
-        public IActionResult Index()
+        public IActionResult Index(string searchPrompt, int category)
         {   
-            var recipeList = _recipeRepository.GetRecipes(out string error);
+            var recipeList = _recipeRepository.GetRecipes(searchPrompt, category, out string error);
+
+            if (error != "")
+            {
+                 ViewData["categories"] = error;
+                 return RedirectToAction("Index", "UserFoodItems");
+            }
+
+            var recipeCategories = _recipeCategoriesRepository.GetRecipeCategories(out string categoryError);
+
+            if (error != "")
+            {
+                TempData[error] = categoryError;
+            }
+            else
+            {
+                ViewData["categories"] = recipeCategories;
+            }
+
+            ViewBag.searchPrompt = searchPrompt;
+            ViewBag.category = category;
             return View(recipeList);
         }
 

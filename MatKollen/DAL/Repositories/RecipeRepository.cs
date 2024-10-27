@@ -20,13 +20,23 @@ namespace MatKollen.DAL.Repositories
             _connectionString = configuration.GetConnectionString("DefaultConnection");
             _convertQuantityHandler = convertQuantityHandler;
         }
-        public List<RecipeDetailsViewModel>? GetRecipes( out string errorMsg)
+        public List<RecipeDetailsViewModel>? GetRecipes(string searchPrompt, int category, out string errorMsg)
         {
             var myConnectionString = _connectionString;
 
             using (var myConnection = new MySqlConnection(myConnectionString))
             {
                 string query  = "SELECT * FROM vw_recipe_details";
+                if (searchPrompt != null || (category != null && category != 0))
+                {
+                    query += " WHERE";
+                }
+                if (!string.IsNullOrEmpty(searchPrompt)) 
+                {
+                    query += " title LIKE @searchPrompt";
+                    if (category != null  && category != 0) query += " AND";
+                }
+                if (category != null && category != 0) query += " recipe_category_id = @category";
                 var recipeList = new List<RecipeDetailsViewModel>();
 
                 try
@@ -34,6 +44,8 @@ namespace MatKollen.DAL.Repositories
                     // create a MySQL command and set the SQL statement with parameters
                     MySqlCommand myCommand = new MySqlCommand(query, myConnection);
                     myConnection.Open();
+                    myCommand.Parameters.Add("@searchPrompt", MySqlDbType.VarChar, 50).Value = "%" + searchPrompt + "%";
+                    myCommand.Parameters.Add("@category", MySqlDbType.Int32).Value = category;
 
                     errorMsg = "";
 
