@@ -176,7 +176,7 @@ namespace MatKollen.Controllers
                     
                     Response.Cookies.Append("Jwt-cookie", "", cookieOptions);
             }
-            return View("Login");
+            return RedirectToAction("Login");
         }
 
     }

@@ -1,4 +1,16 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var links = new List<(string controller, string action, string name)> 
+    {
+        ("Home", "Index", "Hem"),
+        ("UserFoodItems", "Index", "Matvaror"),
+        ("Recipe", "My", "Mina Recept"),
+        ("Recipe", "Index", "Recept"),
+        ("GroceryList", "Index", "Inköpslista"),
+    };
+}
+
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -10,47 +22,41 @@
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
+
 <body>
     <header>
         <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
-                <a class="navbar-brand" href="#">Mat<span class="text-main">Kollen</span></a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-                </button>
+                <div>
+                    <a class="navbar-brand">MatKollen</a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                    </button>
+                </div>
                 <div class="collapse navbar-collapse" id="navbarNavDropdown">
-                <ul class="navbar-nav">
-                    @{
-                        if (User.Identity.IsAuthenticated)
+                    <div class="link-container" style="width: 100%;">
+                        <ul class="navbar-nav">
+                            @{
+                                if (User.Identity.IsAuthenticated)
+                                {
+                                    foreach (var link in links)
+                                    {
+                                    <li class="nav-item">
+                                        <a asp-action="@link.action" asp-controller="@link.controller" class="@(ViewData["Title"] == link.name ? "active-nav-item" : "")">@link.name</a>
+                                    </li>
+                                    }
+                                }
+                            }
+                        </ul>
+                        @if (User.Identity.IsAuthenticated)
                         {
-                            <li class="nav-item">
-                                <a class="nav-link" asp-action="index" asp-controller="Home">Hem</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-action="index" asp-controller="UserFoodItems">Matvaror</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-action="My" asp-controller="Recipe">Mina Recept</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-action="index" asp-controller="Recipe">Recept</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-action="Index" asp-controller="GroceryList">Inköpslista</a>
-                            </li>
+                            <form method="post" asp-controller="Account" asp-action="Logout">
+                                <button type="submit" class="btn btn-outline-success"> Logga ut</button>
+                            </form>
+                        } else {
+                            <a href="Account/Login" class="btn btn-outline-success"> Logga in</a>
                         }
-                    }
-                    <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Dropdown link
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#">Action</a></li>
-                        <li><a class="dropdown-item" href="#">Another action</a></li>
-                        <li><a class="dropdown-item" href="#">Something else here</a></li>
-                    </ul>
-                    </li>
-                </ul>
+                    </div>
                 </div>
             </div>
         </nav>

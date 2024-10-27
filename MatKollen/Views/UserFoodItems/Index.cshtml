@@ -23,10 +23,12 @@
             <div class="card rounded-5 bg-@item?.StatusLevel()" style="border-radius: 1.25rem; min-height: 22vh;">
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
-                        <h1 class="bg-@item?.StatusLevel()">
-                            @(item?.UserFoodItems?.Count == 1 
+                        <h1 class="bg-@item?.StatusLevel()" id="">
+                            @(
+                                item?.UserFoodItems?.Count == 1 
                                 ? item.UserFoodItems[0].ConvertedQuantity.ToString() + item.UserFoodItems[0].UnitInfo.Unit 
-                                : sum.ToString() + (item?.UserFoodItems?[0].UnitInfo.Type == "weight" 
+                                : 
+                                sum.ToString() + (item?.UserFoodItems?[0].UnitInfo.Type == "weight" 
                                     ? "kg" 
                                     : (item?.UserFoodItems?[0].UnitInfo.Type == "volume" 
                                         ? "L" 
