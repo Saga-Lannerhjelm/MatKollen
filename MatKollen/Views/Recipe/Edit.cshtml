@@ -16,7 +16,7 @@
         </form>                 
     </div>
 </div>
-<form method="post" asp-controller="Recipe" asp-action="Edit">
+<form method="post" asp-controller="Recipe" asp-action="Edit" class="mb-4">
     <h4><input asp-for="Recipe.Title" value="@Model.Recipe.Title" style="width: 100%; border: 1px solid lightgray;"/></h4>
     <small>
         <div class="mb-3">
@@ -76,5 +76,5 @@
             <p>Detta recept har inga ingredienser än.</p>
         }
     }
-    <a class="btn btn-primary btn-sm" type="submit" asp-controller="Recipe" asp-action="AddIngredient" asp-route-recipeId="@Model.Recipe.Id" asp-route-title="@Model.Recipe.Title">Lägg till en ny ingrediens</a>
+    <a class="btn btn-outline-primary btn-sm" type="submit" asp-controller="Recipe" asp-action="AddIngredient" asp-route-recipeId="@Model.Recipe.Id" asp-route-title="@Model.Recipe.Title">Lägg till en ny ingrediens</a>
 
