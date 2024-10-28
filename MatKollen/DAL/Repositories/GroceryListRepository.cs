@@ -152,14 +152,14 @@ namespace MatKollen.DAL.Repositories
             }
         }
 
-        public int UpdateCompletedState (int id, bool completed, out string errorMsg)
+        public bool UpdateCompletedState (int id, out string errorMsg)
         {
             var myConnectionString = _connectionString;
 
             using (var myConnection = new MySqlConnection(myConnectionString))
             {
-                string query  = "UPDATE list_has_fooditems SET completed = @value WHERE id = @id";
-                var testList = new List<string>();
+                string query  = "CALL sp_update_completed_state(@id)";
+                bool isCompleted = false;
 
                 try
                 {
@@ -169,26 +169,24 @@ namespace MatKollen.DAL.Repositories
                     //open a connection
                     myConnection.Open();
 
-                    myCommand.Parameters.Add("@id", MySqlDbType.Int32).Value = id;
-                    myCommand.Parameters.AddWithValue("@value", completed);
+                    myCommand.Parameters.Add("@id", MySqlDbType.Int32).Value = id;;
 
                     errorMsg = "";
 
                     // execute the command and read the results
-                    var rowsAffected = myCommand.ExecuteNonQuery();
+                    var reader = myCommand.ExecuteReader();
 
-                    if (rowsAffected == 0)
+                    while (reader.Read())
                     {
-                        errorMsg = "Gick inte att lägga till matvaran i inköpslistan";
-                        return 0;
+                        isCompleted = reader.GetBoolean("completed");
                     }
                     
-                    return rowsAffected;
+                    return isCompleted;
                 }
                 catch (MySqlException e)
                 {
                     errorMsg = e.Message;
-                    return 0;
+                    return false;
                 }    
             }
         }

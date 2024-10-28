@@ -189,20 +189,15 @@ namespace MatKollen.Controllers
         }
 
         [HttpPost]
-        public IActionResult MarkAsComplete(int id, bool completed)
+        public IActionResult MarkAsComplete(int id)
         {
-            completed = !completed;
-            var rowsAffected = _groceryListRepository.UpdateCompletedState(id, completed, out string error);
+            var isCompleted = _groceryListRepository.UpdateCompletedState(id, out string error);
             if (error != "")
             {
                 TempData["error"] = error;
             }
-            if (rowsAffected == 0)
-            {
-                TempData["error"] = "Gick inte att markera varan som köpt";
-            }
 
-            return RedirectToAction("Index");
+            return new JsonResult(Ok(isCompleted));
         }
     }
 }

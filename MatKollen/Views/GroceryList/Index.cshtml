@@ -5,26 +5,22 @@
 }
 
 <h2>@ViewData["Title"]</h2>
-<ul class="p-0" style="list-style: none;">
+<ul id="grocery-list" class="p-0" style="list-style: none;">
     @if (Model.Count > 0) {
         foreach(var item in Model)
         {
             <li class="my-3 d-flex align-items-center">
-                <form method="post" asp-action="MarkAsComplete" asp-controller="GroceryList">
-                    <button type="submit" style="background-color: transparent; border: none;" class="d-flex align-items-center gap-2">
-                        <input type="hidden" name="id" value="@item.FoodDetails.Id">
-                        <input type="hidden" name="completed" value="@item.FoodDetails.Completed.ToString()">
-                        <i class="bi bi-@(item.FoodDetails.Completed ? "check-circle" : "circle")" style="font-size: 1.5rem; @(item.FoodDetails.Completed ? "color: var(--main-color)" : "")"></i>
-                        <span style="border-radius: 99px;">
-                            <span style="@(item.FoodDetails.Completed ? "text-decoration: line-through" : "")">
-                                @if (item.ConvertedQuantity != 1 && item.Unit != "st")
-                                {
-                                    @item.ConvertedQuantity@item.Unit
-                                }
-                                @item.FoodItemName</span>
-                        </span>
-                    </button>
-                </form>
+                <button type="submit" style="background-color: transparent; border: none;" class="d-flex align-items-center gap-2" onclick="MarkAsComplete(@item.FoodDetails.Id)">
+                    <i id="icon-@item.FoodDetails.Id" class="icon bi bi-@(item.FoodDetails.Completed ? "check-circle" : "circle")" style="font-size: 1.5rem; @(item.FoodDetails.Completed ? "color: var(--main-color)" : "")"></i>
+                    <span style="border-radius: 99px;">
+                        <span id="text-@item.FoodDetails.Id" style="@(item.FoodDetails.Completed ? "text-decoration: line-through" : "")">
+                            @if (item.ConvertedQuantity != 1 && item.Unit != "st")
+                            {
+                                @item.ConvertedQuantity@item.Unit
+                            }
+                            @item.FoodItemName</span>
+                    </span>
+                </button>
                 <form method="post" asp-action="Delete" style="display: inline;">
                     <input type="hidden" name="id" value="@item.FoodDetails.Id">
                     <button type="submit" class="action-btn"><i class="bi bi-trash3"></i></button>
@@ -44,11 +40,58 @@
         </a>
     </li>
 </ul>
-@if (Model.Any(i => i.FoodDetails.Completed))
-{
-    <form method="post" asp-action="AddCompletedItemsToUserInventory">
-        <button type="submit" class="btn btn-primary">Lägg till klarmarkerade varor!</button>
-    </form>
+<form id="completed-add" method="post" asp-action="AddCompletedItemsToUserInventory" style="@(Model.Any(i => i.FoodDetails.Completed) ? "display: block" : "display: none;")">
+    <button type="submit" class="btn btn-primary">Lägg till klarmarkerade varor!</button>
+</form>
+
+
+@section Scripts{
+    <script>
+        function MarkAsComplete(id, completed) {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("MarkAsComplete", "GroceryList")',
+                data: {
+                    id: id,
+                    completed: !completed,
+                },
+                success: function (response) {
+                    const completed = response.value;
+                    const icon = $(`#icon-${id}`);
+                    const text = $(`#text-${id}`);
+
+                    if (completed) {
+                        icon.removeClass('bi-circle').addClass('bi-check-circle').css('color', 'var(--main-color)')
+                        text.css('text-decoration', 'line-through');
+                    }
+                    else {
+                        icon.removeClass('bi-check-circle').addClass('bi-circle').css('color', '')
+                        text.css('text-decoration', 'none');
+                    }
+                    FindCompleted();
+                },
+                error: function (error) {
+                    TempData["error"];
+                }
+            });
+        }
+
+        function FindCompleted() {
+            const addBtn = $('#completed-add');
+            const items = document.getElementsByClassName("icon");
+            let countNotCompleted = 0;
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].classList.contains("bi-check-circle")) {
+                    addBtn.css('display', 'block');
+                } else {
+                    countNotCompleted += 1;
+                }
+            }
+            if (countNotCompleted == items.length) {
+                addBtn.css('display', 'none');
+            }
+        }
+    </script>
 }
 
 
