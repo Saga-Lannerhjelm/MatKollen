@@ -3,6 +3,12 @@
 @{
     ViewData["Title"] = "Recept detalj";
 }
+
+<ol class="breadcrumb">
+    <li class="breadcrumb-item"><a onclick="history.back()">Recept</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Recept detalj</li>
+</ol>
+
 <div class="d-flex justify-content-between">
     <h4>@Model.Recipe.Title</h4>
     @if (ViewBag.user == Model.Recipe.UserId){

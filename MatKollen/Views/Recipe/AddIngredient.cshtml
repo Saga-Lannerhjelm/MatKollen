@@ -1,10 +1,13 @@
 @model RecipeFoodItem
 
 @{
-    ViewData["Title"] = "Lägg till Ingredienser";
+    ViewData["Title"] = "Lägg till Ingrediens";
 }
 
-<h2>@ViewData["Title"] till @ViewBag.recipe</h2>
+<ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/Recipe/Edit?id=@Model.RecipeId">Ändra recept</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Lägg till ingrediens</li>
+</ol>
 
 <div class="d-flex justify-content-center mt-5">
   <div class="card" style="width: 50vw;">

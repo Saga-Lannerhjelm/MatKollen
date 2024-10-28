@@ -70,7 +70,6 @@ builder.Services.AddScoped<FoodCategoriesRepository>();
 builder.Services.AddScoped<UnitsRepository>();
 
 builder.Services.AddScoped<ConvertQuantityHandler>();
-builder.Services.AddScoped<FoodService>();
 
 // Added to handle sessions. Retrieved from https://www.canvas.umu.se/courses/15315/pages/undervisningsfilmer-asp-dot-net-mvc 4th september 2024
 builder.Services.AddDistributedMemoryCache();
