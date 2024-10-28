@@ -90,10 +90,15 @@ a {
   text-decoration: none;
 }
 
-  a:hover {
-    color: #000000;
-      opacity: 0.5;
-  }
+a:hover {
+  color: #000000;
+  opacity: 0.5;
+}
+
+.attention-links {
+  color: #0080ff;
+  text-decoration: underline;
+}
 
 
 .bg-custom {
