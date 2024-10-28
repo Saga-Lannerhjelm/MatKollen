@@ -1,7 +1,7 @@
 @model List<UserFoodItemViewModel>
 
 @{
-    ViewData["Title"] = "Matvaror";
+    ViewData["Title"] = "Mina Matvaror";
 }
 
 <form  method="get" asp-action="Index" asp-controller="UserFoodItems">
@@ -137,7 +137,14 @@
                                     <input type="hidden" value="@item.UserFoodItems[0].UnitInfo.Multiplier" name="unitMultiplier">
                                     <input type="hidden" value="@item.UserFoodItems[0].FoodDetails.Quantity" name="quantity">
                                     <input type="hidden" value="@item.UserFoodItems[0].UnitInfo.Unit" name="unit">
-                                    <button type="submit" class="action-btn"><i class="bi bi-dash"></i></button>
+                                    @if (@item.UserFoodItems[0].FoodDetails.Quantity <= 0)
+                                    {
+                                        <button type="submit" class="action-btn"><i class="bi bi-dash" style="color: rgb(176, 176, 176);"></i></button>
+                                    }
+                                    else
+                                    {
+                                        <button type="submit" class="action-btn"><i class="bi bi-dash"></i></button>
+                                    }
                                 </form>
                                 <form method="post" asp-action="IncreaseQuantity">
                                     <input type="hidden" value="@item.UserFoodItems[0].FoodDetails.Id" name="id">
