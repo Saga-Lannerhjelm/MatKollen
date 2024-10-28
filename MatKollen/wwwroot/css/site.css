@@ -2,7 +2,6 @@ html {
   font-size: 14px;
   --main-color: #1ccc1e;
   --secondary-color:rgb(197, 255, 198);
-  --highlight-color:rgb(255, 162, 0);
 }
 
 @media (min-width: 768px) {
