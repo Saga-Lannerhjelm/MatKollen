@@ -11,18 +11,13 @@ namespace MatKollen.ViewModels
         public required string FoodItemName { get; set; }
         public string? CategoryName { get; set; }
         public required List<UserFoodDetailsViewModel> UserFoodItems { get; set; }
-        public decimal SumOfQuantities 
-        { 
-            get 
-            {
-                return UserFoodItems?.Sum(q => q.FoodDetails.Quantity) ?? 0;
-            }
-        }
+        public decimal SumOfQuantities { get; set; }
 
         public string StatusLevel()
         {
             int daysinWeek = 7;
             int threeDays = 3;
+            int expired = 0;
 
             DateOnly today = DateOnly.FromDateTime(DateTime.Now);
 
@@ -34,6 +29,7 @@ namespace MatKollen.ViewModels
                 if (item.FoodDetails.Quantity <= 0) return "out";
                 if (item.FoodDetails.ExpirationDate == new DateOnly()) return "transparent";
 
+                if (daysUntilExpiration < expired) return "expired";
                 if (daysUntilExpiration < threeDays) return "critical";
                 if (daysUntilExpiration < daysinWeek) return "attention";
             }

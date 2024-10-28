@@ -139,7 +139,7 @@ namespace MatKollen.Controllers
             {
                 decimal decreaseNr = Convert.ToDecimal((unit != "kg" && unit != "L" ? 1 / unitMultiplier : 0.1) * -1);
                 var affectedRows = _userFoodItemRepository.UpdateQuantity(id, decreaseNr, out string error);
-                if (affectedRows == 0) TempData["error"] = "Det gick inte att ändra antalet";
+                if (affectedRows == -1) TempData["error"] = "Det gick inte att ändra antalet";
                 if (error != "") TempData["error"] = error;
             }
             else if (canDelete)

@@ -119,12 +119,16 @@ a {
 }
 
 .bg-critical{
-  background-color: #ffb6b6;
+  background-color: #fbc4aa;
+}
+
+.bg-expired{
+  background-color: #fcaaaa;
 }
 
 .bg-out{
   background-color: #eeeded;
-  opacity: 0.7;
+  opacity: 0.8;
 }
 
 .bg-transparent {
@@ -267,8 +271,8 @@ input[type="checkbox"].filter + .filter-checkbox:hover {
   display: flex;
   flex: row;
   justify-content: end;
+  align-items: center;
   gap: 1rem;
-  margin-bottom: 2rem;
   align-items: center;
 }
 
@@ -299,4 +303,19 @@ input[type="checkbox"].filter + .filter-checkbox:hover {
   color: white;
   padding: 5px 10px;
   border-radius: 10px;
+}
+
+
+/* grid */
+
+.food-item-grid {
+  display: grid;
+  width: 100%;
+  gap: 1.5rem;
+  grid-template-columns:  repeat(6, 1fr);
+  grid-template-rows:  auto;
+}
+
+.food-item-grid > div {
+  aspect-ratio: 1/ 1;
 }
