@@ -3,6 +3,7 @@ using MatKollen.DAL.Repositories;
 using MatKollen.Extensions;
 using MatKollen.Models;
 using MatKollen.Services;
+using MatKollen.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Mysqlx;
 
@@ -114,22 +115,27 @@ namespace MatKollen.Controllers
             }
 
             // Find multiplier based on unit id
-            var measurementMultipliers = _unitRepository.GetUnits(out string unitsError);
+            var unitList= _unitRepository.GetUnits(out string unitsError);
             if (unitsError != "")
             {
                 TempData["error"] = unitsError;
                 return View(item);
             }
-            double multiplier = measurementMultipliers.Find(m => m.Id == item.UnitId).Multiplier;
+            var unitInfo = unitList.Find(m => m.Id == item.UnitId);
+
+            var groceryItem = new GroceriesToAddViewModel(){
+                ListItem = item,
+                UnitType = unitInfo.Type
+            };
 
             //Get user id
             int userId = UserHelper.GetUserId(User);
 
             // Recalculate quantity
-            item.Quantity = _convertQuantityHandler.ConverToLiterOrKg(item.Quantity, multiplier);
+            item.Quantity = _convertQuantityHandler.ConverToLiterOrKg(item.Quantity, unitInfo.Multiplier);
 
             // Insert values in database
-            int affectedRows = _groceryListRepository.InsertFoodItemInList(item, userId, out string error);
+            int affectedRows = _groceryListRepository.InsertOrUpdateFoodItems(groceryItem, userId, out string error);
 
             if (error != "")
             {
@@ -157,8 +163,8 @@ namespace MatKollen.Controllers
         public IActionResult AddFromRecipe(List<int> checkedItems)
         {
             int userId = UserHelper.GetUserId(User);
-            var groceryListItems = HttpContext.Session.GetObject<List<GroceryListFoodItem>>("groceryList");
-            var filteredGroceryItems = groceryListItems.Where(g => !checkedItems.Contains(g.FoodItemId)).ToList();
+            var groceryListItems = HttpContext.Session.GetObject<List<GroceriesToAddViewModel>>("groceryList");
+            var filteredGroceryItems = groceryListItems.Where(g => !checkedItems.Contains(g.ListItem.FoodItemId)).ToList();
 
             foreach (var item in filteredGroceryItems)
             {

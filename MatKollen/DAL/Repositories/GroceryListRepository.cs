@@ -17,24 +17,31 @@ namespace MatKollen.DAL.Repositories
             _convertQuantityHandler = convertQuantityHandler;
         }
 
-        public int InsertOrUpdateFoodItems (GroceryListFoodItem food, int userId, out string errorMsg)
+        public int InsertOrUpdateFoodItems (GroceriesToAddViewModel food, int userId, out string errorMsg)
         {
-            if (GroceryListItemsExists(food.FoodItemId, userId, out errorMsg))
+            if (GroceryListItemsExists(food.ListItem.FoodItemId, food.UnitType, userId, out errorMsg))
             {
-                return UpdateFoodItemInList(food, out errorMsg);
+                return UpdateFoodItemInList(food.ListItem, food.UnitType, out errorMsg);
             }
             else
             {
-                return InsertFoodItemInList(food, userId, out errorMsg);
+                return InsertFoodItemInList(food.ListItem, userId, out errorMsg);
             }
         }
 
-        public bool GroceryListItemsExists (int foodItemId, int userId, out string errorMsg)
+        public bool GroceryListItemsExists (int foodItemId, string type, int userId, out string errorMsg)
         {
             var myConnectionString = _connectionString;
-            string query  = "SELECT COUNT(*) FROM list_has_fooditems AS lhf INNER JOIN lists ON lists.id = lhf.list_id " +
-                            "WHERE food_item_id = @foodItemId AND lists.user_id = @userId";
-            var testList = new List<string>();
+            string query = "SELECT COUNT(*) FROM list_has_fooditems AS lhf INNER JOIN lists ON lists.id = lhf.list_id ";
+            if (type != "")
+            {
+                query  += "INNER JOIN measurement_units AS ms ON ms.id = lhf.unit_id " +
+                            "WHERE food_item_id = @foodItemId AND lists.user_id = @userId AND ms.type = @type";
+            } else 
+            {
+                query  += "WHERE food_item_id = @foodItemId AND lists.user_id = @userId";
+
+            }
 
             using (var myConnection = new MySqlConnection(myConnectionString))
             {
@@ -45,6 +52,7 @@ namespace MatKollen.DAL.Repositories
 
                     myCommand.Parameters.Add("@foodItemId", MySqlDbType.Int32).Value = foodItemId;
                     myCommand.Parameters.Add("@userId", MySqlDbType.Int32).Value = userId;
+                    myCommand.Parameters.Add("@type", MySqlDbType.VarChar, 50).Value = type;
 
                     errorMsg = "";
 
@@ -75,7 +83,6 @@ namespace MatKollen.DAL.Repositories
             using (var myConnection = new MySqlConnection(myConnectionString))
             {
                 string query  = "INSERT INTO list_has_fooditems (quantity, unit_id, list_id, food_item_id) SELECT @quantity, @unitId, id, @foodItemId FROM lists WHERE user_id = @userId";
-                var testList = new List<string>();
 
                 try
                 {
@@ -111,14 +118,14 @@ namespace MatKollen.DAL.Repositories
             }
         }
         
-        public int UpdateFoodItemInList (GroceryListFoodItem food, out string errorMsg)
+        public int UpdateFoodItemInList (GroceryListFoodItem food, string type, out string errorMsg)
         {
             var myConnectionString = _connectionString;
 
             using (var myConnection = new MySqlConnection(myConnectionString))
             {
-                string query  = "UPDATE list_has_fooditems SET quantity = (quantity + @addedQuantity) WHERE food_item_id = @foodItemId";
-                var testList = new List<string>();
+                string query  = "UPDATE list_has_fooditems lhf INNER JOIN measurement_units AS ms ON lhf.unit_id = ms.id SET quantity = (quantity + @addedQuantity) " +
+                                "WHERE food_item_id = @foodItemId AND ms.type = @type";
 
                 try
                 {
@@ -130,6 +137,7 @@ namespace MatKollen.DAL.Repositories
 
                     myCommand.Parameters.Add("@addedQuantity", MySqlDbType.Decimal).Value = food.Quantity;
                     myCommand.Parameters.Add("@foodItemId", MySqlDbType.Int32).Value = food.FoodItemId;
+                    myCommand.Parameters.Add("@type", MySqlDbType.VarChar, 50).Value = type;
 
                     errorMsg = "";
 

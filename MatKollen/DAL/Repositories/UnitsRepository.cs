@@ -19,7 +19,7 @@ namespace MatKollen.DAL.Repositories
         public List<MeasurementUnit> GetUnits(out string errorMsg)
         {
             var myConnectionString = _connectionString;
-            string query  = "SELECT id, unit, conversion_multiplier FROM measurement_units";
+            string query  = "SELECT id, unit, conversion_multiplier, type FROM measurement_units";
             List<MeasurementUnit> unitList = [];
 
             using (var myConnection = new MySqlConnection(myConnectionString))
@@ -38,7 +38,8 @@ namespace MatKollen.DAL.Repositories
                             {
                                 Id = reader.GetInt32("id"),
                                 Unit = reader.GetString("unit"),
-                                Multiplier = reader.GetDouble("conversion_multiplier")
+                                Multiplier = reader.GetDouble("conversion_multiplier"),
+                                Type = reader.GetString("type")
                             };
                             unitList.Add(unit);
                         }

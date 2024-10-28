@@ -14,7 +14,7 @@
                     <i id="icon-@item.FoodDetails.Id" class="icon bi bi-@(item.FoodDetails.Completed ? "check-circle" : "circle")" style="font-size: 1.5rem; @(item.FoodDetails.Completed ? "color: var(--main-color)" : "")"></i>
                     <span style="border-radius: 99px;">
                         <span id="text-@item.FoodDetails.Id" style="@(item.FoodDetails.Completed ? "text-decoration: line-through" : "")">
-                            @if (item.ConvertedQuantity != 1 && item.Unit != "st")
+                            @if (item.ConvertedQuantity != 1 || item.Unit != "st")
                             {
                                 @item.ConvertedQuantity@item.Unit
                             }

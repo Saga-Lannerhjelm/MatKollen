@@ -72,7 +72,7 @@ namespace MatKollen.Controllers
 
             int userId = UserHelper.GetUserId(User);
             var userFoodItems = _userFoodItemRepository.GetUserFoodList(userId, "", "", "", out string listError);
-            var foodItemsForGroceryList = new List<GroceryListFoodItem>();
+            var foodItemsForGroceryList = new List<GroceriesToAddViewModel>();
             var existingItems = new Dictionary<int, string>();
 
             foreach(var item in recipe.Ingredients)
@@ -94,16 +94,21 @@ namespace MatKollen.Controllers
                 }
                 else
                 {
-                    var foodItem = new GroceryListFoodItem()
+                    var foodItem = new GroceriesToAddViewModel()
                     {
-                        Quantity = item.IngredientDetails.Quantity,
-                        UnitId = item.IngredientDetails.UnitId,
-                        FoodItemId = item.IngredientDetails.FoodItemId,
+                        ListItem = new GroceryListFoodItem()
+                        {
+                            Quantity = item.IngredientDetails.Quantity,
+                            UnitId = item.IngredientDetails.UnitId,
+                            FoodItemId = item.IngredientDetails.FoodItemId,
+                        },
+                        UnitType = item.UnitInfo.Type
                     };
 
                     // The non-matching food items are added to a list
                     foodItemsForGroceryList.Add(foodItem);
-                    if (_groceryListRepository.GroceryListItemsExists(item.IngredientDetails.FoodItemId, userId, out error) && (matchingGroceryListItem.FoodDetails.Quantity >= item.IngredientDetails.Quantity))
+
+                    if (_groceryListRepository.GroceryListItemsExists(item.IngredientDetails.FoodItemId, item.UnitInfo.Type, userId, out error) && (matchingGroceryListItem.FoodDetails.Quantity >= item.IngredientDetails.Quantity))
                     {
                         existingItems.Add(item.IngredientDetails.FoodItemId, item.Ingredient);
                     }
