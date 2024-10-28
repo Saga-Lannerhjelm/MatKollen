@@ -21,10 +21,17 @@ namespace MatKollen.DAL.Repositories
             _convertQuantityHandler = convertQuantityHandler;
         }
 
-        public List<UserFoodItemViewModel>? GetUserFoodList(int userId, out string errorMsg)
+        public List<UserFoodItemViewModel>? GetUserFoodList(int userId, string searchPrompt, string category, string filter,  out string errorMsg)
         {
             var myConnectionString = _connectionString;
             string query  = "SELECT * FROM vw_user_food_details WHERE user_id = @userid";
+
+            if (!string.IsNullOrEmpty(searchPrompt)) query += " AND item LIKE @searchPrompt";
+            if (!string.IsNullOrEmpty(category) && category != "default") query += " AND category = @category";
+            if (filter == "expiration_date")  query += " ORDER BY expiration_date";
+            if (filter == "quantity")  query += " ORDER BY quantity";
+            if (filter == "unit")  query += " ORDER BY unit";
+
             var foodItems = new List<UserFoodItemViewModel>();
 
             using (var myConnection = new MySqlConnection(myConnectionString))
@@ -33,14 +40,18 @@ namespace MatKollen.DAL.Repositories
                 {
                     MySqlCommand myCommand = new MySqlCommand(query, myConnection);
                     myConnection.Open();
-                    myCommand.Parameters.AddWithValue("@userId", userId);
+                    myCommand.Parameters.Add("@userId", MySqlDbType.Int32).Value = userId;
+                    myCommand.Parameters.Add("@searchPrompt", MySqlDbType.VarChar, 50).Value = "%" + searchPrompt + "%";
+                    myCommand.Parameters.Add("@category", MySqlDbType.VarChar, 50).Value = category;
+                    myCommand.Parameters.Add("@filter", MySqlDbType.VarChar, 50).Value = filter;
+
                     errorMsg = "";
 
                     using var reader = myCommand.ExecuteReader();
                     {
                         while (reader.Read())
                         {
-                            // Find if an tiem with the name and type already exists 
+                            // Find if an item with the name and type already exists 
                             UserFoodItemViewModel? existingItem = null;
                             if (DateOnly.FromDateTime(reader.GetDateTime("expiration_date")) != new DateOnly())
                             {   
@@ -176,7 +187,7 @@ namespace MatKollen.DAL.Repositories
 
                     while (reader.Read())
                     {
-                        newQuantity = Convert.ToDouble(reader.GetDecimal("quantity"));
+                        newQuantity = Convert.ToDouble(_convertQuantityHandler.ConverFromtLiterOrKg(reader.GetDecimal("quantity"), reader.GetDouble("conversion_multiplier")));
                     }
 
                     return newQuantity;
@@ -184,7 +195,7 @@ namespace MatKollen.DAL.Repositories
                 catch (MySqlException e)
                 {
                     errorMsg = e.Message;
-                    return 0;
+                    return -1;
                 }    
             }
         }
