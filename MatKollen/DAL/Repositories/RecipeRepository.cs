@@ -20,36 +20,34 @@ namespace MatKollen.DAL.Repositories
             _connectionString = configuration.GetConnectionString("DefaultConnection");
             _convertQuantityHandler = convertQuantityHandler;
         }
-        public List<RecipeDetailsViewModel>? GetRecipes(string searchPrompt, int category, out string errorMsg)
+        public List<RecipeDetailsViewModel>? GetRecipes(string searchPrompt, int categoryId, out string errorMsg)
         {
             var myConnectionString = _connectionString;
 
             using (var myConnection = new MySqlConnection(myConnectionString))
             {
                 string query  = "SELECT * FROM vw_recipe_details";
-                if (searchPrompt != null || (category != null && category != 0))
+                if (searchPrompt != null || categoryId != 0)
                 {
                     query += " WHERE";
                 }
                 if (!string.IsNullOrEmpty(searchPrompt)) 
                 {
                     query += " title LIKE @searchPrompt";
-                    if (category != null  && category != 0) query += " AND";
+                    if (categoryId != 0) query += " AND";
                 }
-                if (category != null && category != 0) query += " recipe_category_id = @category";
+                if (categoryId != 0) query += " recipe_category_id = @category";
                 var recipeList = new List<RecipeDetailsViewModel>();
 
                 try
                 {
-                    // create a MySQL command and set the SQL statement with parameters
                     MySqlCommand myCommand = new MySqlCommand(query, myConnection);
                     myConnection.Open();
                     myCommand.Parameters.Add("@searchPrompt", MySqlDbType.VarChar, 50).Value = "%" + searchPrompt + "%";
-                    myCommand.Parameters.Add("@category", MySqlDbType.Int32).Value = category;
+                    myCommand.Parameters.Add("@category", MySqlDbType.Int32).Value = categoryId;
 
                     errorMsg = "";
 
-                    // execute the command and read the results
                     using var reader = myCommand.ExecuteReader();
                     {
                         while (reader.Read())
@@ -92,14 +90,12 @@ namespace MatKollen.DAL.Repositories
 
                 try
                 {
-                    // create a MySQL command and set the SQL statement with parameters
                     MySqlCommand myCommand = new MySqlCommand(query, myConnection);
                     myConnection.Open();
                     myCommand.Parameters.Add("@userId", MySqlDbType.Int32).Value = userId;
 
                     errorMsg = "";
 
-                    // execute the command and read the results
                     using var reader = myCommand.ExecuteReader();
                     {
                         while (reader.Read())
@@ -142,7 +138,6 @@ namespace MatKollen.DAL.Repositories
 
                 try
                 {
-                    // create a MySQL command and set the SQL statement with parameters
                     MySqlCommand myCommand = new MySqlCommand(query, myConnection);
                     myConnection.Open();
 
@@ -214,7 +209,6 @@ namespace MatKollen.DAL.Repositories
                 string query  = "INSERT INTO recipes (title, description, recipe_category_id, user_id) VALUES (@title, @description, @recipeCategoryId, @userId); SELECT LAST_INSERT_ID();";
                 try
                 {
-                    // create a MySQL command and set the SQL statement with parameters
                     MySqlCommand myCommand = new MySqlCommand(query, myConnection);
                     myConnection.Open();
 
@@ -224,8 +218,9 @@ namespace MatKollen.DAL.Repositories
                     myCommand.Parameters.Add("@userId", MySqlDbType.Int32).Value = recipe.UserId;
 
                     errorMsg = "";
+                    int lastInsertedId = 0;
 
-                    int lastInsertedId = Convert.ToInt32(myCommand.ExecuteScalar());
+                    lastInsertedId = Convert.ToInt32(myCommand.ExecuteScalar());
                     
                     return lastInsertedId;
                 }
@@ -243,10 +238,9 @@ namespace MatKollen.DAL.Repositories
 
             using (var myConnection = new MySqlConnection(myConnectionString))
             {
-                string query  = "INSERT INTO recipe_has_fooditems (quantity, unit_id, recipe_id, food_item_id) VALUES (@quantity, @unitId, @recipeId, @foodItemId); SELECT LAST_INSERT_ID();";
+                string query  = "INSERT INTO recipe_has_fooditems (quantity, unit_id, recipe_id, food_item_id) VALUES (@quantity, @unitId, @recipeId, @foodItemId);";
                 try
                 {
-                    // create a MySQL command and set the SQL statement with parameters
                     MySqlCommand myCommand = new MySqlCommand(query, myConnection);
                     myConnection.Open();
 
@@ -345,33 +339,28 @@ namespace MatKollen.DAL.Repositories
             }
         }
 
-        public int Delete(int recipeId, out string errorMsg)
+        public int DeleteIngredient(int ingredientId, out string errorMsg)
         {
             var myConnectionString = _connectionString;
 
             using (var myConnection = new MySqlConnection(myConnectionString))
             {
-                //Creates a new user and a grozery list for that user at the same time
-                string query  = "DELETE FROM recipes WHERE id = @recipeId;";
+                string query  = "DELETE FROM recipe_has_fooditems WHERE id = @ingredientId;";
 
                 try
                 {
-                    // create a MySQL command and set the SQL statement with parameters
                     MySqlCommand myCommand = new MySqlCommand(query, myConnection);
-
-                    //open a connection
                     myConnection.Open();
 
-                    myCommand.Parameters.Add("@recipeId", MySqlDbType.Int32).Value = recipeId;
+                    myCommand.Parameters.Add("@ingredientId", MySqlDbType.Int32).Value = ingredientId;
 
                     errorMsg = "";
 
-                    // execute the command and read the results
                     var rowsAffected = myCommand.ExecuteNonQuery();
 
                     if (rowsAffected == 0)
                     {
-                        errorMsg = "Inget recept togs bort";
+                        errorMsg = "Ingen ingrediens togs bort";
                         return 0;
                     }
                     
@@ -384,33 +373,29 @@ namespace MatKollen.DAL.Repositories
                 }    
             }
         }
-        public int DeleteIngredient(int ingredientId, out string errorMsg)
+
+        public int Delete(int recipeId, out string errorMsg)
         {
             var myConnectionString = _connectionString;
 
             using (var myConnection = new MySqlConnection(myConnectionString))
             {
-                //Creates a new user and a grozery list for that user at the same time
-                string query  = "DELETE FROM recipe_has_fooditems WHERE id = @ingredientId;";
+                string query  = "DELETE FROM recipes WHERE id = @recipeId;";
 
                 try
                 {
-                    // create a MySQL command and set the SQL statement with parameters
                     MySqlCommand myCommand = new MySqlCommand(query, myConnection);
-
-                    //open a connection
                     myConnection.Open();
 
-                    myCommand.Parameters.Add("@ingredientId", MySqlDbType.Int32).Value = ingredientId;
+                    myCommand.Parameters.Add("@recipeId", MySqlDbType.Int32).Value = recipeId;
 
                     errorMsg = "";
 
-                    // execute the command and read the results
                     var rowsAffected = myCommand.ExecuteNonQuery();
 
                     if (rowsAffected == 0)
                     {
-                        errorMsg = "Ingen ingrediens togs bort";
+                        errorMsg = "Inget recept togs bort";
                         return 0;
                     }
                     
