@@ -38,7 +38,6 @@ namespace MatKollen.Controllers
             _convertQuantityHandler = convertQuantityHandler;
         }
 
-        //Recipe
         public IActionResult Index(string searchPrompt, int category)
         {   
             var recipeList = _recipeRepository.GetRecipes(searchPrompt, category, out string error);
@@ -65,7 +64,6 @@ namespace MatKollen.Controllers
             return View(recipeList);
         }
 
-        //Recipe/Details
         public IActionResult Details(int id)
         {
             var recipe = _recipeRepository.GetRecipe(id, out string error);
@@ -124,7 +122,6 @@ namespace MatKollen.Controllers
             return View(recipe);
         }
 
-        //Recipe/Saved
          public IActionResult My()
         {
             int userId = UserHelper.GetUserId(User);
@@ -133,7 +130,6 @@ namespace MatKollen.Controllers
             return View(recipeList);
         }
 
-        //Recipe/Create
         [HttpGet]       
         public IActionResult Create()
         {
@@ -177,7 +173,6 @@ namespace MatKollen.Controllers
             return categoryList;
         }
 
-        //Recipe/AddIngredient
         [HttpGet]       
         public IActionResult AddIngredient(int recipeId, string title)
         {
@@ -236,7 +231,6 @@ namespace MatKollen.Controllers
         }
 
         [HttpGet]
-        //Recipe/Edit
         public IActionResult Edit(int id)
         {
             string error = "";
@@ -250,7 +244,6 @@ namespace MatKollen.Controllers
         }
 
         [HttpPost]
-        //Recipe/Edit
         public IActionResult Edit(Recipe recipe)
         {
             var affectedRows = _recipeRepository.Update(recipe, out string error);
@@ -291,7 +284,6 @@ namespace MatKollen.Controllers
         }
 
         [HttpPost]
-        //Recipe/Delete
         public IActionResult Delete(int id, int recipeId)
         {
             var affectedRows = _recipeRepository.Delete(id, out string error);
@@ -301,7 +293,6 @@ namespace MatKollen.Controllers
         }
 
         [HttpPost]
-        //Recipe/Delete
         public IActionResult DeleteIngredient(int id)
         {
             var affectedRows = _recipeRepository.DeleteIngredient(id, out string error);
