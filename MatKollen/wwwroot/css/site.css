@@ -319,3 +319,32 @@ input[type="checkbox"].filter + .filter-checkbox:hover {
 .food-item-grid > div {
   aspect-ratio: 1/ 1;
 }
+
+@media screen and (max-width: 600px) {
+  .food-item-grid {
+    display: grid;
+    width: 100%;
+    gap: 1.5rem;
+    grid-template-columns:  repeat(2, 1fr);
+    grid-template-rows:  auto;
+  }
+}
+
+/* Recipe cards */
+
+.recipe-cards-container {
+  display: grid;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.recipe-cards {
+  border: 1px solid black;
+  border-radius: 20px;
+  transition: transform 0.2s ease;
+}
+
+.recipe-cards:hover {
+  border: 1px solid black;
+  transform: scale(1.01);
+}
