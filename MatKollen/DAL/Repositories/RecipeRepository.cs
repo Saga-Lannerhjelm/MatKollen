@@ -7,6 +7,7 @@ using MatKollen.Models;
 using MatKollen.Services;
 using MatKollen.ViewModels;
 using MySql.Data.MySqlClient;
+using Org.BouncyCastle.Bcpg;
 
 namespace MatKollen.DAL.Repositories
 {
@@ -127,13 +128,41 @@ namespace MatKollen.DAL.Repositories
             }
         }
 
-        public RecipeDetailsViewModel? GetRecipe(int recipeId, out string errorMsg)
+        public RecipeDetailsViewModel? GetRecipe(int recipeId, int userId, out string errorMsg)
         {
             var myConnectionString = _connectionString;
 
             using (var myConnection = new MySqlConnection(myConnectionString))
             {
-                string query  = "SELECT * FROM vw_recipe_with_ingredients WHERE id = @recipeId";
+                string query  = "SELECT " +
+                                "recipes.*, rc.name AS category, users.username, " +
+                                "CASE " + 
+                                    "WHEN rhf.food_item_id IN " + 
+                                        "(SELECT food_item_id FROM user_has_fooditems WHERE user_id = @userId) " + 
+                                   " THEN 1 ELSE 0 " +
+                                "END AS user_has_item, " +
+                               " CASE " + 
+                                    "WHEN ms.type IN " +
+                                        "(SELECT ms2.type FROM user_has_fooditems AS uhf INNER JOIN measurement_units AS ms2 ON ms2.id = uhf.unit_id WHERE uhf.user_id = @userId AND uhf.food_item_id = rhf.food_item_id) " + 
+                                    "THEN 1 ELSE 0 " +
+                                "END AS exists_in_same_type, " +
+                                "CASE " + 
+                                    "WHEN rhf.quantity <= " + 
+                                        "(SELECT SUM(quantity) FROM user_has_fooditems AS uhf " + 
+                                        "INNER JOIN measurement_units AS ms ON ms.id = uhf.unit_id " +
+                                        "WHERE food_item_id = rhf.food_item_id " +
+                                        "AND user_id = @userId) " + 
+                                    "THEN 1 ELSE 0 " +
+                                "END AS quantity_exists, " + 
+                                "rhf.id AS ingredient_id, rhf.quantity, rhf.food_item_id, rhf.unit_id,  ms.unit, ms.conversion_multiplier, ms.`type`, fi.name AS ingredient " +
+                                "FROM recipe_has_fooditems AS rhf " +
+                                "INNER JOIN measurement_units AS ms ON ms.id = rhf.unit_id " +
+                                "INNER JOIN recipes ON recipes.id = rhf.recipe_id " +
+                                "INNER JOIN recipe_categories AS rc ON rc.id = recipes.recipe_category_id " +
+                                "INNER JOIN users ON users.id = recipes.user_id " +
+                                "INNER JOIN food_items AS fi ON fi.id = rhf.food_item_id " +
+                                "WHERE rhf.recipe_id = @recipeId";
+
                 var recipe = new RecipeDetailsViewModel();
 
                 try
@@ -141,7 +170,8 @@ namespace MatKollen.DAL.Repositories
                     MySqlCommand myCommand = new MySqlCommand(query, myConnection);
                     myConnection.Open();
 
-                    myCommand.Parameters.AddWithValue("@recipeId", recipeId);
+                    myCommand.Parameters.Add("@recipeId", MySqlDbType.Int32).Value = recipeId;
+                    myCommand.Parameters.Add("@userId", MySqlDbType.Int32).Value = userId;
 
                     errorMsg = "";
 
@@ -186,6 +216,9 @@ namespace MatKollen.DAL.Repositories
                                     ConvertedQuantity = _convertQuantityHandler.ConverFromtLiterOrKg(reader.GetDecimal("quantity"), reader.GetDouble("conversion_multiplier")),
 
                                     Ingredient = reader.GetString("ingredient"),
+                                    UserHasIngredient = reader.GetBoolean("user_has_item"),
+                                    QuantityExists = reader.GetBoolean("quantity_exists"),
+                                    IngredientExistInSameType = reader.GetBoolean("exists_in_same_type"),
                                 }); 
                             }
                         }

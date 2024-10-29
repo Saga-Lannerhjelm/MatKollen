@@ -13,6 +13,7 @@ namespace MatKollen.ViewModels
         public required MeasurementUnit UnitInfo { get; set; }
         public decimal ConvertedQuantity { get; set; }
         public bool UserHasIngredient { get; set; } = false;
-        public bool IngredientExistInOtherType { get; set; } = false;
+        public bool QuantityExists { get; set; } = false;
+        public bool IngredientExistInSameType { get; set; } = false;
     }
 }

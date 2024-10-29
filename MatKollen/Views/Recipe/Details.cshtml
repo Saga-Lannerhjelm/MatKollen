@@ -30,7 +30,7 @@
         {
             <div class="my-4">
                 <span style="padding: 10px; border-radius: 99px;" class=" @(item.UserHasIngredient ? "bg-custom" : "bg-out")">
-                    <strong>@item.ConvertedQuantity@item.UnitInfo.Unit</strong> @item.Ingredient <i class="bi bi-exclamation-lg text-danger" style="@(item.IngredientExistInOtherType ? "" : "display: none;")"></i>
+                    <strong>@item.ConvertedQuantity@item.UnitInfo.Unit</strong> @item.Ingredient <i class="bi bi-exclamation-lg text-danger" style="@((item.IngredientExistInSameType || !item.UserHasIngredient) ? "display: none;" : "")"></i>
                 </span>
             </div>
         }

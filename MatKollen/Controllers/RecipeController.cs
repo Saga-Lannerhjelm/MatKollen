@@ -44,17 +44,17 @@ namespace MatKollen.Controllers
 
             if (error != "")
             {
-                 ViewData["categories"] = error;
+                 TempData["error"] = error;
                  return RedirectToAction("Index", "UserFoodItems");
             }
 
             var recipeCategories = _recipeCategoriesRepository.GetRecipeCategories(out string categoryError);
 
-            if (error != "")
+            if (categoryError != "")
             {
                 TempData[error] = categoryError;
-            }
-            else
+                return RedirectToAction("Index", "UserFoodItems");
+            } else
             {
                 ViewData["categories"] = recipeCategories;
             }
@@ -66,13 +66,10 @@ namespace MatKollen.Controllers
 
         public IActionResult Details(int id)
         {
-            // Get the recipe based on id
-            var recipe = _recipeRepository.GetRecipe(id, out string error);
-
-            int userId = UserHelper.GetUserId(User);
-
             // Fetch the fooditems in the user's inventory
-            var userFoodItems = _userFoodItemRepository.GetUserFoodList(userId, "", "", "", out string listError);
+            int userId = UserHelper.GetUserId(User);
+            // Get the recipe and ingredients based on id
+            var recipe = _recipeRepository.GetRecipe(id, userId, out string error);
 
             var missingIngredients = new List<GroceriesToAddViewModel>();
             var existingIngredientsInGroceryList = new Dictionary<int, string>();
@@ -80,20 +77,7 @@ namespace MatKollen.Controllers
             // loop through each ingredient in the recipe
             foreach(var ingredient in recipe.Ingredients)
             {
-                // Find matching food items between a recipe and the user's food items
-                var matchingItem = userFoodItems?.Find(food => food?.UserFoodItems?[0].FoodDetails.FoodItemId == ingredient.IngredientDetails.FoodItemId);
-
-                // If the food item exists among the user's food items and the amount is equal to or more than in the recipe
-                if (matchingItem != null && (matchingItem?.UserFoodItems?[0].FoodDetails.Quantity >= ingredient.IngredientDetails.Quantity))
-                {
-                    ingredient.UserHasIngredient = true;   
-                }
-                // If the food item exists but the unit type is different than in the recipe
-                else if (matchingItem != null && (matchingItem?.UserFoodItems[0].UnitInfo.Type != ingredient.UnitInfo.Type)) {
-                    ingredient.UserHasIngredient = true;
-                    ingredient.IngredientExistInOtherType = true;
-                }
-                else
+                if (ingredient.UserHasIngredient == false)
                 {
                     var foodItem = new GroceriesToAddViewModel()
                     {
@@ -247,7 +231,8 @@ namespace MatKollen.Controllers
         public IActionResult Edit(int id)
         {
             string error = "";
-            var recipe = _recipeRepository.GetRecipe(id, out error);
+            int userId = UserHelper.GetUserId(User);
+            var recipe = _recipeRepository.GetRecipe(id, userId, out error);
             if (error != "") TempData["error"] = error;
 
             var categories = _recipeCategoriesRepository.GetRecipeCategories(out error);
