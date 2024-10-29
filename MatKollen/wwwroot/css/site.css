@@ -166,11 +166,12 @@ a:hover {
 .footer {
   color: #666;
   text-align: center;
-  padding: 20px;
+  padding: 10px;
   position: fixed;
   left: 0;
   bottom: 0;
   width: 100%;
+  background-color: white;
 }
 
 
@@ -314,10 +315,10 @@ input[type="checkbox"].filter + .filter-checkbox:hover {
 
 .food-item-grid {
   display: grid;
-  width: 100%;
   gap: 1.5rem;
   grid-template-columns:  repeat(6, 1fr);
   grid-template-rows:  auto;
+  margin-top: 2rem;
 }
 
 .food-item-grid > div {
