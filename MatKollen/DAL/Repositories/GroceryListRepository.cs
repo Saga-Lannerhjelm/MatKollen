@@ -17,31 +17,144 @@ namespace MatKollen.DAL.Repositories
             _convertQuantityHandler = convertQuantityHandler;
         }
 
-        public int InsertOrUpdateFoodItems (GroceriesToAddViewModel food, int userId, out string errorMsg)
+        public List<GroceryListViewModel> GetGroceryList(int userId, out string errorMsg)
         {
-            if (GroceryListItemsExists(food.ListItem.FoodItemId, food.UnitType, userId, out errorMsg))
+            var myConnectionString = _connectionString;
+            string query  = "SELECT * FROM vw_grocery_list_details WHERE `list_id` = (SELECT id FROM lists WHERE user_id = @userId)";
+            
+            var foodItems = new List<GroceryListViewModel>();
+
+            using (var myConnection = new MySqlConnection(myConnectionString))
             {
-                return UpdateFoodItemInList(food.ListItem, food.UnitType, out errorMsg);
+                try
+                {
+                    MySqlCommand myCommand = new MySqlCommand(query, myConnection);
+                    myConnection.Open();
+
+                    myCommand.Parameters.AddWithValue("@userId", userId);
+
+                    errorMsg = "";
+
+                    using var reader = myCommand.ExecuteReader();
+                    {
+                        while (reader.Read())
+                        {
+                            var foodItem = new GroceryListViewModel()
+                            {
+                                FoodDetails = new GroceryListFoodItem()
+                                {
+                                    Id = reader.GetInt32("id"),
+                                    Quantity = reader.GetDecimal("quantity"),
+                                    UnitId = reader.GetInt16("unit_id"),
+                                    ListId = reader.GetInt16("list_id"),
+                                    FoodItemId = reader.GetInt16("food_item_id"),
+                                    Completed = reader.GetBoolean("completed")
+                                },
+                                ConvertedQuantity = _convertQuantityHandler.ConvertFromLiterOrKg(reader.GetDecimal("quantity"), reader.GetDouble("conversion_multiplier")),
+                                FoodItemName = reader.GetString("food_item"),
+                                Unit = reader.GetString("unit"),
+                                ListName = reader.GetString("list_name"),
+                            }; 
+                            foodItems.Add(foodItem);
+                        }
+                        // ...
+                    }
+                    return foodItems;
+                }
+                catch (MySqlException e)
+                {
+                    errorMsg = e.Message;
+                    return null;
+                }
             }
-            else
+        }
+
+        public List<GroceryListFoodItem> GetCompletedItems(int userId, out string errorMsg)
+        {
+            var myConnectionString = _connectionString;
+            string query  = "SELECT * FROM vw_grocery_list_details WHERE `list_id` = (SELECT id FROM lists WHERE user_id = @userId) AND completed = true";
+            
+            var foodItems = new List<GroceryListFoodItem>();
+
+            using (var myConnection = new MySqlConnection(myConnectionString))
             {
-                return InsertFoodItemInList(food.ListItem, userId, out errorMsg);
+                try
+                {
+                    MySqlCommand myCommand = new MySqlCommand(query, myConnection);
+                    myConnection.Open();
+
+                    myCommand.Parameters.AddWithValue("@userId", userId);
+
+                    errorMsg = "";
+
+                    using var reader = myCommand.ExecuteReader();
+                    {
+                        while (reader.Read())
+                        {
+                            var foodItem = new GroceryListFoodItem()
+                            {
+                                Id = reader.GetInt32("id"),
+                                Quantity = reader.GetDecimal("quantity"),
+                                UnitId = reader.GetInt16("unit_id"),
+                                ListId = reader.GetInt16("list_id"),
+                                FoodItemId = reader.GetInt16("food_item_id"),
+                                Completed = reader.GetBoolean("completed")
+                                };
+                            foodItems.Add(foodItem);
+                        }
+                    }
+                    return foodItems;
+                }
+                catch (MySqlException e)
+                {
+                    errorMsg = e.Message;
+                    return null;
+                }
+            }
+        }
+
+        public int GetGroceryListId(int userId, out string errorMsg)
+        {
+            var myConnectionString = _connectionString;
+            string query  = "SELECT id FROM lists WHERE user_id = @userId";
+            
+            var listId = 0;
+
+            using (var myConnection = new MySqlConnection(myConnectionString))
+            {
+                try
+                {
+                    MySqlCommand myCommand = new MySqlCommand(query, myConnection);
+                    myConnection.Open();
+
+                    myCommand.Parameters.AddWithValue("@userId", userId);
+
+                    errorMsg = "";
+
+                    using var reader = myCommand.ExecuteReader();
+                    {
+                        while (reader.Read())
+                        {
+                            listId = reader.GetInt32("id");
+                        }
+                    }
+                    return listId;
+                }
+                catch (MySqlException e)
+                {
+                    errorMsg = e.Message;
+                    return 0;
+                }
             }
         }
 
         public bool GroceryListItemsExists (int foodItemId, string type, int userId, out string errorMsg)
         {
             var myConnectionString = _connectionString;
-            string query = "SELECT COUNT(*) FROM list_has_fooditems AS lhf INNER JOIN lists ON lists.id = lhf.list_id ";
-            if (type != "")
-            {
-                query  += "INNER JOIN measurement_units AS ms ON ms.id = lhf.unit_id " +
-                            "WHERE food_item_id = @foodItemId AND lists.user_id = @userId AND ms.type = @type";
-            } else 
-            {
-                query  += "WHERE food_item_id = @foodItemId AND lists.user_id = @userId";
-
-            }
+            string query = "SELECT COUNT(*) FROM list_has_fooditems AS lhf " + 
+                           "INNER JOIN lists ON lists.id = lhf.list_id " + 
+                           "INNER JOIN measurement_units AS ms ON ms.id = lhf.unit_id " +
+                           "WHERE food_item_id = @foodItemId AND lists.user_id = @userId AND ms.type = @type";
 
             using (var myConnection = new MySqlConnection(myConnectionString))
             {
@@ -73,6 +186,18 @@ namespace MatKollen.DAL.Repositories
                     errorMsg = e.Message;
                     return false;
                 }    
+            }
+        }
+
+        public int InsertOrUpdateFoodItems (GroceriesToAddViewModel food, int userId, out string errorMsg)
+        {
+            if (GroceryListItemsExists(food.ListItem.FoodItemId, food.UnitType, userId, out errorMsg))
+            {
+                return UpdateFoodItemInList(food.ListItem, food.UnitType, out errorMsg);
+            }
+            else
+            {
+                return InsertFoodItemInList(food.ListItem, userId, out errorMsg);
             }
         }
 
@@ -198,137 +323,7 @@ namespace MatKollen.DAL.Repositories
                 }    
             }
         }
-        
-        public List<GroceryListViewModel> GetGroceryList(int userId, out string errorMsg)
-        {
-            var myConnectionString = _connectionString;
-            string query  = "SELECT * FROM vw_grocery_list_details WHERE `list_id` = (SELECT id FROM lists WHERE user_id = @userId)";
-            
-            var foodItems = new List<GroceryListViewModel>();
-
-            using (var myConnection = new MySqlConnection(myConnectionString))
-            {
-                try
-                {
-                    MySqlCommand myCommand = new MySqlCommand(query, myConnection);
-                    myConnection.Open();
-
-                    myCommand.Parameters.AddWithValue("@userId", userId);
-
-                    errorMsg = "";
-
-                    using var reader = myCommand.ExecuteReader();
-                    {
-                        while (reader.Read())
-                        {
-                            var foodItem = new GroceryListViewModel()
-                            {
-                                FoodDetails = new GroceryListFoodItem()
-                                {
-                                    Id = reader.GetInt32("id"),
-                                    Quantity = reader.GetDecimal("quantity"),
-                                    UnitId = reader.GetInt16("unit_id"),
-                                    ListId = reader.GetInt16("list_id"),
-                                    FoodItemId = reader.GetInt16("food_item_id"),
-                                    Completed = reader.GetBoolean("completed")
-                                },
-                                ConvertedQuantity = _convertQuantityHandler.ConvertFromLiterOrKg(reader.GetDecimal("quantity"), reader.GetDouble("conversion_multiplier")),
-                                FoodItemName = reader.GetString("food_item"),
-                                Unit = reader.GetString("unit"),
-                                ListName = reader.GetString("list_name"),
-                            }; 
-                            foodItems.Add(foodItem);
-                        }
-                    }
-                    return foodItems;
-                }
-                catch (MySqlException e)
-                {
-                    errorMsg = e.Message;
-                    return null;
-                }
-            }
-        }
-
-        public List<GroceryListFoodItem> GetCompletedItems(int userId, out string errorMsg)
-        {
-            var myConnectionString = _connectionString;
-            string query  = "SELECT * FROM vw_grocery_list_details WHERE `list_id` = (SELECT id FROM lists WHERE user_id = @userId) AND completed = true";
-            
-            var foodItems = new List<GroceryListFoodItem>();
-
-            using (var myConnection = new MySqlConnection(myConnectionString))
-            {
-                try
-                {
-                    MySqlCommand myCommand = new MySqlCommand(query, myConnection);
-                    myConnection.Open();
-
-                    myCommand.Parameters.AddWithValue("@userId", userId);
-
-                    errorMsg = "";
-
-                    using var reader = myCommand.ExecuteReader();
-                    {
-                        while (reader.Read())
-                        {
-                            var foodItem = new GroceryListFoodItem()
-                            {
-                                Id = reader.GetInt32("id"),
-                                Quantity = reader.GetDecimal("quantity"),
-                                UnitId = reader.GetInt16("unit_id"),
-                                ListId = reader.GetInt16("list_id"),
-                                FoodItemId = reader.GetInt16("food_item_id"),
-                                Completed = reader.GetBoolean("completed")
-                                };
-                            foodItems.Add(foodItem);
-                        }
-                    }
-                    return foodItems;
-                }
-                catch (MySqlException e)
-                {
-                    errorMsg = e.Message;
-                    return null;
-                }
-            }
-        }
-
-        public int GetGroceryListId(int userId, out string errorMsg)
-        {
-            var myConnectionString = _connectionString;
-            string query  = "SELECT id FROM lists WHERE user_id = @userId";
-            
-            var listId = 0;
-
-            using (var myConnection = new MySqlConnection(myConnectionString))
-            {
-                try
-                {
-                    MySqlCommand myCommand = new MySqlCommand(query, myConnection);
-                    myConnection.Open();
-
-                    myCommand.Parameters.AddWithValue("@userId", userId);
-
-                    errorMsg = "";
-
-                    using var reader = myCommand.ExecuteReader();
-                    {
-                        while (reader.Read())
-                        {
-                            listId = reader.GetInt32("id");
-                        }
-                    }
-                    return listId;
-                }
-                catch (MySqlException e)
-                {
-                    errorMsg = e.Message;
-                    return 0;
-                }
-            }
-        }
-
+    
         public int Delete(int id, out string errorMsg)
         {
             var myConnectionString = _connectionString;
