@@ -3,6 +3,12 @@
 @{
     ViewData["Title"] = "Recept detalj";
 }
+
+<ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/Recipe/Details?id=@Model.Recipe.Id">Recept detalj</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Ändra Recept</li>
+</ol>
+
 <div class="d-flex justify-content-between">
     <p><small>Publicerad @Model.Recipe.CreatedAt</small> av @Model.Username</p>
     <div class="d-flex flex-row">
@@ -61,7 +67,7 @@
             <p>Detta recept har inga ingredienser än.</p>
         }
     }
-    <a class="btn btn-outline-primary btn-sm" type="submit" asp-controller="Recipe" asp-action="AddIngredient" asp-route-recipeId="@Model.Recipe.Id" asp-route-title="@Model.Recipe.Title">Lägg till en ny ingrediens</a>
+    <a class="btn btn-outline-primary btn-sm" type="submit" asp-controller="Recipe" asp-action="AddIngredient" asp-route-recipeId="@Model.Recipe.Id">Lägg till en ny ingrediens</a>
 
 
 

@@ -5,6 +5,7 @@
 }
 
 <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/Recipe/Details?id=@Model.RecipeId">Recept Detalj</a></li>
     <li class="breadcrumb-item"><a href="/Recipe/Edit?id=@Model.RecipeId">Ändra recept</a></li>
     <li class="breadcrumb-item active" aria-current="page">Lägg till ingrediens</li>
 </ol>
@@ -42,7 +43,6 @@
                 @Html.ValidationMessageFor(m => m.UnitId, "", new { @class = "text-danger" })
             </div>
             <input type="hidden" asp-for="RecipeId" value="@Model.RecipeId">
-            <input type="hidden" name="title" value="@ViewBag.recipe">
             <input type="submit" class="btn btn-primary" value="Lägg till ingrediens"/>
         </form>
     </div>

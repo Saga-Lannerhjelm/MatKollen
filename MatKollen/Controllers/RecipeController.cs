@@ -167,7 +167,7 @@ namespace MatKollen.Controllers
         }
 
         [HttpGet]       
-        public IActionResult AddIngredient(int recipeId, string title)
+        public IActionResult AddIngredient(int recipeId)
         {
             List<MeasurementUnit> unitList = _unitRepository.GetUnits(out string unitsError);
             List<FoodItem>? foodItemList = _foodRepository.GetFoodItems(out string error);
@@ -185,12 +185,11 @@ namespace MatKollen.Controllers
             {
                 RecipeId = recipeId
             };
-            ViewBag.recipe = title;
             return View(model);
         }
 
         [HttpPost]       
-        public IActionResult AddIngredient(RecipeFoodItem ingredient, string title)
+        public IActionResult AddIngredient(RecipeFoodItem ingredient)
         {
             List<MeasurementUnit> unitList = _unitRepository.GetUnits(out string unitsError);
             string error = "";
@@ -212,7 +211,6 @@ namespace MatKollen.Controllers
                 ViewData["units"] = unitList;
                 ViewData["foodItems"] = foodItemList;
 
-                ViewBag.recipe = title;
                 return View(ingredient);
             }
             

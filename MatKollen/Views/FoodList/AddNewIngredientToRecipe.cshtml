@@ -3,7 +3,12 @@
     ViewData["Title"] = "Lägg till matvara";
 }
 
-<h2>@ViewData["Title"]</h2>
+<ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/Recipe/Details?id=@Model.RecipeFoodItem.RecipeId">Recept Detalj</a></li>
+    <li class="breadcrumb-item"><a href="/Recipe/Edit?id=@Model.RecipeFoodItem.RecipeId">Ändra recept</a></li>
+    <li class="breadcrumb-item"><a href="/Recipe/AddIngredient?recipeId=@Model.RecipeFoodItem.RecipeId">Lägg till ingrediens</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Skapa ny matvara</li>
+</ol>
 
 <div class="d-flex justify-content-center mt-5">
   <div class="card" style="width: 50vw;">
