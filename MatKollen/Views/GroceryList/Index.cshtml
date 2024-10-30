@@ -47,13 +47,12 @@
 
 @section Scripts{
     <script>
-        function MarkAsComplete(id, completed) {
+        function MarkAsComplete(id) {
             $.ajax({
                 type: 'POST',
                 url: '@Url.Action("MarkAsComplete", "GroceryList")',
                 data: {
                     id: id,
-                    completed: !completed,
                 },
                 success: function (response) {
                     const completed = response.value;
@@ -71,7 +70,7 @@
                     FindCompleted();
                 },
                 error: function (error) {
-                    TempData["error"];
+                    Console.log(error);
                 }
             });
         }
