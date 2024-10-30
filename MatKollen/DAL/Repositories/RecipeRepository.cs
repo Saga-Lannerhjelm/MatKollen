@@ -212,7 +212,7 @@ namespace MatKollen.DAL.Repositories
                                         Multiplier = reader.GetDouble("conversion_multiplier"),
                                         Type = reader.GetString("type"),
                                     },
-                                    ConvertedQuantity = _convertQuantityHandler.ConverFromtLiterOrKg(reader.GetDecimal("quantity"), reader.GetDouble("conversion_multiplier")),
+                                    ConvertedQuantity = _convertQuantityHandler.ConvertFromLiterOrKg(reader.GetDecimal("quantity"), reader.GetDouble("conversion_multiplier")),
                                     Ingredient = reader.GetString("ingredient"),
                                     UserHasIngredient = reader.GetBoolean("user_has_item"),
                                     QuantityExists = reader.GetBoolean("quantity_exists"),
@@ -358,7 +358,7 @@ namespace MatKollen.DAL.Repositories
                     while (reader.Read())
                     {
                         var test = reader.GetDecimal("quantity");
-                        updatedQuantity = Convert.ToDouble(_convertQuantityHandler.ConverFromtLiterOrKg(reader.GetDecimal("quantity"), reader.GetDouble("conversion_multiplier")));
+                        updatedQuantity = Convert.ToDouble(_convertQuantityHandler.ConvertFromLiterOrKg(reader.GetDecimal("quantity"), reader.GetDouble("conversion_multiplier")));
                     }
                     
                     return updatedQuantity;

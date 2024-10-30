@@ -40,7 +40,6 @@
     @{
         if(Model.Ingredients.Count != 0)
         {
-            @* <div> *@
             @foreach(var item in Model.Ingredients)
             {
                 <div class="my-4">
@@ -56,7 +55,6 @@
                     </span>
                 </div>
             }
-            @* </div> *@
         }
         else 
         {
@@ -83,9 +81,10 @@
                     },
                     success: function (response) {
                         const updatedQuantity = response.value;
-                        const quantity = document.getElementById(`quantity-${id}`);
-
-                        quantity.innerText = updatedQuantity;
+                        if (updateQuantity != -1) {
+                            const quantity = document.getElementById(`quantity-${id}`);
+                            quantity.innerText = updatedQuantity;
+                        }
                     },
                     error: function (error) {
                         console.log(error);

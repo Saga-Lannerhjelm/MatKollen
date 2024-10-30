@@ -232,7 +232,7 @@ namespace MatKollen.DAL.Repositories
                                     FoodItemId = reader.GetInt16("food_item_id"),
                                     Completed = reader.GetBoolean("completed")
                                 },
-                                ConvertedQuantity = _convertQuantityHandler.ConverFromtLiterOrKg(reader.GetDecimal("quantity"), reader.GetDouble("conversion_multiplier")),
+                                ConvertedQuantity = _convertQuantityHandler.ConvertFromLiterOrKg(reader.GetDecimal("quantity"), reader.GetDouble("conversion_multiplier")),
                                 FoodItemName = reader.GetString("food_item"),
                                 Unit = reader.GetString("unit"),
                                 ListName = reader.GetString("list_name"),

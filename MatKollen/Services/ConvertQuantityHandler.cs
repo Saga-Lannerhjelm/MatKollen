@@ -8,7 +8,7 @@ namespace MatKollen.Services
 {
     public class ConvertQuantityHandler
     {
-        public decimal ConverFromtLiterOrKg(decimal quanity, double conversionMultiplier)
+        public decimal ConvertFromLiterOrKg(decimal quanity, double conversionMultiplier)
         {
             decimal conversionMultiplierDecimal = Convert.ToDecimal(conversionMultiplier);
             var convertedValue = quanity * conversionMultiplierDecimal;
