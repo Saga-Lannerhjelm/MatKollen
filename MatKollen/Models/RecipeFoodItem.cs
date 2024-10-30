@@ -16,8 +16,6 @@ namespace MatKollen.Models
         [Range(1, int.MaxValue, ErrorMessage = "Du måste välja en enhet")]
         public int UnitId { get; set; }
         public int RecipeId { get; set; } 
-
-        [Range(1, int.MaxValue, ErrorMessage = "Du måste välja en vara")]
         public int FoodItemId { get; set; }
     }
 }

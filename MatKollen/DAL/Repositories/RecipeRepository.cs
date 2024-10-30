@@ -139,9 +139,9 @@ namespace MatKollen.DAL.Repositories
                                 "CASE " + 
                                     "WHEN rhf.food_item_id IN " + 
                                         "(SELECT food_item_id FROM user_has_fooditems WHERE user_id = @userId) " + 
-                                   " THEN 1 ELSE 0 " +
+                                    "THEN 1 ELSE 0 " +
                                 "END AS user_has_item, " +
-                               " CASE " + 
+                                "CASE " + 
                                     "WHEN ms.type IN " +
                                         "(SELECT ms2.type FROM user_has_fooditems AS uhf INNER JOIN measurement_units AS ms2 ON ms2.id = uhf.unit_id WHERE uhf.user_id = @userId AND uhf.food_item_id = rhf.food_item_id) " + 
                                     "THEN 1 ELSE 0 " +
@@ -153,15 +153,14 @@ namespace MatKollen.DAL.Repositories
                                         "WHERE food_item_id = rhf.food_item_id " +
                                         "AND user_id = @userId) " + 
                                     "THEN 1 ELSE 0 " +
-                                "END AS quantity_exists, " + 
-                                "rhf.id AS ingredient_id, rhf.quantity, rhf.food_item_id, rhf.unit_id,  ms.unit, ms.conversion_multiplier, ms.`type`, fi.name AS ingredient " +
-                                "FROM recipe_has_fooditems AS rhf " +
-                                "INNER JOIN measurement_units AS ms ON ms.id = rhf.unit_id " +
-                                "INNER JOIN recipes ON recipes.id = rhf.recipe_id " +
-                                "INNER JOIN recipe_categories AS rc ON rc.id = recipes.recipe_category_id " +
-                                "INNER JOIN users ON users.id = recipes.user_id " +
-                                "INNER JOIN food_items AS fi ON fi.id = rhf.food_item_id " +
-                                "WHERE rhf.recipe_id = @recipeId";
+                                "END AS quantity_exists, rhf.id AS ingredient_id, rhf.quantity, rhf.food_item_id, rhf.unit_id,  ms.unit, ms.conversion_multiplier, ms.`type`, fi.name AS ingredient " +
+                                "FROM recipes " +
+                                "LEFT JOIN recipe_has_fooditems AS rhf ON rhf.recipe_id = recipes.id " +
+                                "LEFT JOIN measurement_units AS ms ON ms.id = rhf.unit_id " +
+                                "LEFT JOIN recipe_categories AS rc ON rc.id = recipes.recipe_category_id " +
+                                "LEFT JOIN users ON users.id = recipes.user_id " +
+                                "LEFT JOIN food_items AS fi ON fi.id = rhf.food_item_id " +
+                                "WHERE recipes.id = @recipeId";
 
                 var recipe = new RecipeDetailsViewModel();
 
@@ -214,7 +213,6 @@ namespace MatKollen.DAL.Repositories
                                         Type = reader.GetString("type"),
                                     },
                                     ConvertedQuantity = _convertQuantityHandler.ConverFromtLiterOrKg(reader.GetDecimal("quantity"), reader.GetDouble("conversion_multiplier")),
-
                                     Ingredient = reader.GetString("ingredient"),
                                     UserHasIngredient = reader.GetBoolean("user_has_item"),
                                     QuantityExists = reader.GetBoolean("quantity_exists"),
@@ -336,38 +334,39 @@ namespace MatKollen.DAL.Repositories
             }
         }
         
-        public int UpdateQuantity(int id, decimal nr, out string errorMsg)
+        public double UpdateQuantity(int id, decimal nr, out string errorMsg)
         {
             var myConnectionString = _connectionString;
 
             using (var myConnection = new MySqlConnection(myConnectionString))
             {
-                string query  = "Update recipe_has_fooditems SET quantity = ROUND((quantity + @nr), 4) WHERE id = @id";
+                string query  = "CALL sp_update_recipe_food_item_quantity(@id, @nr)";
 
                 try
                 {
                     MySqlCommand myCommand = new MySqlCommand(query, myConnection);
                     myConnection.Open();
 
-                    myCommand.Parameters.Add("@nr", MySqlDbType.Decimal).Value = nr;
                     myCommand.Parameters.Add("@id", MySqlDbType.Int32).Value = id;
+                    myCommand.Parameters.Add("@nr", MySqlDbType.Decimal).Value = nr;
 
                     errorMsg = "";
 
-                    var rowsAffected = myCommand.ExecuteNonQuery();
+                    var reader = myCommand.ExecuteReader();
+                    double updatedQuantity = -1;
 
-                    if (rowsAffected == 0)
+                    while (reader.Read())
                     {
-                        errorMsg = "Gick inte att updatera antalet.";
-                        return 0;
+                        var test = reader.GetDecimal("quantity");
+                        updatedQuantity = Convert.ToDouble(_convertQuantityHandler.ConverFromtLiterOrKg(reader.GetDecimal("quantity"), reader.GetDouble("conversion_multiplier")));
                     }
                     
-                    return rowsAffected;
+                    return updatedQuantity;
                 }
                 catch (MySqlException e)
                 {
                     errorMsg = e.Message;
-                    return 0;
+                    return -1;
                 }    
             }
         }

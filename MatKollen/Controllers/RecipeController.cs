@@ -77,7 +77,7 @@ namespace MatKollen.Controllers
             // loop through each ingredient in the recipe
             foreach(var ingredient in recipe.Ingredients)
             {
-                if (ingredient.UserHasIngredient == false)
+                if (ingredient.UserHasIngredient == false || (ingredient.UserHasIngredient && !ingredient.QuantityExists && ingredient.IngredientExistInSameType))
                 {
                     var foodItem = new GroceriesToAddViewModel()
                     {
@@ -92,21 +92,18 @@ namespace MatKollen.Controllers
 
                     // The non-matching food items are added to a list
                     missingIngredients.Add(foodItem);
-
                     // Find matching food items between a recipe and the items in the grocery list
                     var matchingGroceryListItem = _groceryListRepository.GetGroceryList(userId, out error).Find(listItem => listItem.FoodDetails.FoodItemId == ingredient.IngredientDetails.FoodItemId);
-
                     // If the food item exist in the grocery list and the ammount is bigger or equal to the ingredient in the recipe
-                    if (_groceryListRepository.GroceryListItemsExists(ingredient.IngredientDetails.FoodItemId, ingredient.UnitInfo.Type, userId, out error) && (matchingGroceryListItem?.FoodDetails.Quantity >= ingredient.IngredientDetails.Quantity))
+                    if (_groceryListRepository.GroceryListItemsExists(ingredient.IngredientDetails.FoodItemId, ingredient.UnitInfo.Type, userId, out error) 
+                    && (matchingGroceryListItem?.FoodDetails.Quantity >= ingredient.IngredientDetails.Quantity))
                     {
                         existingIngredientsInGroceryList.Add(ingredient.IngredientDetails.FoodItemId, ingredient.Ingredient);
                     }
                 }
             }
-
             // Saves the non-matching food items to a session variabel
             HttpContext.Session.SetObject("groceryList", missingIngredients);
-
             ViewBag.user = userId;
             ViewBag.groceryListItemsExists = existingIngredientsInGroceryList;
             ViewBag.itemsAreMissing = missingIngredients.Count > 0;
@@ -197,6 +194,12 @@ namespace MatKollen.Controllers
         {
             List<MeasurementUnit> unitList = _unitRepository.GetUnits(out string unitsError);
             string error = "";
+
+            if (ingredient.FoodItemId == 0)
+            {
+                ModelState.AddModelError(nameof(ingredient.FoodItemId), "Välj en matvara");
+            }
+
             if (!ModelState.IsValid)
             {
                 List<FoodItem>? foodItemList = _foodRepository.GetFoodItems(out error);
@@ -233,19 +236,48 @@ namespace MatKollen.Controllers
             string error = "";
             int userId = UserHelper.GetUserId(User);
             var recipe = _recipeRepository.GetRecipe(id, userId, out error);
-            if (error != "") TempData["error"] = error;
+            if (error != "") 
+            {
+                TempData["error"] = error;
+                return RedirectToAction("MyRecipes");
+            }
 
             var categories = _recipeCategoriesRepository.GetRecipeCategories(out error);
-            if (categories == null) TempData["error"] = "Gick inte att hämta kategorier";
-
-            if (error != "") TempData["error"] = error;
-            else ViewData["categories"] = categories;
+            if (categories == null)
+            {
+                TempData["error"] = "Gick inte att hämta kategorier";
+                if (error != "") TempData["error"] = error;
+                return RedirectToAction("MyRecipes");
+            }
+            
+            ViewData["categories"] = categories;
             return View(recipe);
         }
 
         [HttpPost]
         public IActionResult Edit(Recipe recipe)
         {
+            if (!ModelState.IsValid)
+            {
+                int userId = UserHelper.GetUserId(User);
+                var recipeDetails = _recipeRepository.GetRecipe(recipe.Id, userId, out string recipeError);
+                if (recipeError != "") 
+                {
+                    TempData["error"] = recipeError;
+                    return RedirectToAction("MyRecipes");
+                }
+                var categories = _recipeCategoriesRepository.GetRecipeCategories(out string categoryError);
+                if (categories == null)
+                {
+                    TempData["error"] = "Gick inte att hämta kategorier";
+                    if (categoryError != "") TempData["error"] = categoryError;
+                    return RedirectToAction("MyRecipes");
+                }
+                ViewData["categories"] = categories;
+                TempData["error"] = "Gick inte att uppdatera receptet då ett eller flera fält var tomma";
+                return View(recipeDetails);
+            }
+
             var affectedRows = _recipeRepository.Update(recipe, out string error);
             if (error != "" || affectedRows == 0) 
             {
@@ -261,26 +293,22 @@ namespace MatKollen.Controllers
         }
 
         [HttpPost]
-        public IActionResult IncreaseQuantity(int id, double unitMultiplier, string unit, int recipeId)
+        public IActionResult UpdateQuantity(int id, string unitMultiplier, string unit, string type)
         {
-            decimal incrementNr = Convert.ToDecimal(unit != "kg" && unit != "L" ? 1 / unitMultiplier : 0.1);
-            var affectedRows = _recipeRepository.UpdateQuantity(id, incrementNr, out string error);
-            if (error != "") TempData["error"] = error;
-            if (affectedRows == 0) TempData["error"] = "Det gick inte att ändra antalet";
-            return RedirectToAction("Edit", new {id = recipeId});
-        }
-
-        [HttpPost]
-        public IActionResult DecreaseQuantity(int id, double unitMultiplier, decimal quantity, string unit, int recipeId)
-        {
-            if (quantity > 0)
+            double multiplier = Convert.ToDouble(unitMultiplier);
+            decimal incrOrDecrNr = 0;
+            if (type == "incr")
             {
-                decimal decreaseNr = Convert.ToDecimal((unit != "kg" && unit != "L" ? 1 / unitMultiplier : 0.1) * -1);
-                var affectedRows = _recipeRepository.UpdateQuantity(id, decreaseNr, out string error);
-                if (error != "") TempData["error"] = error;
-                if (affectedRows == 0) TempData["error"] = "Det gick inte att ändra antalet";
+                incrOrDecrNr = Convert.ToDecimal(unit != "kg" && unit != "L" ? 1 / multiplier : 0.1);
             }
-            return RedirectToAction("Edit", new {id = recipeId});
+            if (type == "decr")
+            {
+                incrOrDecrNr = Convert.ToDecimal((unit != "kg" && unit != "L" ? 1 / multiplier : 0.1) * -1);
+            }
+            var newQuantity = _recipeRepository.UpdateQuantity(id, incrOrDecrNr, out string error);
+            if (error != "") TempData["error"] = error;
+            if (newQuantity == -1) TempData["error"] = "Det gick inte att ändra antalet";
+            return new JsonResult(Ok(newQuantity));
         }
 
         [HttpPost]

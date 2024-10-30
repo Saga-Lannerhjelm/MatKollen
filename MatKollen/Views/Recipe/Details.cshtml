@@ -29,7 +29,7 @@
         foreach(var item in Model.Ingredients)
         {
             <div class="my-4">
-                <span style="padding: 10px; border-radius: 99px;" class=" @(item.UserHasIngredient ? "bg-custom" : "bg-out")">
+                <span style="padding: 10px; border-radius: 99px;" class=" @(((item.UserHasIngredient && item.QuantityExists) || (!item.IngredientExistInSameType && item.UserHasIngredient)) ? "bg-custom" : "bg-out")">
                     <strong>@item.ConvertedQuantity@item.UnitInfo.Unit</strong> @item.Ingredient <i class="bi bi-exclamation-lg text-danger" style="@((item.IngredientExistInSameType || !item.UserHasIngredient) ? "display: none;" : "")"></i>
                 </span>
             </div>
