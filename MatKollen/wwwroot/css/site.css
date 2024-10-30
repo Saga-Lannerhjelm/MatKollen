@@ -205,6 +205,14 @@ a:hover {
   transition: transform 100ms ease-in-out;
 }
 
+.btn-standard {
+  background-color: var(--main-color);
+  border: none;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 10px;
+}
+
 /* checkmark */
 
 /* Remove checkmark defaul apperance */
@@ -302,18 +310,10 @@ input[type="checkbox"].filter + .filter-checkbox:hover {
   outline: none;
 }
 
-.btn-standard {
-  background-color: var(--main-color);
-  border: none;
-  color: white;
-  padding: 5px 10px;
-  border-radius: 10px;
-}
-
-
 /* grid */
 
 .food-item-grid {
+  width: 100%;
   display: grid;
   gap: 1.5rem;
   grid-template-columns:  repeat(6, 1fr);
@@ -321,9 +321,9 @@ input[type="checkbox"].filter + .filter-checkbox:hover {
   margin-top: 2rem;
 }
 
-.food-item-grid > div {
-  aspect-ratio: 1/ 1;
-}
+/* .food-item-grid > a {
+  aspect-ratio: 1 / 1;
+} */
 
 @media screen and (max-width: 600px) {
   .food-item-grid {
@@ -334,6 +334,25 @@ input[type="checkbox"].filter + .filter-checkbox:hover {
     grid-template-rows:  auto;
   }
 }
+
+.new-date-form {
+  display: flex;
+  border: 1px solid black;
+  border-radius: 10px;
+  border-left: none;
+  padding: 0;
+}
+
+.new-date-form input {
+  display: flex;
+  border: none;
+  border-right: 1px solid black;
+  border-left: 1px solid black;
+  border-radius: 10px 0 0 10px;
+  padding: 0 10px;
+}
+
+
 
 /* Recipe cards */
 
