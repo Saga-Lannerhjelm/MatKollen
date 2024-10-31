@@ -51,7 +51,7 @@ namespace MatKollen.DAL.Repositories
                     {
                         while (reader.Read())
                         {
-                            // Find if an item with the name and type already exists 
+                            // Find if an item with the foodItemId and type already exists 
                             UserFoodItemViewModel? existingItem = null;
                             if (DateOnly.FromDateTime(reader.GetDateTime("expiration_date")) != new DateOnly())
                             {   
@@ -68,7 +68,7 @@ namespace MatKollen.DAL.Repositories
                                     [
                                         new()
                                         {
-                                            ConvertedQuantity = _convertQuantityHandler.ConverFromtLiterOrKg(reader.GetDecimal("quantity"), reader.GetDouble("conversion_multiplier")),
+                                            ConvertedQuantity = _convertQuantityHandler.ConvertFromLiterOrKg(reader.GetDecimal("quantity"), reader.GetDouble("conversion_multiplier")),
                                             FoodDetails = new UserFoodItem()
                                             {
                                                 Id = reader.GetInt32("id"),
@@ -86,6 +86,7 @@ namespace MatKollen.DAL.Repositories
                                             }
                                         } 
                                     ],
+                                    SumOfQuantities = GetTotalQuantity(reader.GetInt16("food_item_id"), userId, reader.GetString("type"), out string error)
                                 }; 
                                 foodItems.Add(foodItem);
                             } else
@@ -93,7 +94,7 @@ namespace MatKollen.DAL.Repositories
                                 existingItem?.UserFoodItems.Add(
                                     new()
                                     {
-                                        ConvertedQuantity = _convertQuantityHandler.ConverFromtLiterOrKg(reader.GetDecimal("quantity"), reader.GetDouble("conversion_multiplier")),
+                                        ConvertedQuantity = _convertQuantityHandler.ConvertFromLiterOrKg(reader.GetDecimal("quantity"), reader.GetDouble("conversion_multiplier")),
                                         FoodDetails = new UserFoodItem()
                                         {
                                             Id = reader.GetInt32("id"),
@@ -120,6 +121,46 @@ namespace MatKollen.DAL.Repositories
                 {
                     errorMsg = e.Message;
                     return null;
+                }    
+            }
+        }
+
+
+        public decimal GetTotalQuantity(int foodItemId, int userId, string type, out string errorMsg)
+        {
+            var myConnectionString = _connectionString;
+
+            using (var myConnection = new MySqlConnection(myConnectionString))
+            {
+                string query  = "SELECT SUM(quantity) AS sum FROM user_has_fooditems AS uhf " +
+                                "INNER JOIN measurement_units AS ms ON ms.id = uhf.unit_id WHERE food_item_id = @foodItemId " +
+                                "AND user_id = @userId AND ms.type = @type";
+                decimal totalQuantity = 0;
+
+                try
+                {
+                    MySqlCommand myCommand = new MySqlCommand(query, myConnection);
+                    myConnection.Open();
+
+                    myCommand.Parameters.Add("@foodItemId", MySqlDbType.Int32).Value = foodItemId;
+                    myCommand.Parameters.Add("@userId", MySqlDbType.Int32).Value = userId;
+                    myCommand.Parameters.Add("@type", MySqlDbType.VarChar, 50).Value = type;
+
+                    errorMsg = "";
+
+                    var reader = myCommand.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        totalQuantity = reader.GetDecimal("sum");
+                    }
+                    
+                    return totalQuantity;
+                }
+                catch (MySqlException e)
+                {
+                    errorMsg = e.Message;
+                    return 0;
                 }    
             }
         }
@@ -164,13 +205,13 @@ namespace MatKollen.DAL.Repositories
             }
         }
 
-        public double UpdateQuantity(int id, decimal nr, out string errorMsg)
+        public int UpdateQuantity(int id, decimal nr, out string errorMsg)
         {
             var myConnectionString = _connectionString;
 
             using (var myConnection = new MySqlConnection(myConnectionString))
             {
-                string query  = "CALL `update_user_food_item_quantity`(@id, @nr)";
+                string query  = "UPDATE `user_has_fooditems` SET `quantity` = ROUND((`quantity` + @nr), 4) WHERE id = @id;";
 
                 try
                 {
@@ -181,21 +222,21 @@ namespace MatKollen.DAL.Repositories
                     myCommand.Parameters.Add("@id", MySqlDbType.Int32).Value = id;
 
                     errorMsg = "";
-                    double newQuantity = 0;
 
-                    var reader = myCommand.ExecuteReader();
+                    var affectedRows = myCommand.ExecuteNonQuery();
 
-                    while (reader.Read())
+                    if (affectedRows == 0)
                     {
-                        newQuantity = Convert.ToDouble(_convertQuantityHandler.ConverFromtLiterOrKg(reader.GetDecimal("quantity"), reader.GetDouble("conversion_multiplier")));
+                        errorMsg = "Det gick inte att uppdatera mängden av matvaran";
+                        return 0;
                     }
 
-                    return newQuantity;
+                    return affectedRows;
                 }
                 catch (MySqlException e)
                 {
                     errorMsg = e.Message;
-                    return -1;
+                    return 0;
                 }    
             }
         }
@@ -206,7 +247,7 @@ namespace MatKollen.DAL.Repositories
 
             using (var myConnection = new MySqlConnection(myConnectionString))
             {
-                string query  = "SELECT `quantity` FROM `user_has_fooditems` WHERE `id` = paramId;";
+                string query  = "UPDATE user_has_fooditems SET expiration_date = @expirationDate WHERE id = @id";
 
                 try
                 {
@@ -242,15 +283,11 @@ namespace MatKollen.DAL.Repositories
 
             using (var myConnection = new MySqlConnection(myConnectionString))
             {
-                //Creates a new user and a grozery list for that user at the same time
                 string query  = "DELETE uhf FROM user_has_fooditems AS uhf INNER JOIN measurement_units AS ms ON ms.id = uhf.unit_id WHERE uhf.food_item_id = @foodId AND uhf.user_id = @userId AND ms.type = @type;";
 
                 try
                 {
-                    // create a MySQL command and set the SQL statement with parameters
                     MySqlCommand myCommand = new MySqlCommand(query, myConnection);
-
-                    //open a connection
                     myConnection.Open();
 
                     myCommand.Parameters.Add("@foodId", MySqlDbType.Int32).Value = foodId;
@@ -259,7 +296,6 @@ namespace MatKollen.DAL.Repositories
 
                     errorMsg = "";
 
-                    // execute the command and read the results
                     var rowsAffected = myCommand.ExecuteNonQuery();
 
                     if (rowsAffected == 0)
@@ -284,22 +320,16 @@ namespace MatKollen.DAL.Repositories
 
             using (var myConnection = new MySqlConnection(myConnectionString))
             {
-                //Creates a new user and a grozery list for that user at the same time
                 string query  = "DELETE FROM user_has_fooditems WHERE id = @id;";
 
                 try
                 {
-                    // create a MySQL command and set the SQL statement with parameters
                     MySqlCommand myCommand = new MySqlCommand(query, myConnection);
-
-                    //open a connection
                     myConnection.Open();
 
                     myCommand.Parameters.Add("@id", MySqlDbType.Int32).Value = id;
-
                     errorMsg = "";
 
-                    // execute the command and read the results
                     var rowsAffected = myCommand.ExecuteNonQuery();
 
                     if (rowsAffected == 0)
