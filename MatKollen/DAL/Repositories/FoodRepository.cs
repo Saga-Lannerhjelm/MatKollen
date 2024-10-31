@@ -67,16 +67,12 @@ namespace MatKollen.Controllers.Repositories
 
             using (var myConnection = new MySqlConnection(myConnectionString))
             {
-                //Creates a new user and a grozery list for that user at the same time
                 string query  = "CALL `insert_food_and_assign_to_user`(@foodName, @categoryId, @quantity, @expirationDate, @userId, @unitId);";
-                var testList = new List<string>();
 
                 try
                 {
-                    // create a MySQL command and set the SQL statement with parameters
                     MySqlCommand myCommand = new MySqlCommand(query, myConnection);
 
-                    //open a connection
                     myConnection.Open();
 
                     myCommand.Parameters.Add("@foodName", MySqlDbType.VarChar, 50).Value = foodItem.FoodItem.Name;
@@ -88,7 +84,6 @@ namespace MatKollen.Controllers.Repositories
 
                     errorMsg = "";
 
-                    // execute the command and read the results
                     var rowsAffected = Convert.ToInt32(myCommand.ExecuteScalar());
 
                     if (rowsAffected == 0)
@@ -113,16 +108,13 @@ namespace MatKollen.Controllers.Repositories
 
             using (var myConnection = new MySqlConnection(myConnectionString))
             {
-                //Creates a new user and a grozery list for that user at the same time
                 string query  = "CALL `insert_food_and_assign_to_recipe`(@foodName, @categoryId, @quantity, @recipeId, @unitId);";
                 var testList = new List<string>();
 
                 try
                 {
-                    // create a MySQL command and set the SQL statement with parameters
                     MySqlCommand myCommand = new MySqlCommand(query, myConnection);
 
-                    //open a connection
                     myConnection.Open();
 
                     myCommand.Parameters.Add("@foodName", MySqlDbType.VarChar, 50).Value = foodItem.FoodItem.Name;
@@ -133,7 +125,6 @@ namespace MatKollen.Controllers.Repositories
 
                     errorMsg = "";
 
-                    // execute the command and read the results
                     var rowsAffected = Convert.ToInt32(myCommand.ExecuteScalar());
 
                     if (rowsAffected == 0)
@@ -158,16 +149,13 @@ namespace MatKollen.Controllers.Repositories
 
             using (var myConnection = new MySqlConnection(myConnectionString))
             {
-                //Creates a new user and a grozery list for that user at the same time
                 string query  = "CALL `insert_food_and_assign_to_grocery_list`(@foodName, @categoryId, @quantity, @listId, @unitId);";
                 var testList = new List<string>();
 
                 try
                 {
-                    // create a MySQL command and set the SQL statement with parameters
                     MySqlCommand myCommand = new MySqlCommand(query, myConnection);
 
-                    //open a connection
                     myConnection.Open();
 
                     myCommand.Parameters.Add("@foodName", MySqlDbType.VarChar, 50).Value = foodItem.FoodItem.Name;
@@ -178,7 +166,6 @@ namespace MatKollen.Controllers.Repositories
 
                     errorMsg = "";
 
-                    // execute the command and read the results
                     var rowsAffected = Convert.ToInt32(myCommand.ExecuteScalar());
 
                     if (rowsAffected == 0)
