@@ -14,8 +14,6 @@ namespace MatKollen.Models
     [Required (ErrorMessage = "Fältet kan inte vara tomt")]
     [StringLength(1000, ErrorMessage = "Instruktionerna kan inte vara längre än 1000 tecken.")]
     public string? Description { get; set; }
-    public byte[]? ImageData { get; set; }
-    public string? ImageContentType { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.Now;
 
     [Required (ErrorMessage = "Fältet kan inte vara tomt")]
