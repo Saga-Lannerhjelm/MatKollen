@@ -89,11 +89,13 @@ namespace MatKollen.Controllers
                         },
                         UnitType = ingredient.UnitInfo.Type
                     };
-
                     // The non-matching food items are added to a list
                     missingIngredients.Add(foodItem);
                     // Find matching food items between a recipe and the items in the grocery list
-                    var matchingGroceryListItem = _groceryListRepository.GetGroceryList(userId, out error).Find(listItem => listItem.FoodDetails.FoodItemId == ingredient.IngredientDetails.FoodItemId && listItem.Type == ingredient.UnitInfo.Type);
+                    var matchingGroceryListItem = _groceryListRepository.GetGroceryList(userId, out error).Find
+                    (
+                        listItem => listItem.FoodDetails.FoodItemId == ingredient.IngredientDetails.FoodItemId && listItem.Type == ingredient.UnitInfo.Type
+                    );
                     // If the food item exist in the grocery list and the ammount is bigger or equal to the ingredient in the recipe
                     if (_groceryListRepository.GroceryListItemsExists(ingredient.IngredientDetails.FoodItemId, ingredient.UnitInfo.Type, userId, out error) 
                     && (matchingGroceryListItem?.FoodDetails.Quantity >= ingredient.IngredientDetails.Quantity))
