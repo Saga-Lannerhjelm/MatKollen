@@ -53,11 +53,11 @@ namespace MatKollen.DAL.Repositories
                                 ConvertedQuantity = _convertQuantityHandler.ConvertFromLiterOrKg(reader.GetDecimal("quantity"), reader.GetDouble("conversion_multiplier")),
                                 FoodItemName = reader.GetString("food_item"),
                                 Unit = reader.GetString("unit"),
+                                Type = reader.GetString("type"),
                                 ListName = reader.GetString("list_name"),
                             }; 
                             foodItems.Add(foodItem);
                         }
-                        // ...
                     }
                     return foodItems;
                 }
