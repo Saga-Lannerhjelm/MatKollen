@@ -34,11 +34,11 @@ namespace MatKollen.Controllers
         {
             int userId = UserHelper.GetUserId(User);
             var foodList = _userFoodItemRepository.GetUserFoodList(userId, searchPrompt, category, filter, out string error);
-            
-            if (error != "") TempData["error"] = error;
+            if (error != "") {
+                TempData["error"] = error;
+            }
 
             var foodCategories = _foodCategoryRepository.GetFoodCategories(out string categoryError);
-
             if (error != "")
             {
                 TempData[error] = categoryError;
@@ -51,10 +51,8 @@ namespace MatKollen.Controllers
             ViewBag.searchPrompt = searchPrompt;
             ViewBag.category = category;
             ViewBag.filter = filter;
-
             ViewBag.showAccordionName = showAccordionName;
-
-            return View("Index", foodList);
+            return View(foodList);
         }
 
         [HttpGet]
@@ -93,18 +91,16 @@ namespace MatKollen.Controllers
             int userId = UserHelper.GetUserId(User);
             item.UserId = userId;
 
-            // Recalculate quantity
+            // Convert quantity
             item.Quantity = _convertQuantityHandler.ConverToLiterOrKg(item.Quantity, multiplier);
 
             // Insert values in database
             int affectedRows = _userFoodItemRepository.AddFoodItem(item, out string error);
 
-            if (error != "")
+            if (affectedRows == 0 || error != "")
             {
-                TempData["error"] = "Det gick inte att lägga till matvaran:" + error;
-            }
-
-            if (affectedRows == 0) TempData["error"] = "Det gick inte att lägga till matvaran";
+                TempData["error"] = "Det gick inte att lägga till matvaran. " + error;
+            } 
             else TempData["success"] = "Matvara tillagd!";
 
             return RedirectToAction("Index");
@@ -121,15 +117,14 @@ namespace MatKollen.Controllers
             ViewData["foodItems"] = foodItemList;
         }
 
-        // Update
-
         [HttpPost]
         public IActionResult IncreaseQuantity(int id, double unitMultiplier, string unit, string showAccordionName)
         {
             decimal incrementNr = Convert.ToDecimal(unit != "kg" && unit != "L" ? 1 / unitMultiplier : 0.1);
-            var newQuantity = _userFoodItemRepository.UpdateQuantity(id, incrementNr, out string error);
+            var affectedRows = _userFoodItemRepository.UpdateQuantity(id, incrementNr, out string error);
+            if (affectedRows == 0) TempData["error"] = "Det gick inte att ändra antalet";
             if (error != "") TempData["error"] = error;
-            return new JsonResult(new { success = true, newQuantity });
+            return RedirectToAction("Index", new {showAccordionName});
         }
 
         [HttpPost]
@@ -139,7 +134,7 @@ namespace MatKollen.Controllers
             {
                 decimal decreaseNr = Convert.ToDecimal((unit != "kg" && unit != "L" ? 1 / unitMultiplier : 0.1) * -1);
                 var affectedRows = _userFoodItemRepository.UpdateQuantity(id, decreaseNr, out string error);
-                if (affectedRows == -1) TempData["error"] = "Det gick inte att ändra antalet";
+                if (affectedRows == 0) TempData["error"] = "Det gick inte att ändra antalet";
                 if (error != "") TempData["error"] = error;
             }
             else if (canDelete)
@@ -161,9 +156,6 @@ namespace MatKollen.Controllers
             
             return RedirectToAction("Index");
         }
-
-
-        // Delete
 
         [HttpPost]
         public IActionResult Delete(int foodId, int userId, string type)
