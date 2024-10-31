@@ -77,7 +77,7 @@ namespace MatKollen.Controllers
             if (affectedRows == 0) TempData["error"] = "Det gick inte att lägga till matvaran";
             else TempData["success"] = "Matvara tillagd!";
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", "UserFoodItems");
         }
 
         [HttpGet]
