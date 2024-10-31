@@ -13,7 +13,6 @@ namespace MatKollen.Models
         [DataType(DataType.ImageUrl, ErrorMessage = "Fältet måste vara ett giltigt datum")]
         public DateOnly ExpirationDate { get; set; } = DateOnly.FromDateTime(DateTime.Now);
         public int UserId { get; set; } 
-        [Range(1, int.MaxValue, ErrorMessage = "Välja en matvara")]
         public int FoodItemId { get; set; }
 
         [Required (ErrorMessage = "Du måste välja en enhet")]

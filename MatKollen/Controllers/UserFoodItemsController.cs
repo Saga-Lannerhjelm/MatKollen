@@ -72,6 +72,11 @@ namespace MatKollen.Controllers
                 ModelState.AddModelError(nameof(item.ExpirationDate), "Utgångsdatumet kan inte vara i det förflutna");
             }
 
+            if (item.FoodItemId == 0)
+            {
+                ModelState.AddModelError(nameof(item.FoodItemId), "Välj en vara");
+            }
+
             if (!ModelState.IsValid)
             {
                 GetAddFormData();
