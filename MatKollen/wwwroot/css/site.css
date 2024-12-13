@@ -1,7 +1,7 @@
 html {
   font-size: 14px;
   --main-color: #1ccc1e;
-  --secondary-color:rgb(197, 255, 198);
+  --secondary-color: rgb(197, 255, 198);
 }
 
 @media (min-width: 768px) {
@@ -10,11 +10,13 @@ html {
   }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
-
-
 
 .btn:focus,
 .btn:active:focus,
@@ -43,18 +45,18 @@ nav ul {
 }
 
 nav ul li {
-    display: inline-block;
-    margin-right: 10px;
+  display: inline-block;
+  margin-right: 10px;
 }
 
 nav ul li a {
-    color: #212529;
-    text-decoration: none;
-    color: #000000;
+  color: #212529;
+  text-decoration: none;
+  color: #000000;
 }
 
 .navbar-brand {
-  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   font-size: x-large;
 }
 
@@ -100,9 +102,8 @@ a:hover {
   text-decoration: underline;
 }
 
-
 .bg-custom {
-  background-color: #e4ffb6;
+  background-color: rgb(170, 255, 170);
 }
 
 .border-color {
@@ -112,25 +113,25 @@ a:hover {
 .text-main {
   color: var(--main-color);
 }
-.bg-default{
-  background-color: #e4ffb6;
+.bg-default {
+  background-color: rgb(170, 255, 170);
   color: #2f691c;
 }
 
-.bg-attention{
+.bg-attention {
   background-color: #ffe7af;
   color: #6d541c;
 }
 
-.bg-critical{
+.bg-critical {
   background-color: #fbc4aa;
 }
 
-.bg-expired{
+.bg-expired {
   background-color: #fcaaaa;
 }
 
-.bg-out{
+.bg-out {
   background-color: #eeeded;
   opacity: 0.8;
 }
@@ -155,9 +156,9 @@ a:hover {
   border-radius: 5px;
 }
 
-  .tag a:hover {
-      color: #6d6dfb;
-  }
+.tag a:hover {
+  color: #6d6dfb;
+}
 
 .post-date {
   margin-bottom: 5px;
@@ -174,8 +175,6 @@ a:hover {
   background-color: white;
 }
 
-
-
 /* Buttons */
 
 .add-btn {
@@ -189,18 +188,18 @@ a:hover {
 }
 
 .action-btn {
-  background-color: transparent; 
+  background-color: transparent;
   border: none;
   transition: transform 330ms ease-in-out;
 }
 
-.action-btn:hover{
+.action-btn:hover {
   background-color: rgba(0, 0, 0, 0.1);
   border-radius: 99px;
 }
 
 .action-btn i {
-  font-size: 1.2rem; 
+  font-size: 1.2rem;
   color: green;
   transition: transform 100ms ease-in-out;
 }
@@ -271,7 +270,7 @@ input[type="checkbox"].filter {
 input[type="checkbox"].filter:checked + .filter-checkbox {
   border: 2px solid var(--main-color);
   opacity: 1;
-  font-size: 1.0rem;
+  font-size: 1rem;
 }
 
 input[type="checkbox"].filter + .filter-checkbox:hover {
@@ -316,9 +315,24 @@ input[type="checkbox"].filter + .filter-checkbox:hover {
   width: 100%;
   display: grid;
   gap: 1.5rem;
-  grid-template-columns:  repeat(6, 1fr);
-  grid-template-rows:  auto;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: auto;
   margin-top: 2rem;
+}
+
+.food-item-grid > div .card {
+  background-color: #f4f4f4;
+  border: none;
+  position: relative;
+}
+
+.status {
+  width: 34px;
+  height: 34px;
+  border-radius: 100px;
+  position: absolute;
+  right: -6px;
+  top: -6px;
 }
 
 /* .food-item-grid > a {
@@ -330,8 +344,8 @@ input[type="checkbox"].filter + .filter-checkbox:hover {
     display: grid;
     width: 100%;
     gap: 1.5rem;
-    grid-template-columns:  repeat(2, 1fr);
-    grid-template-rows:  auto;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: auto;
   }
 }
 
@@ -351,8 +365,6 @@ input[type="checkbox"].filter + .filter-checkbox:hover {
   border-radius: 10px 0 0 10px;
   padding: 0 10px;
 }
-
-
 
 /* Recipe cards */
 
